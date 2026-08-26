@@ -53,7 +53,9 @@ O mesmo pipeline, encurtado — `pesquisar-mercado` detecta o modo no enquadrame
 
 Para uma correção pequena ou tarefa trivial, nada disso: o pipeline existe para trabalho onde errar estrutura custa caro.
 
-### Transversal
+### Transversais
+
+**`pesquisar`** — pesquisa profunda de qualquer tema (técnica, comparativo de ferramenta, prática nova — ex.: GEO), em qualquer ponto do fluxo. Pesquisadores de contexto limpo com busca web entregam duas camadas: `SINTESE.md` acionável (fatos → backlog APPLY → decisões DISCUSS → gates de medição) e a trilha de evidências por frente com fontes e trechos salvos, para um agente futuro se aprofundar sem refazer a busca. A síntese é a base natural para a entrevista do `decidir-antes` — a invocação da próxima skill é sempre sua.
 
 **`orquestrar`** vale em qualquer etapa que use subagentes — mas é na **implementação longa** que ele mais trabalha: é o manual de como o implementador decompõe por fronteiras de contexto, delega, roteia modelos e verifica com contexto limpo durante horas ou dias. Nas demais etapas, rege os pesquisadores, narradores e verificadores que as skills despacham.
 
@@ -66,6 +68,7 @@ Para uma correção pequena ou tarefa trivial, nada disso: o pipeline existe par
 | `desarmar` | 3 | Executa testes desarmadores e POCs com aceite pré-registrado e preenche o placar |
 | `decidir-antes` | 4 | Entrevista de decisões → SPEC.md + PROGRESS.md para implementação autônoma longa |
 | `verificar-entrega` | 6 | Auditoria de contexto limpo da entrega contra os critérios da SPEC |
+| `pesquisar` | — | Pesquisa profunda de qualquer tema em duas camadas: síntese acionável + trilha de evidências reutilizável |
 | `orquestrar` | — | Regras de orquestração multi-agente: delegação, briefs, roteamento, verificação |
 
 ## Adicionando novas skills
