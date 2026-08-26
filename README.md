@@ -38,7 +38,6 @@ O plugin não fixa versão, então cada `git push` no repositório já conta com
 | `pesquisa-de-mercado` | Pesquisa de mercado completa antes de qualquer código: dossiê indexado em `docs/`, preços sem âncora, força de evidência, decisões em aberto → teste empírico |
 | `voltar-do-futuro` | Premortem narrado do futuro: por que o projeto morreu, atacando o que nunca foi medido, com teste barato e critério de aceite para cada falha |
 | `decidir-antes` | Entrevista de decisões antes de implementar: perguntas priorizadas por irreversibilidade com recomendação embasada, consolidadas em SPEC.md + PROGRESS.md com protocolo anti-drift para agentes de longa duração |
-| `exemplo` | Skill de exemplo para testar se o plugin está funcionando |
 
 ## Adicionando novas skills
 
