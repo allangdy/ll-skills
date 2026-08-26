@@ -201,10 +201,11 @@ fronteira) → falhas ordenadas com TOP 3 marcados → síntese.
 O premortem só está encerrado quando cada falha tem **veredicto medido**. Ele derruba a
 confiança no plano e depois a reconstrói sobre evidência — parar na metade é teatro.
 
-A execução dos testes é trabalho da skill `desarmar` (plugin ll-skills): após o
-Checkpoint 2, invoque-a pela ferramenta Skill — ela confere cada teste contra a anatomia,
-executa com disciplina "reprova primeiro" e preenche o placar. Sem ela no ambiente, execute
-os testes você mesmo respeitando o contrato abaixo.
+A execução dos testes é trabalho da skill `desarmar` (plugin ll-skills), que confere cada
+teste contra a anatomia, executa com disciplina "reprova primeiro" e preenche o placar.
+Após o Checkpoint 2, entregue o premortem e nomeie esse próximo passo — invocá-lo é decisão
+do usuário. Só execute os testes você mesmo se o usuário pedir, respeitando o contrato
+abaixo.
 
 Grave `docs/premortem/placar.md`: uma linha por falha, com **vocabulário fechado**:
 

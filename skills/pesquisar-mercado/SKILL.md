@@ -99,7 +99,7 @@ Apresente ao usuário cada decisão em aberto com as teses concorrentes enunciad
 
 Percorra o portão de completude do dossiê e os sinais de "pesquisa demais" em `referencias/indice-e-fechamento.md`. Entregue o desfecho — prosseguir, prosseguir diferente ou não prosseguir; em modo feature, **construir, construir diferente ou não construir** — sabendo que os três são sucesso da pesquisa; um dossiê que evita um projeto inviável pagou por si.
 
-Feche com as duas listas que a próxima fase consome: as **premissas críticas ordenadas por letalidade** (importância × força de evidência) e os **itens que só um humano pode executar** — conversar com N usuários reais, falar com advogado, comprar e usar o produto do concorrente. Ofereça então o próximo passo e, se o usuário aceitar, invoque a skill `voltar-do-futuro` (plugin ll-skills) pela ferramenta Skill: as premissas críticas são o insumo direto do premortem, que roda antes dos POCs e transforma cada falha prevista em critério de aceite.
+Feche com as duas listas que a próxima fase consome: as **premissas críticas ordenadas por letalidade** (importância × força de evidência) e os **itens que só um humano pode executar** — conversar com N usuários reais, falar com advogado, comprar e usar o produto do concorrente. Feche nomeando o próximo passo natural — a skill `voltar-do-futuro` (premortem), que consome as premissas críticas e transforma cada falha prevista em teste com critério de aceite. Não a invoque: o dossiê é o entregável final desta skill, e avançar de etapa é decisão do usuário.
 
 ## Regras invioláveis
 

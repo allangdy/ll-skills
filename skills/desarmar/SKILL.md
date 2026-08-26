@@ -233,8 +233,8 @@ que continua com o humano**, com dono e marco.
 4. **Handoff**: os requisitos que os testes cravaram (condições das DESARMADAS COM CONDIÇÕES,
    redesenhos das CONFIRMADAS, decisões de arquitetura dos achados colaterais) entram como
    decisões **já tomadas** na skill `decidir-antes` — elas não voltam a ser perguntadas.
-   Ofereça o próximo passo e, se o usuário aceitar, invoque `decidir-antes` (plugin
-   ll-skills) pela ferramenta Skill para montar a spec de implementação sobre o placar.
+   Feche nomeando esse próximo passo; o placar é o entregável final desta skill, e
+   invocar a `decidir-antes` é decisão do usuário.
 
 ## Verificação antes de entregar
 
