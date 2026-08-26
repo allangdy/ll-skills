@@ -1,0 +1,7 @@
+{
+  "name": "ll-skills",
+  "displayName": "LL Skills",
+  "description": "Coleção de skills do allangdy para Claude Code",
+  "author": { "name": "allangdy" },
+  "skills": "./skills/"
+}

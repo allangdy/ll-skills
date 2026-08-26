@@ -1,0 +1,14 @@
+{
+  "name": "ll-skills",
+  "owner": {
+    "name": "allangdy",
+    "email": "allangdy2594@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "ll-skills",
+      "source": "./",
+      "description": "Coleção de skills do allangdy para Claude Code"
+    }
+  ]
+}
