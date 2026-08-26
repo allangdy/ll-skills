@@ -1,5 +1,6 @@
 {
   "name": "ll-skills",
+  "description": "Pipeline de desenvolvimento orientado a evidência: pesquisa de mercado, premortem, POCs desarmadoras, spec por entrevista e verificação de entrega",
   "owner": {
     "name": "allangdy",
     "email": "allangdy2594@gmail.com"
