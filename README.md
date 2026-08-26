@@ -15,7 +15,9 @@ As skills são invocadas automaticamente pelo Claude quando o pedido bate com a 
 
 ### Atualizações
 
-Cada `git push` neste repositório é uma nova versão. Para receber automaticamente: `/plugin` → aba **Marketplaces** → ativar *auto-update* no `ll-skills`. Manualmente: `/plugin marketplace update ll-skills` + `/plugin update ll-skills@ll-skills`.
+Cada `git push` neste repositório é uma nova versão. O plugin **avisa no início da sessão** quando a versão instalada ficou para trás do remoto, e `/ll-skills:atualizar` atualiza por dentro do Claude — mostrando o changelog dos commits novos antes de aplicar.
+
+Para receber automaticamente: `/plugin` → aba **Marketplaces** → ativar *auto-update* no `ll-skills`. Manualmente: `/plugin marketplace update ll-skills` + `/plugin update ll-skills@ll-skills`.
 
 ## O fluxo completo
 
@@ -70,6 +72,7 @@ Para uma correção pequena ou tarefa trivial, nada disso: o pipeline existe par
 | `verificar-entrega` | 6 | Auditoria de contexto limpo da entrega contra os critérios da SPEC |
 | `pesquisar` | — | Pesquisa profunda de qualquer tema em duas camadas: síntese acionável + trilha de evidências reutilizável |
 | `orquestrar` | — | Regras de orquestração multi-agente: delegação, briefs, roteamento, verificação |
+| `atualizar` | — | Atualiza o plugin para o último commit, com o changelog do que mudou antes de aplicar |
 
 ## Adicionando novas skills
 
