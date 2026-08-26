@@ -73,7 +73,7 @@ e produza `docs/premortem/00-inventario-medido-vs-fe.md`:
 > O horizonte é o ponto em que o projeto teria *provado* sua tese central — curto demais
 > gera falhas triviais, longo demais gera ficção científica. Peça correção antes de seguir.
 
-**Se existe `docs/` de uma pesquisa de mercado** (skill `pesquisa-de-mercado`), as premissas
+**Se existe `docs/` de uma pesquisa de mercado** (skill `pesquisar-mercado`), as premissas
 mapeadas por importância × evidência já são metade da F0: as de alta importância e baixa
 evidência entram direto na coluna "na fé". Use como insumo quando houver; a F0 funciona
 igual sem ela.
@@ -214,7 +214,7 @@ Grave `docs/premortem/placar.md`: uma linha por falha, com **vocabulário fechad
 Registre também os **achados colaterais**: testes desenhados para falsear premissas
 encontram bugs e cravam decisões de arquitetura que nenhuma revisão de código encontra.
 Isso deve ser esperado e capturado. Números medidos aqui realimentam o índice de pesquisas
-da skill `pesquisa-de-mercado`, quando ela existir no projeto.
+da skill `pesquisar-mercado`, quando ela existir no projeto.
 
 ## Verificação antes de entregar
 

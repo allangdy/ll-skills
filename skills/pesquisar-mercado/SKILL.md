@@ -1,5 +1,5 @@
 ---
-name: pesquisa-de-mercado
+name: pesquisar-mercado
 description: Conduz a pesquisa de mercado completa antes de qualquer código — dimensiona público e beachhead, prova a dor com evidência externa, mapeia onde cada concorrente para, levanta os preços praticados sem âncora, testa insumos e economia unitária, e entrega uma pasta docs/ indexada com as decisões em aberto e o teste barato que fecha cada uma. Use quando houver uma ideia de produto, app ou negócio e a pergunta for validar mercado, ver se vale a pena, estudar a concorrência, descobrir quanto dá para cobrar, dimensionar TAM/SAM/SOM, achar espaço não ocupado ou decidir se prossegue.
 ---
 
