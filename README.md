@@ -28,7 +28,7 @@ flowchart LR
     D --> E[implementação longa autônoma via SPEC.md]
     E --> F[verificar-entrega]
     F -->|falhas viram novas decisões| D
-    O[orquestrar]:::trans -.regras transversais.-> A & B & C & D & F
+    O[orquestrar]:::trans -.regras transversais.-> A & B & C & D & E & F
     classDef trans stroke-dasharray: 5 5
 ```
 
@@ -40,7 +40,7 @@ Cada etapa produz o insumo da seguinte, mas **toda skill funciona sozinha** — 
 2. **`voltar-do-futuro`** — o premortem: um agente narra do futuro por que o projeto morreu, atacando o que nunca foi medido. Cada falha traz o aviso que já existia, o viés que cegou e o **teste barato com critério de aceite** que a desarma. As premissas do dossiê são metade do insumo.
 3. **`desarmar`** — executa os testes desarmadores e as POCs com aceite pré-registrado ("reprova primeiro") e preenche o **placar**: DESARMADA, CONFIRMADA COM ROTA DE SAÍDA, EM CURSO… Os números medidos realimentam o dossiê.
 4. **`decidir-antes`** — com os riscos desarmados, a entrevista de decisões: perguntas via AskUserQuestion priorizadas por irreversibilidade × impacto (recomendações sempre com lastro — dos mapas do código ou de pesquisa web), consolidadas em **`SPEC.md` + `PROGRESS.md`** com protocolo anti-drift embutido. Decisões já tomadas nas etapas anteriores não são re-perguntadas.
-5. **Implementação longa** — um agente autônomo (horas ou dias) parte do `SPEC.md`, que é autossuficiente: contrato de decisões, critérios verificáveis por comando, marcos, protocolo de escalada. Não é uma skill — é qualquer sessão/agente com a instrução de partida.
+5. **Implementação longa** — um agente autônomo (horas ou dias) parte do `SPEC.md`, que é autossuficiente: contrato de decisões, critérios verificáveis por comando, marcos, protocolo de escalada. O plugin inclui o agente **`implementador`**, que já parte com a `orquestrar` pré-carregada — mas qualquer sessão/agente com a instrução de partida serve.
 6. **`verificar-entrega`** — auditoria de contexto limpo: um verificador que nunca viu o raciocínio da implementação roda os comandos de aceite da SPEC um a um e confere o placar de marcos contra o código real. O auto-relato de agentes degrada em execuções longas; esta etapa é o que transforma "pronto" em pronto.
 
 ### Para uma feature de um sistema existente
@@ -55,7 +55,7 @@ Para uma correção pequena ou tarefa trivial, nada disso: o pipeline existe par
 
 ### Transversal
 
-**`orquestrar`** vale em qualquer etapa: quando delegar a subagentes (e quando não), anatomia de briefs, roteamento de modelos por etapa, verificação com contexto limpo e evidência.
+**`orquestrar`** vale em qualquer etapa que use subagentes — mas é na **implementação longa** que ele mais trabalha: é o manual de como o implementador decompõe por fronteiras de contexto, delega, roteia modelos e verifica com contexto limpo durante horas ou dias. Nas demais etapas, rege os pesquisadores, narradores e verificadores que as skills despacham.
 
 ## Skills
 

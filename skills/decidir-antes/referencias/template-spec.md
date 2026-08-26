@@ -161,7 +161,10 @@ Durante o marco:
 7. Decisão two-way tomada em voo (seção 5b): uma linha no PROGRESS.md com o
    porquê.
 8. PROGRESS.md é cronológico e append-only: feito, decisão, surpresa, próximo
-   passo. Commits pequenos e descritivos a cada unidade verde.
+   passo. Commits pequenos e descritivos a cada unidade verde. Antes de
+   registrar qualquer progresso (aqui ou ao dono), audite cada afirmação contra
+   um resultado de ferramenta desta sessão — comando rodado, teste executado,
+   arquivo lido. Afirmação sem resultado que a sustente não é registrável.
 
 Escalada — pare o marco e escale se, e somente se:
 (a) a ação é irreversível e nenhum marco a autoriza (migração destrutiva,

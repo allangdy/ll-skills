@@ -51,6 +51,7 @@ Q-003 (kickoff) → Q-001 → Q-007 → ...
   → DECIDIDA — <resposta literal do usuário> (<data>) [contra a recomendação — registro fiel; NÃO re-litigar] [risco aceito: <qual>]
   → ASSUMIDA — <default> porque <porquê em 1 linha>
   → DECIDIDA POR REGRA — segue Q-x (<data>)
+  → HERDADA — <decisão fechada em etapa anterior> (fonte: <artefato §seção>) — contrato, não pergunta
 </esqueleto-fila>
 
 O bloco Estado é atualizado a cada checkpoint. O git é o registro durável, não a conversa: commit por bloco de respostas (`docs(spec): fila — decisões Q-x..Q-y (bloco N)`).
@@ -108,4 +109,4 @@ Casos especiais:
 
 ## 6. Fechamento da entrevista
 
-Com zero `PENDENTE`, escreva o Sumário executivo no topo da FILA.md: contagens (por classe, camada, impacto), decisões contra a recomendação, respostas livres registradas verbatim, riscos aceitos conscientemente, pendências com dono, e a linha "Consumo: este arquivo alimenta SPEC.md; em conflito, SPEC.md prevalece". Commit de fechamento. Siga para a fase 4 do SKILL.md.
+Com zero `PENDENTE`, escreva o Sumário executivo no topo da FILA.md: contagens (por classe, camada, impacto), decisões herdadas de etapas anteriores com a fonte de cada uma, decisões contra a recomendação, respostas livres registradas verbatim, riscos aceitos conscientemente, pendências com dono, e a linha "Consumo: este arquivo alimenta SPEC.md; em conflito, SPEC.md prevalece". Commit de fechamento. Siga para a fase 4 do SKILL.md.

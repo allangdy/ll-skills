@@ -23,6 +23,7 @@ Na primeira interação, confirme com o usuário em uma única troca: o corte de
 
 Nenhuma pergunta sem lastro. Antes de formular qualquer decisão:
 
+- **Os artefatos das etapas anteriores vêm primeiro**, antes de mapear qualquer coisa nova. Procure no repo e leia direto, sem subagente — já são evidência condensada e citável: `docs/README.md` (o índice do dossiê, com o **Estado da decisão** no topo) e `docs/decisoes-em-aberto.md` da pesquisa de mercado; `docs/premortem/premortem.md` e `docs/premortem/placar.md`; SPECs anteriores e suas decisões `DEC-NNN`. Eles se citam pelo caminho e pela seção, como os mapas se citam por `arquivo:linha`. Nada disso existir é normal — a skill roda sozinha; o que não pode é existir e ser remapeado do zero.
 - Delegue o mapeamento a subagentes — um por material (código atual, protótipo/design, documentos do pedido). A sessão principal lê apenas os mapas condensados que eles produzem, nunca os fontes inteiros: sessões que abrem tudo morrem por estouro de contexto antes de decidir qualquer coisa. Fontes abertos na sessão principal só sob demanda, no trecho exato que uma pergunta exigir.
 - Cada mapa registra fatos com `arquivo:linha` — é essa citação que as perguntas vão carregar.
 - O lastro tem dois tipos: **interno** (os mapas do projeto) e **externo** — decisões que dependem de conhecimento de fora do projeto (escolha de tecnologia ou biblioteca, padrão de mercado, limites e preços de API) exigem pesquisa web por subagente antes da pergunta. Recomendação de memória ou opinião não sustenta pergunta.
@@ -31,6 +32,12 @@ Nenhuma pergunta sem lastro. Antes de formular qualquer decisão:
 ## Fase 2 — Fila de decisões
 
 Construa `FILA.md`: um item por coisa decidível pelo usuário (não por detalhe), com evidência dos dois lados, camada/impacto, dependências e status `PENDENTE`. Divergências entre o que existe e o que foi pedido entram nas duas direções — adição e subtração são ambas decisões do dono, nunca descarte silencioso.
+
+Antes de classificar, aplique a herança dos artefatos anteriores:
+
+- Decisão **já tomada** neles **não vira pergunta**: entra na spec como contrato herdado, com a fonte citada (`docs/README.md` §Estado da decisão, `docs/premortem/placar.md`, `DEC-014` da spec anterior). Não re-litigar atravessa as skills, não só a entrevista — re-perguntar o que o dono já fechou queima a confiança na fila inteira. Só volta a ser pergunta se a evidência nova a contradiz, e aí a pergunta é essa: a contradição, com os dois registros lado a lado.
+- Falha **CONFIRMADA** no placar do premortem entra como **restrição de desenho**, não como risco a discutir: as opções que a ignoram não são oferecidas, e a rota de saída quantificada no placar vira o custo declarado das que sobram.
+- **Pendência com dono** nesses artefatos vira item da fila apenas se o dono for o usuário; dono implementador ou agente vira pendência da spec, com o marco em que fecha.
 
 Classificação de cada item — o coração da skill:
 
@@ -63,12 +70,12 @@ Leia `referencias/template-spec.md` e escreva os dois arquivos a partir dele. Re
 
 ## Fase 5 — Handoff
 
-Apresente ao usuário: contagem de decisões (perguntadas / assumidas / contra a recomendação), riscos aceitos conscientemente, pendências com dono, e a instrução de partida do implementador:
+Apresente ao usuário: contagem de decisões (perguntadas / assumidas / herdadas / contra a recomendação), riscos aceitos conscientemente, pendências com dono, e a instrução de partida do implementador:
 
 <instrucao-de-partida>
 Implemente <caminho>/SPEC.md até o fim.
 
-Leia a spec inteira antes de qualquer código. Ela é autossuficiente e as decisões da seção 3 são contrato — nada é re-decidido. A seção 7 é o seu protocolo de operação e prevalece sobre instruções genéricas de sessão. Estado vive em PROGRESS.md e no git, não na conversa. Trabalhe um marco por vez até todos estarem `passes: true` com os comandos de verificação passando. Suas liberdades estão na seção 5b; use seu melhor julgamento dentro delas. Tudo fora delas: escale conforme a seção 7.
+Leia a spec inteira antes de qualquer código. Ela é autossuficiente e as decisões da seção 3 são contrato — nada é re-decidido. A seção 7 é o seu protocolo de operação e prevalece sobre instruções genéricas de sessão. Estado vive em PROGRESS.md e no git, não na conversa. Trabalhe um marco por vez até todos estarem `passes: true` com os comandos de verificação passando. Antes de delegar trabalho a subagentes, invoque a skill `orquestrar` (plugin ll-skills) pela ferramenta Skill — ela rege decomposição, briefs, roteamento de modelos e verificação. Se ela não existir no seu ambiente: delegue apenas subtarefas grandes e genuinamente independentes, com brief autossuficiente (objetivo, contrato de saída, limites), e verifique resultados com evidência. Suas liberdades estão na seção 5b; use seu melhor julgamento dentro delas. Tudo fora delas: escale conforme a seção 7. Ao final, a entrega é auditada pela skill `verificar-entrega` — o VERIFICACAO.md dela, não o seu relato, é o que fecha o trabalho.
 </instrucao-de-partida>
 
-O usuário dispara o implementador (nova sessão ou agente). Você entrega a spec e para aqui.
+Rota preferida: dispare o agente **`implementador`** do plugin (ele parte com a `orquestrar` pré-carregada) com a instrução acima. Qualquer sessão ou agente com a instrução também serve — a spec é autossuficiente. Você entrega a spec e para aqui; quando o implementador declarar pronto, o caminho é `verificar-entrega`.

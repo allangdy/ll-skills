@@ -76,6 +76,8 @@ O dossiê está completo quando as **oito perguntas de decisão** têm resposta 
 7. A **economia fecha** em pelo menos um cenário de preço realista? *(doc 8)*
 8. Existe **canal** para alcançar o público a um custo compatível? *(doc 10)*
 
+Em **modo feature** o portão é o mesmo com dois alvos trocados (`dossie.md` §Modo feature): as perguntas 1 e 8 já vêm respondidas pela base instalada e saem; entram no lugar **quem na base já pede a capacidade, medido nos dados internos**, e **o que a feature faz com o preço e o empacotamento, canibalização incluída**. A pergunta 7 passa a ser sobre a economia do delta, não a do produto.
+
 E, transversalmente:
 
 - [ ] Cada premissa crítica está mapeada por **importância × força de evidência**, e nenhuma premissa do quadrante "crítica + sem evidência" está sem teste desenhado.
@@ -103,6 +105,8 @@ Um dossiê completo termina em um destes, e os três são sucesso da pesquisa:
 1. **Prosseguir**, com as decisões em aberto listadas e os testes que as fecham agendados.
 2. **Prosseguir diferente** — o beachhead, o posicionamento ou o modelo mudam por causa do que foi achado.
 3. **Não prosseguir** — não há espaço, não há economia, ou o risco letal não tem teste barato. Uma pesquisa que evita um projeto inviável pagou por si muitas vezes.
+
+Em modo feature os três se chamam **construir / construir diferente / não construir**, e a leitura é a mesma.
 
 ## Handoff
 

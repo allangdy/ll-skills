@@ -1,6 +1,6 @@
 # O dossiê, documento por documento
 
-Quem monta o escopo lê a visão geral e a tabela de dossiê mínimo. Quem pesquisa lê **apenas a seção do seu documento** — ler as outras é ancoragem.
+Quem monta o escopo lê a visão geral, a tabela de dossiê mínimo e — se o trabalho for uma feature de um sistema que já existe — a seção **Modo feature**, ao fim. Quem pesquisa lê **apenas a seção do seu documento** — ler as outras é ancoragem.
 
 ---
 
@@ -338,6 +338,25 @@ O estado da decisão fica visível **no topo do índice**, não enterrado neste 
 | Domínio regulado ou dados de terceiros | + 9 |
 
 Documentos que **não** devem ser escritos nesta fase: especificação de features, arquitetura de software, roadmap, wireframes. Se aparecerem, a pesquisa virou projeto antes da hora.
+
+---
+
+## Modo feature — sistema existente
+
+Quando o sistema já está em uso e a decisão é sobre uma capacidade nova dentro dele, o dossiê troca de eixo: quem é o público e se ele existe já foi respondido pela base instalada, e o que está em aberto é se **esta capacidade** merece ser construída, cobrada e mantida.
+
+**Seleção default.** O doc 1 e o dimensionamento TAM/SAM/SOM saem do mínimo — voltam apenas quando a feature abre um segmento que a base não cobre, e então o alvo é aquele segmento, não o mercado inteiro. Entram como centrais:
+
+- **2 — dores e jobs**, recortado ao job que a feature cumpre: o que a base faz hoje na ausência dela, dentro do produto (gambiarra, exportação para planilha, uso torto de outra tela) e fora dele.
+- **3 — gap competitivo da capacidade**, não da categoria: as colunas da matriz são as capacidades desta feature, e a pergunta por player continua sendo **onde ele para** — quem já entrega, com que profundidade verificada, e se cobra à parte por isso.
+- **4 e 5 — preço e empacotamento**, recortados à decisão de empacotamento: cobrar à parte × incluir no plano atual × usar como gatilho de upgrade de degrau, com a **canibalização** medida junto (quanto da receita já existente a feature apenas move de lugar em vez de somar, e quem deixa de subir de plano porque agora tem o suficiente). O doc 4 continua rodando sem âncora e sem recomendar.
+- **8 — economia unitária incremental**: o custo de servir **o delta**, não o do produto. Quanto a feature adiciona por usuário/mês, o que domina esse custo, e em que arranjo de empacotamento a margem ainda fecha.
+
+Os docs 6, 7 e 9 entram pelo mesmo critério do modo produto novo — núcleo técnico incerto, insumo de terceiro, domínio regulado. O doc 10 só entra se a feature for usada como alavanca de aquisição, e aí é sobre a feature, não sobre o produto.
+
+**A fonte que só este modo tem: os dados internos do sistema.** Uso real das telas e capacidades vizinhas, tickets de suporte, motivos de churn e de downgrade, pedidos de clientes registrados, buscas sem resultado, tentativas de gambiarra dentro do produto, contas que pararam de crescer em um limite. É preferência revelada da própria base — comportamento medido de gente que já paga —, e por isso **vence pesquisa web sempre que as duas respondem à mesma pergunta**. A web fica com o que a base não pode responder: o que existe fora, quem já entrega a capacidade, quanto o mercado cobra por ela. O acesso é do usuário e se pede no enquadramento; sem ele, o documento declara a lacuna e a rota de coleta, e não a preenche com fonte externa disfarçada.
+
+**Os três desfechos:** **construir**, **construir diferente** (outro recorte, outro empacotamento, outro momento) e **não construir**. Valem as mesmas regras do modo produto novo — os três são sucesso, e "não construir" com a base explicando por quê custa menos que descobrir o mesmo depois do deploy.
 
 ---
 
