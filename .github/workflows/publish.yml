@@ -53,4 +53,5 @@ jobs:
           if npm view "ll-skills@$PKG" version >/dev/null 2>&1; then
             echo "ll-skills@$PKG já publicado; nada a fazer"; exit 0
           fi
-          npm publish --access public
+          npm publish --access public --loglevel verbose 2>&1 | grep -viE "http fetch|_authToken" || true
+          npm view "ll-skills@$PKG" version >/dev/null 2>&1 || { echo "publicação não confirmada no registro"; exit 1; }
