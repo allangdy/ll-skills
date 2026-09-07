@@ -53,5 +53,15 @@ jobs:
           if npm view "ll-skills@$PKG" version >/dev/null 2>&1; then
             echo "ll-skills@$PKG já publicado; nada a fazer"; exit 0
           fi
-          npm publish --access public --loglevel verbose 2>&1 | grep -viE "http fetch|_authToken" || true
-          npm view "ll-skills@$PKG" version >/dev/null 2>&1 || { echo "publicação não confirmada no registro"; exit 1; }
+          npm publish --access public
+
+      - name: Confirmar no registro (propagação leva alguns segundos)
+        run: |
+          PKG="$(node -p "require('./package.json').version")"
+          for i in 1 2 3 4 5 6; do
+            if npm view "ll-skills@$PKG" version >/dev/null 2>&1; then
+              echo "ll-skills@$PKG confirmado no registro"; exit 0
+            fi
+            sleep 10
+          done
+          echo "ll-skills@$PKG não apareceu no registro em 60s"; exit 1
