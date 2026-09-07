@@ -13,6 +13,9 @@
     "CHANGELOG.md",
     "README.md"
   ],
+  "scripts": {
+    "test": "bash scripts/smoke-test.sh"
+  },
   "engines": {
     "node": ">=18"
   },

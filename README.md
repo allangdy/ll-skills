@@ -86,6 +86,20 @@ Para uma correção pequena ou tarefa trivial, nada disso: o pipeline existe par
 
 1. Crie `skills/ll-<nome>/SKILL.md` com frontmatter `name: ll-<nome>` (kebab-case, igual ao nome da pasta) e `description` (diz ao Claude **quando** invocar)
 2. Material de profundidade vai em `skills/ll-<nome>/referencias/`, lido no momento certo
-3. Atualize a tabela acima, registre a mudança em `CHANGELOG.md`, suba a versão em `package.json` e publique: `npm publish`. O hook avisa quem está atrasado na próxima sessão.
+3. Atualize a tabela acima e registre a mudança em `CHANGELOG.md`, numa seção `## [x.y.z] - data` com a versão que vai sair
+4. Publique uma versão (abaixo). O hook avisa quem está atrasado na próxima sessão.
 
-O instalador (`bin/install.js`) descobre as skills pela pasta `skills/ll-*` e os agentes por `agents/ll-*.md`; não há lista para manter.
+O instalador (`bin/install.js`) descobre as skills pela pasta `skills/ll-*` e os agentes por `agents/ll-*.md`; não há lista para manter. `npm test` roda o smoke test do instalador num diretório isolado.
+
+## Publicando uma versão
+
+A publicação no npm é feita pela CI via [Trusted Publishing](https://docs.npmjs.com/trusted-publishers) (OIDC entre GitHub Actions e npm, sem token guardado em lugar nenhum). Cada tag `vX.Y.Z` dispara `.github/workflows/publish.yml`, que confere tag × `package.json` × `CHANGELOG.md`, roda o smoke test e publica com proveniência.
+
+```bash
+npm version patch|minor|major    # sobe package.json, commita e cria a tag vX.Y.Z
+git push --follow-tags           # o push da tag dispara a publicação
+```
+
+Regra de bump: `patch` para ajuste em skill existente, `minor` para skill nova ou mudança de comportamento, `major` para renomear ou remover skill. O workflow falha se o `CHANGELOG.md` não tiver a seção da versão.
+
+Configuração feita uma vez no npmjs.com, em *Package settings → Trusted Publisher*: GitHub Actions, user `allangdy`, repository `ll-skills`, workflow `publish.yml`. Em *Publishing access*, "Require two-factor authentication and disallow tokens", para que só a CI publique.

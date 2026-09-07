@@ -11,6 +11,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - Instalador limpa a instalação anterior: desinstala o plugin legado `ll-skills@ll-skills`, poda arquivos órfãos de instalações standalone anteriores e apaga o cache antigo.
 - Hook de aviso de atualização reescrito em Node; compara a versão instalada com a publicada no npm.
 - `ll-atualizar` passa a rodar `npx --yes ll-skills@latest` e mostra o changelog a partir deste arquivo.
+- Publicação no npm pela CI com Trusted Publishing: tag `vX.Y.Z` dispara verificação (tag × package.json × CHANGELOG), smoke test e `npm publish` com proveniência.
 
 ### Removido
 

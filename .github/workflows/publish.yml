@@ -1,0 +1,56 @@
+# Publica no npm via Trusted Publishing (OIDC), sem token armazenado.
+#
+# Disparo: push de uma tag vX.Y.Z (criada por `npm version`). Antes de publicar,
+# confere que a tag bate com a versão do package.json e que o CHANGELOG.md tem a
+# seção da versão, e roda o smoke test do instalador.
+#
+# Vínculo no npmjs.com (uma vez, em Package settings → Trusted Publisher):
+#   GitHub Actions · user: allangdy · repository: ll-skills · workflow: publish.yml
+# Depois, em Publishing access: "Require two-factor authentication and disallow tokens".
+
+name: publish
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: npm >= 11.5.1 (exigência do trusted publishing)
+        run: npm install -g npm@latest && npm --version
+
+      - name: Tag, package.json e CHANGELOG coerentes
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "tag v$TAG != package.json $PKG"; exit 1
+          fi
+          if ! grep -q "^## \[$PKG\]" CHANGELOG.md; then
+            echo "CHANGELOG.md sem a seção ## [$PKG]"; exit 1
+          fi
+
+      - name: Smoke test do instalador
+        run: bash scripts/smoke-test.sh
+
+      - name: Publicar (pula se a versão já está no registro)
+        run: |
+          PKG="$(node -p "require('./package.json').version")"
+          if npm view "ll-skills@$PKG" version >/dev/null 2>&1; then
+            echo "ll-skills@$PKG já publicado; nada a fazer"; exit 0
+          fi
+          npm publish --access public
