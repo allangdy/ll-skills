@@ -1,6 +1,6 @@
 {
   "name": "ll-skills",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pipeline de desenvolvimento orientado a evidência para Claude Code: pesquisa de mercado, premortem, POCs desarmadoras, spec por entrevista e verificação de entrega",
   "bin": {
     "ll-skills": "bin/install.js"
