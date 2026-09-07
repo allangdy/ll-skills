@@ -1,0 +1,35 @@
+{
+  "name": "ll-skills",
+  "version": "1.0.0",
+  "description": "Pipeline de desenvolvimento orientado a evidência para Claude Code: pesquisa de mercado, premortem, POCs desarmadoras, spec por entrevista e verificação de entrega",
+  "bin": {
+    "ll-skills": "bin/install.js"
+  },
+  "files": [
+    "bin",
+    "skills",
+    "agents",
+    "hooks",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allangdy/ll-skills.git"
+  },
+  "homepage": "https://github.com/allangdy/ll-skills#readme",
+  "bugs": {
+    "url": "https://github.com/allangdy/ll-skills/issues"
+  },
+  "keywords": [
+    "claude-code",
+    "skills",
+    "agents"
+  ],
+  "author": "allangdy",
+  "license": "MIT"
+}
