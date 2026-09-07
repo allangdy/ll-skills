@@ -2,6 +2,16 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A skill `ll-atualizar` lê este arquivo para mostrar o que mudou entre a versão instalada e a publicada.
 
+## [Unreleased]
+
+### Corrigido
+
+- `publish.yml`: a confirmação no registro espera a propagação por até 60 s em vez de consultar no mesmo segundo do publish (a 1.0.1 publicou com sucesso mas o job marcou falha por isso).
+
+### Alterado
+
+- README documenta o funcionamento interno do instalador e do hook, o layout dos arquivos instalados, a migração do formato plugin e o processo completo de release com a configuração inicial do Trusted Publishing.
+
 ## [1.0.1] - 2026-09-07
 
 ### Adicionado
