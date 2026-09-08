@@ -4,8 +4,8 @@
 // Hook SessionStart do ll-skills. Instalado em <configDir>/hooks/ pelo bin/install.js.
 //
 // Modo leitor (sem argumentos, foreground, sem rede):
-//   lê o cache da execução anterior e, se houver versão mais nova registrada para a
-//   versão instalada agora, emite um systemMessage curto. Depois dispara o modo worker
+//   reads the cache of the previous run and, when a newer version is recorded for the
+//   version installed now, emits a short systemMessage. Then it starts the worker mode
 //   em background e sai.
 //
 // Modo worker (--worker, background, com rede):
@@ -13,8 +13,8 @@
 //   está no registro e a instalação veio de `npx github:`, cai para `git ls-remote` e
 //   compara o SHA. Regrava o cache.
 //
-// Regra de ouro: nunca atrasar o início da sessão, nada em stderr, nada fora do
-// próprio cache. Qualquer falha termina em silêncio com exit 0.
+// Golden rule: never delay the session start, nothing on stderr, nothing outside
+// its own cache. Any failure ends silently with exit 0.
 
 const fs = require('fs');
 const path = require('path');
@@ -111,7 +111,7 @@ function worker(installed) {
     return;
   }
 
-  // Pacote ainda não publicado: só há referência remota confiável se a instalação veio do GitHub.
+  // Package not published yet: a remote reference is reliable only when installed from GitHub.
   const info = readJson(path.join(STATE_DIR, 'install.json'));
   if (info && info.source === 'github' && info.sha) {
     const remote = gitRemoteSha();
@@ -152,6 +152,6 @@ function main() {
 try {
   main();
 } catch {
-  /* silêncio */
+  /* silence */
 }
 process.exit(0);

@@ -332,6 +332,22 @@ check "uninstall preservou alheios"   'grep -q "echo alheio" "$CLAUDE_CONFIG_DIR
 check "uninstall removeu o preâmbulo" '! grep -q "ll-skills:preamble" "$CMD"'
 check "uninstall preservou as sentinelas" 'grep -q "SENTINEL-TOP" "$CMD" && grep -q "SENTINEL-BOTTOM" "$CMD"'
 
+# ---------------------------------------------------------------------------
+# 9. lint dos prompts (uma checagem por regra de scripts/lint-prompts.sh)
+# ---------------------------------------------------------------------------
+lint() { # lint <n>: roda uma regra e só imprime a saída quando ela falha
+  bash "$ROOT/scripts/lint-prompts.sh" --rule "$1" > "$TMP/lint-$1.txt" 2>&1 \
+    || { cat "$TMP/lint-$1.txt"; return 1; }
+}
+
+check "lint 1: frontmatter das skills"  'lint 1'
+check "lint 2: frontmatter dos agentes" 'lint 2'
+check "lint 3: tetos de linhas"         'lint 3'
+check "lint 4: forma das SKILL.md"      'lint 4'
+check "lint 5: strings proibidas"       'lint 5'
+check "lint 6: cópias idênticas"        'lint 6'
+check "lint 7: idioma"                  'lint 7'
+check "lint 8: lista privada"           'lint 8'
 
 # --- optional private word list (never shipped): LL_FORBIDDEN_FILE=<path> enables the check
 if [ -n "${LL_FORBIDDEN_FILE:-}" ] && [ -f "$LL_FORBIDDEN_FILE" ]; then

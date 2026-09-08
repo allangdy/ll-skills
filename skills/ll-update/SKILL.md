@@ -66,6 +66,11 @@ carries the old skills — new or renamed skills appear after restarting Claude 
 content of an existing skill is read on its next invocation. If `VERSION` did not change, say
 that instead of declaring success.
 
+## Completion criterion
+
+The installed `VERSION` equals the published one (or the owner declined the update) and the report above was printed.
+▶ Next — `/clear` then `ll-resume` (the running session keeps the old skill texts until it restarts).
+
 ## Migration from 1.x
 
 The first 2.x install removes the eight Portuguese skills — `ll-orquestrar`, `ll-pesquisar`,

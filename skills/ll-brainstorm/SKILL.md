@@ -154,7 +154,7 @@ decision he did not make is a defect, not a rounding. Band-1 items and items tha
 phases also get `decisions/DEC-NNNN-<slug>.md`. The helper `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/ll-implement/scripts/ll-tools.js` is used only if it exists — this skill does not ship it; when it is absent,
 the DEC id is the next number after the highest in `decisions/`; with it, `dec-reserve <n>`.
 
-## Closing criterion
+## Completion criterion
 
 The conversation closes when four list comparisons hold — no model score:
 1. Zero Blocking items open (answered by the owner or explicitly deferred by him).
