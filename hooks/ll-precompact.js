@@ -8,13 +8,34 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
+// State root: PROGRESS.md at cwd, else the single one found up to 3 levels down
+// (skipping node_modules/.git/dist/build/vendor and docs/history).
+function stateRoot(cwd) {
+  if (fs.existsSync(path.join(cwd, 'PROGRESS.md'))) return cwd;
+  const skip = new Set(['node_modules', '.git', 'dist', 'build', 'vendor']);
+  const found = [];
+  const walk = (dir, depth) => {
+    if (depth > 3 || found.length > 1) return;
+    let ents;
+    try { ents = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const e of ents) {
+      if (!e.isDirectory() || skip.has(e.name)) continue;
+      const sub = path.join(dir, e.name);
+      if (path.relative(cwd, sub) === path.join('docs', 'history')) continue;
+      if (fs.existsSync(path.join(sub, 'PROGRESS.md'))) found.push(sub); else walk(sub, depth + 1);
+    }
+  };
+  walk(cwd, 1);
+  return found.length === 1 ? found[0] : cwd;
+}
+
 function main() {
   let input = {};
   try { input = JSON.parse(fs.readFileSync(0, 'utf8')); } catch { input = {}; }
   const cwd = typeof input.cwd === 'string' && input.cwd ? input.cwd : process.cwd();
   const trigger = typeof input.trigger === 'string' && input.trigger ? input.trigger : 'auto';
 
-  const file = path.join(cwd, 'PROGRESS.md');
+  const file = path.join(stateRoot(cwd), 'PROGRESS.md');
   let body;
   try { body = fs.readFileSync(file, 'utf8'); } catch { return; }
 

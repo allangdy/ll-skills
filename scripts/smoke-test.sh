@@ -173,6 +173,11 @@ check "nested state: git_top aponta ao topo do git" \
 check "nested ledger: FRESH/STALE/UNKNOWN iguais ao topo" \
   '$HELPER ledger --cwd "$NEST/docs/state" --json | grep -q "\"FRESH\":1,\"STALE\":1,\"UNKNOWN\":1"'
 
+printf '{"cwd":"%s","source":"compact"}' "$NEST" | node hooks/ll-state.js > "$TMP/nest-hook.json"
+check "nested hook ll-state acha o PROGRESS em docs/state" 'grep -q "post-compaction" "$TMP/nest-hook.json" && grep -q "milestones [0-9]/3" "$TMP/nest-hook.json"'
+printf '{"cwd":"%s","trigger":"auto"}' "$NEST" | node hooks/ll-precompact.js > "$TMP/nest-pre.out"
+check "nested hook precompact carimba docs/state/PROGRESS.md" 'grep -q "compaction marked" "$TMP/nest-pre.out" && grep -q "^- \[compaction " "$NEST/docs/state/PROGRESS.md"'
+
 $HELPER backlog-reconcile --run --cwd "$NEST/docs/state" --json > "$TMP/nest-backlog.json"
 check "nested backlog-reconcile fecha B-014 (comando roda no topo do git)" \
   'grep -q "\"closed\":\[\"B-014\"\]" "$TMP/nest-backlog.json"'
