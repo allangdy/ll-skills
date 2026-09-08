@@ -1,0 +1,1 @@
+corrige o typo 'recieve' em src/a.ts

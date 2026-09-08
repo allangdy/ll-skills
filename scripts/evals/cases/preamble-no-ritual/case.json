@@ -1,0 +1,8 @@
+{
+  "max_turns": 6,
+  "history": false,
+  "min_pass": 2,
+  "agent": null,
+  "permission_mode": "bypassPermissions",
+  "note": "SMALL forbids the ritual: no spec, no plan, no PROGRESS, no VERIFICATION, no subagent for what fits in three calls."
+}

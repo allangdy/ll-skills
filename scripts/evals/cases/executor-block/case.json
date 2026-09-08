@@ -1,0 +1,8 @@
+{
+  "max_turns": 40,
+  "history": true,
+  "min_pass": 2,
+  "agent": "ll-executor",
+  "permission_mode": "bypassPermissions",
+  "note": "The fixture history already builds M1 (test(M1) then feat(M1)), so the red test passes on its first run and the contract says the executor returns BLOCKED. The case scores the return block, not the code."
+}

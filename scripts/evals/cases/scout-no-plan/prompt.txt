@@ -1,0 +1,8 @@
+PHASE         07 — every provider event lands in `billing_events` exactly once and mismatches are visible   (only this phase)
+MODEL         sonnet / medium — always, contract phases included
+FILES         create: {{WORK}}/src/ingest.ts · change: {{WORK}}/src/pay.ts
+SYMBOLS       none
+OUTPUT        {{WORK}}/phases/07/CODE-CONTEXT.md — at most 120 lines, Write not heredoc
+DO NOT        read the project PLAN.md, PROGRESS.md, phases/*/PLAN.md or decisions/; propose a plan;
+              run tests or builds
+RETURN        your fixed block, at most 10 lines: path, files classified, analogs, readers, assumed values

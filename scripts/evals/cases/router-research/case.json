@@ -1,0 +1,8 @@
+{
+  "max_turns": 1,
+  "history": false,
+  "min_pass": 2,
+  "agent": null,
+  "permission_mode": "acceptEdits",
+  "note": "max_turns 1 keeps the case cheap: the regime line is the first assistant message, read out of the capture, so the run is scored before the skill it names starts spending. Own fixture without PROGRESS.md so the answer measures one signal only: the word pesquise routing to RESEARCH."
+}

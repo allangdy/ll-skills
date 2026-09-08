@@ -1,0 +1,13 @@
+MODE          phase
+ROADMAP       {{WORK}}/ROADMAP.md — section "Phase 07"
+PLAN          {{WORK}}/phases/07/PLAN.md — truths:, milestones, acceptance:, verification:, ## Errata
+DECISIONS     {{WORK}}/decisions/DEC-0041-cents.md
+CRITERIA      SC-01 The reconciliation job ingests a provider batch and writes one row per event.
+              SC-02 A replayed batch produces no duplicate rows.
+              SC-03 Cent-level mismatches are reported instead of silently dropped.
+              SC-04 The operator can list tolerated rows for a day.
+SLICE         branch main · the whole history · worktree {{WORK}}
+OUTPUT        {{WORK}}/phases/07/VERIFICATION.md — Write, not heredoc
+DO NOT        open PROGRESS.md before every state is written; edit code, tests, plan or passes;
+              run the whole suite to prove one criterion
+RETURN        your fixed block, at most 20 lines: verdict, product/process, state counts, BLOCKS, gaps

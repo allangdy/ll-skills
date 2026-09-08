@@ -1,0 +1,8 @@
+{
+  "max_turns": 40,
+  "history": false,
+  "min_pass": 2,
+  "agent": null,
+  "permission_mode": "bypassPermissions",
+  "note": "Empty fixture so the LARGE route has nowhere to resume from. The final round is always sent, even when every item was band 2/3, so the counter must appear whether or not PLAN.md was frozen."
+}

@@ -1,0 +1,8 @@
+{
+  "max_turns": 40,
+  "history": true,
+  "min_pass": 2,
+  "agent": "ll-verifier",
+  "permission_mode": "bypassPermissions",
+  "note": "setup.sh commits a feat(M2) that strips the only expect() from test/a.test.ts, with no DEC id anywhere. The process check must catch it."
+}

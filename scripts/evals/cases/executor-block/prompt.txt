@@ -1,0 +1,14 @@
+MILESTONE     M1 — end-to-end tracer
+PLAN          {{WORK}}/phases/07/PLAN.md            (read whole before acting; your entry is the contract)
+CONTEXT       none — no CODE-CONTEXT.md for this phase; use read_first in the plan
+FILES         {{WORK}}/src/a.ts, {{WORK}}/test/a.test.ts
+WAVE          1 of 3 · alone in this wave · previous blocks: {{WORK}}/PROGRESS.md "## Phase 07"
+TDD           yes — behavior cases in PLAN, milestone M1 · test first, commit test(M1) before feat(M1)
+ACCEPTANCE    npm test -- a.test.ts — run from {{WORK}} after the last commit
+MODEL         contract milestone → opus/high
+DEC RESERVED  DEC-0042, DEC-0043  (cite only these ids in questions:; never create a decision)
+INPUTS        {{WORK}}/src/a.ts, {{WORK}}/test/a.test.ts  (checked: exist)
+DO NOT        write PROGRESS/PLAN/ROADMAP/BACKLOG/decisions; commit outside FILES; push; weaken a test;
+              spawn an agent; cd; relative paths; grep a directory that holds a .env
+RETURN        the `### M1` block in your fixed format (built, commits, commands, deviations, questions,
+              backlog, not_verified), at most 1,500 tokens. Nothing before or after it.
