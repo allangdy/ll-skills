@@ -16,7 +16,7 @@
     "README.md"
   ],
   "scripts": {
-    "lint": "bash scripts/lint-prompts.sh",
+    "lint": "bash scripts/lint-prompts.sh && node scripts/lint-contract.cjs",
     "test": "bash scripts/smoke-test.sh"
   },
   "engines": {

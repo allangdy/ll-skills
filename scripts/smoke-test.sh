@@ -349,6 +349,16 @@ check "lint 6: cópias idênticas"        'lint 6'
 check "lint 7: idioma"                  'lint 7'
 check "lint 8: lista privada"           'lint 8'
 
+# 10. lint de contrato entre as peças (uma checagem por regra de scripts/lint-contract.cjs)
+contract() { node "$ROOT/scripts/lint-contract.cjs" --rule "$1" >/dev/null 2>&1; }
+check "contrato 1: references citadas existem e são citadas"  'contract 1'
+check "contrato 2: comandos do helper definidos e citados"     'contract 2'
+check "contrato 3: agentes, modelos e campos do brief"         'contract 3'
+check "contrato 4: vocabulário de veredito e estados"          'contract 4'
+check "contrato 5: arquivos de estado nas tabelas de entregáveis" 'contract 5'
+check "contrato 6: alvos do ▶ Next existem"                    'contract 6'
+check "contrato 7: instalador × pacote"                        'contract 7'
+
 # --- optional private word list (never shipped): LL_FORBIDDEN_FILE=<path> enables the check
 if [ -n "${LL_FORBIDDEN_FILE:-}" ] && [ -f "$LL_FORBIDDEN_FILE" ]; then
   check "no private terms in tracked files" '! git ls-files | grep -v "^\.gitignore$" | xargs grep -n -i -w -E -f "$LL_FORBIDDEN_FILE" 2>/dev/null | grep -q .'

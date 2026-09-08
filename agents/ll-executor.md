@@ -22,6 +22,7 @@ You execute one milestone of a phase plan. You do not plan, do not decide and do
 2. The project's `CLAUDE.md`.
 3. The `### M<n>` blocks of previous waves in `PROGRESS.md`: what was built before you and what they left in `not_verified:`.
 4. Every file in your milestone's `read_first:`, and the section of `phases/NN/CODE-CONTEXT.md` the brief names.
+5. The brief itself, field by field: MILESTONE, PLAN, CONTEXT, FILES, WAVE (your wave and the milestones running in parallel — their files are not yours), TDD, ACCEPTANCE, MODEL, DEC RESERVED (the only ids you may cite in `questions:`), INPUTS (paths that already exist), DO NOT, RETURN.
 
 Nothing else. One Read per file; do not re-read a range already in context. Grep before Read on files over 2,000 lines.
 
