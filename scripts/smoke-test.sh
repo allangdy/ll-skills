@@ -109,6 +109,10 @@ check "state: fase 07, 1/3"           '$HELPER state --json | grep -q "\"total\"
 check "ledger: 1 FRESH 1 STALE 1 UNKNOWN" '$HELPER ledger --json | grep -q "\"FRESH\":1,\"STALE\":1,\"UNKNOWN\":1"'
 check "epilogue 07 aponta a fase 8"   '$HELPER epilogue 07 --json | grep -q "\"next_command\":\"ll-implement 8\""'
 check "phase-stats: 5 dias com trabalho" '$HELPER phase-stats --json | grep -q "\"days_with_work\":5"'
+check "phase-stats: fase 07 com questions/owner_prompts" \
+  '$HELPER phase-stats --json | grep -q "\"phase\":\"07\"" && $HELPER phase-stats --json | grep -q "\"questions\":3" && $HELPER phase-stats --json | grep -q "\"owner_prompts\":2"'
+check "phase-stats: targets presente"   '$HELPER phase-stats --json | grep -q "\"targets\""'
+check "epilogue 07 humano traz targets" '$HELPER epilogue 07 | grep -q "targets:"'
 check "plan-lint reprova o PLAN"      '$HELPER plan-lint phases/07/PLAN.md --json | grep -q "\"verdict\":\"fail\""'
 check "plan-lint acusa acceptance-missing em M6" '$HELPER plan-lint phases/07/PLAN.md --json | grep -q "acceptance-missing"'
 

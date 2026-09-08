@@ -7,7 +7,7 @@ set -euo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 
 exec python3 - "$ROOT" "${@}" <<'PYTHON'
-import hashlib, json, os, re, subprocess, sys
+import fnmatch, hashlib, json, os, re, subprocess, sys
 
 ROOT = sys.argv[1]
 
@@ -19,6 +19,7 @@ EXCEPT_FLOW = ["ll-resume"]
 EXCEPT_COMPLETION = []
 # Files written in Portuguese by design.
 EXCEPT_LANGUAGE = ["scripts/smoke-test.sh"]
+EXCEPT_LANGUAGE_GLOB = ["scripts/evals/cases/*/prompt.txt"]  # owner-shaped inputs, Portuguese by design
 
 FORBIDDEN = ["MUST", "CRITICAL", "verify carefully", "as discussed", "IMPORTANT:"]
 ALLOWED_TOOLS = "Bash(${CLAUDE_SKILL_DIR}/scripts/ll-tools.js *)"
@@ -304,7 +305,8 @@ def rule7():
     files = [f for f in TRACKED
              if f.split("/")[0] in ("skills", "agents", "assets", "hooks", "scripts")
              and not f.startswith("scripts/fixtures/")
-             and f not in EXCEPT_LANGUAGE]
+             and f not in EXCEPT_LANGUAGE
+             and not any(fnmatch.fnmatch(f, g) for g in EXCEPT_LANGUAGE_GLOB)]
     bad = []
     for f in sorted(files):
         fenced = False

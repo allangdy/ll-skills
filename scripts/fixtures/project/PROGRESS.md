@@ -50,8 +50,12 @@ not_verified: backoff under real network latency
 
 - SC-03 load under 10k rows · `ll-verify --criterion SC-03` · born phase 05
 
+- [2026-01-05T10:00:00Z] owner: pode ir
+- [2026-01-05T11:00:00Z] owner: troca o nome da coluna
+
 ## Epilogue — phase 07 — 2026-09-09
 
 passed: M1 · left: M2 (acceptance red), M3 (BLOCKED: DEC-0041) · WAITING: DEC-0041 (cents rounding) ·
 new backlog: B-014, B-015 · actions that need you: decide DEC-0041 before wave 3
+milestones passed 2/3 · questions asked 3 / assumptions 1 (ASM-1) / band-1 open 0 · amendments 1 · verification: phases/07/VERIFICATION.md APPROVED
 ▶ Next — `/clear`, then `ll-implement 8`

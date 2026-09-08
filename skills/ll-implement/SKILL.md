@@ -62,6 +62,7 @@ One `ll-verifier` (`model: opus`) with the plan-review brief: mode plan, the 8 q
 The gate: no executor is dispatched until `phases/NN/PLAN-REVIEW.md` is on disk; `APPROVED` opens wave 1; `REJECTED` opens it only after every Gaps line is applied to the plan under `## Errata` and `plan-lint` and `waves` rerun clean — no second review. Review first, wave 1 after, never in parallel; there is no `--no-review`. A request to skip the review is answered with the cost, and the review runs.
 
 ### 5. Waves
+Every owner message that arrives during the phase is recorded as `ll-tools.js heartbeat "owner: <summary ≤ 80 chars>"` before acting on it.
 For each wave, in this order:
 1. `ll-tools.js heartbeat "wave i/M — <what it builds>"`; print the same line in the conversation.
 2. `ll-tools.js dec-reserve <n>` with n = milestones in the wave; the returned `ids` fill each brief's `DEC RESERVED` line. Ids never come from an executor.
