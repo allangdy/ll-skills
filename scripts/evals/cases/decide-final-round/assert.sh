@@ -4,8 +4,15 @@
 
 WORK="$1"; OUT_JSON="$2"; OUT_TXT="$3"
 
-contains "$OUT_TXT" 'questions asked' 'the answer carries the counter "questions asked"'
-contains "$OUT_TXT" 'band-1 open'     'the answer carries "band-1 open"'
+# a one-shot run has no owner to answer: either the final round (counter) or a blocking gate block (≤ 4 questions) is the correct stop
+if grep -qE 'questions asked' "$OUT_TXT"; then
+  contains "$OUT_TXT" 'band-1 open' 'the final round carries "band-1 open"'
+else
+  contains "$OUT_TXT" '\[PG-1\]|Pergunta 1/|Question 1/' 'the gate asks its first question instead of assuming'
+  n="$(grep -cE '^\*\*\[PG-[0-9]+\]|^\*\*Pergunta [0-9]+/|^\*\*Question [0-9]+/' "$OUT_TXT")"
+  if [ "$n" -le 4 ]; then ok "the block carries $n questions (≤ 4)"; else fail "the block carries $n questions (> 4)"; fi
+  no_path "$WORK/PLAN.md" 'nothing frozen while the gate is open'
+fi
 
 # The contract is only scored when it was written: with a band-1 item open, nothing freezes.
 if [ -f "$WORK/PLAN.md" ]; then

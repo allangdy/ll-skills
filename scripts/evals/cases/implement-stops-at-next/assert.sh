@@ -13,7 +13,8 @@ verdict="$(node -e '
   let nextAt = -1;          // index of the assistant text block carrying the marker
   let toolAfter = null;     // the first tool_use seen after it
   events.forEach((ev, i) => {
-    const content = ev && ev.message && ev.message.content;
+    if (!ev || ev.type !== "assistant") return;   // hook context and tool results are not assistant text
+    const content = ev.message && ev.message.content;
     if (!Array.isArray(content)) return;
     for (const b of content) {
       if (!b) continue;
