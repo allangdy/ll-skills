@@ -88,6 +88,7 @@ function rootOf(a, strict) {
 }
 function resolveIn(root, p, fb) {
  const t = p || fb || die('missing file argument');
+ if (/^\d{1,2}$/.test(t)) return J(root, 'phases', t.padStart(2, '0'), 'PLAN.md');
  return path.isAbsolute(t) ? t : J(root, t);
 }
 

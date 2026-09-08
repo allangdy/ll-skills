@@ -115,6 +115,7 @@ check "phase-stats: targets presente"   '$HELPER phase-stats --json | grep -q "\
 check "epilogue 07 humano traz targets" '$HELPER epilogue 07 | grep -q "targets:"'
 check "plan-lint reprova o PLAN"      '$HELPER plan-lint phases/07/PLAN.md --json | grep -q "\"verdict\":\"fail\""'
 check "plan-lint acusa acceptance-missing em M6" '$HELPER plan-lint phases/07/PLAN.md --json | grep -q "acceptance-missing"'
+check "plan-lint aceita o número da fase"  '$HELPER plan-lint 7 --json | grep -q "\"verdict\":\"fail\"" && $HELPER waves 07 --json | grep -q "\"waves\""'
 
 cp PROGRESS.md "$TMP/progress-before"
 $HELPER passes M2 true --json > "$TMP/passes.json"
