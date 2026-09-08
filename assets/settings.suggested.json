@@ -1,0 +1,19 @@
+{
+  "_comment": "ll-skills suggested machine policy. The installer PRINTS this file and never writes it; the owner applies it to ~/.claude/settings.json via /update-config. Blocking belongs in permissions.deny, not in PreToolUse hooks (Bash matching is best-effort). Prompt cache of 1h keeps the Fable session and the immutable PLAN.md cacheable; /effort does not invalidate the cache on Fable 5.1. autoCompactWindow 900k replaces the 500k currently on this machine.",
+  "permissions": {
+    "deny": [
+      "Read(**/.env*)",
+      "Read(**/.env)",
+      "Bash(pkill -f *)",
+      "Bash(kill -9 *)",
+      "Bash(git push --force *)"
+    ]
+  },
+  "autoCompactWindow": 900000,
+  "promptCacheTtl": "1h",
+  "subagentPromptCacheTtl": "1h",
+  "outputStyle": "Concise",
+  "modelSettings": {
+    "claude-fable-5-1": { "effortLevel": "high" }
+  }
+}

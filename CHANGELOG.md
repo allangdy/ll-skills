@@ -1,16 +1,77 @@
 # Changelog
 
-Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A skill `ll-atualizar` lê este arquivo para mostrar o que mudou entre a versão instalada e a publicada.
+Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A skill `ll-update` lê este arquivo para mostrar o que mudou entre a versão instalada e a publicada.
 
-## [Unreleased]
-
-### Corrigido
-
-- `publish.yml`: a confirmação no registro espera a propagação por até 60 s em vez de consultar no mesmo segundo do publish (a 1.0.1 publicou com sucesso mas o job marcou falha por isso).
+## [2.0.1] - 2026-09-08
 
 ### Alterado
 
-- README documenta o funcionamento interno do instalador e do hook, o layout dos arquivos instalados, a migração do formato plugin e o processo completo de release com a configuração inicial do Trusted Publishing.
+- Documentação e textos de referência limpos de exemplos com nomes de projetos e de anotações internas de desenvolvimento; sem mudança de comportamento das skills.
+- Instalador: diagnóstico de limpeza restrito ao cache do plugin legado.
+
+## [2.0.0] - 2026-09-07
+
+### Resumo
+
+- O pacote deixa de ser uma coleção de 8 skills soltas e vira um ciclo de trabalho: 11 skills, 4 agentes, 3 hooks e um helper que compartilham o mesmo estado em arquivos versionados do repositório.
+- Um preâmbulo roteador escrito no `~/.claude/CLAUDE.md` classifica todo pedido em 8 regimes antes de agir — pedido pequeno continua pequeno, pedido grande cai na skill certa sem você digitar o nome.
+- A execução ganha skill própria (`ll-implement`): uma fase inteira — conversa, scouting, plano, revisão adversarial, ondas TDD com um executor por marco, verificação de contexto limpo e epílogo — em uma invocação.
+- Tudo o que o modelo lê passa a ser inglês (nomes de skills, agentes, arquivos, campos YAML, prompts); a conversa com você continua em português.
+
+### Quebras
+
+- **Idioma.** Nomes de skills, agentes, artefatos, campos de estado e todo o texto que o modelo lê estão em inglês. Só as respostas ao dono, o README e este changelog ficam em português.
+- **Skills renomeadas, fundidas e removidas.** A primeira instalação 2.x apaga as 8 pastas antigas:
+
+  | Antes (1.x) | Agora (2.0.0) |
+  |---|---|
+  | `ll-pesquisar` | `ll-research` |
+  | `ll-pesquisar-mercado` | `ll-research --market` |
+  | `ll-decidir-antes` | `ll-decide` (modo `project`) |
+  | `ll-voltar-do-futuro` | `ll-decide` — passo do premortem |
+  | `ll-desarmar` | `ll-decide` — passo de desarme (`--measure`) |
+  | `ll-verificar-entrega` | `ll-verify` |
+  | `ll-atualizar` | `ll-update` |
+  | `ll-orquestrar` | seção `## Delegation` do preâmbulo + `references/briefs.md` do `ll-implement` |
+
+- **`agents/ll-implementador.md` removido.** Em seu lugar entram 4 agentes de papel único: `ll-executor`, `ll-scout`, `ll-verifier`, `ll-reviewer`.
+- **`SPEC.md` sai do contrato.** O contrato passa a ser `PLAN.md` + `ROADMAP.md` + `PROGRESS.md` + `phases/NN/`. Repositórios com `SPEC.md` continuam legíveis: `ll-resume` reconhece os nomes antigos por alias só-leitura.
+- **O instalador escreve no `~/.claude/CLAUDE.md`.** Um bloco delimitado por `<!-- ll-skills:preamble v1 -->` … `<!-- /ll-skills:preamble -->` é gravado com diff e aprovação (backup em `CLAUDE.md.ll-skills.bak`); fora de TTY nada é escrito sem `--yes`. `--uninstall` remove o bloco e deixa o resto do arquivo byte a byte igual.
+- **O instalador registra 3 hooks** em vez de 1: `SessionStart` passa a ter `matcher: "startup|resume|compact"` com dois hooks, e `PreCompact` ganha um. A entrada legada `startup|resume` é limpa na atualização.
+- **Novas flags do instalador:** `--no-settings` (imprime o trecho dos hooks em vez de escrever), `--no-preamble` (não toca no `CLAUDE.md`), `--yes`/`-y` (aprova o preâmbulo sem prompt, para uso não interativo).
+
+### Novo
+
+- **Preâmbulo roteador** (`assets/preamble.md`, ≤70 linhas) com 8 regimes — SMALL, FIX, RESEARCH, OPS, LARGE, EXECUTE, RESUME, REFINE —, a política de delegação (profundidade 1, brief de 12 campos, modelo por papel), as 3 faixas de decisão e a regra de prova ("timeout não é verde").
+- **11 skills**, uma linha cada:
+
+  | Skill | O que faz |
+  |---|---|
+  | `ll-brainstorm` | Abre fase, projeto ou ideia solta decidindo na frente do dono: mapa A/B/C ≤35 linhas, uma bateria de ≤4 perguntas, sai em `phases/NN/DECISIONS.md` ou `docs/decide/OPENING.md` |
+  | `ll-research` | Pesquisa com frentes de contexto limpo e busca web → `docs/research-<tema>/` com SUMMARY (Apply/Discuss/Gates), trilha de evidências e fontes datadas; `--market` para mercado, concorrência e preço |
+  | `ll-decide` | Vira um pedido em contrato: gate de premissas, premortem, desarme, sala de decisão, entrevista em baterias → `PLAN.md` §0–§11, `ROADMAP.md`, `decisions/`; modo `feedback` ingere docx/pdf/xlsx |
+  | `ll-goal` | Escreve o texto de `/goal` em 9 partes (≤4.000 chars) e salva `docs/GOAL.md`; você cola em sessão nova |
+  | `ll-implement` | Roda uma fase inteira numa invocação: conversa, scouting, plano, revisão, ondas TDD, verificação e epílogo |
+  | `ll-verify` | Audita em contexto limpo com 3 camadas e ledger FRESH/STALE por critério → `VERIFICATION.md` com dois selos |
+  | `ll-close` | Fecha entrega ou milestone: backlog reconciliado, `docs/DELIVERY.md`, retrospectiva, lições para a memória, uma ratificação em bloco |
+  | `ll-resume` | Reconstrói o estado em ordem fixa de leitura e responde em ≤20 linhas, sem escrever nada |
+  | `ll-refine` | Uma rodada de refino num produto que já roda; modo `visual` faz o loop referência → gate → validador até o veredito FIEL |
+  | `ll-oncall` | Sessão que segura um papel: contrato `## Federation`, log numerado de pedidos; modos `watch` (vigília) e `ops` (deploy com pré-flight) |
+  | `ll-update` | Atualiza o pacote mostrando o changelog entre instalado e publicado antes de aplicar |
+
+- **4 agentes:** `ll-executor` (opus, um marco, allowlist de arquivos, commits atômicos, bloco de retorno fixo), `ll-scout` (sonnet, só `phases/NN/CODE-CONTEXT.md`), `ll-verifier` (opus, `memory: project`, nunca conserta), `ll-reviewer` (opus + Playwright, "imagem não vista = check não feito"). Nenhum deles despacha subagente.
+- **3 hooks:** `ll-skills-check-update.js` (aviso de versão nova), `ll-state.js` (SessionStart: injeta epílogo, últimas linhas do PROGRESS, git status, worktrees, decisões WAITING e o placar de marcos), `ll-precompact.js` (PreCompact: carimba no PROGRESS a ordem de reler o plano depois da compactação).
+- **Helper `scripts/ll-tools.js`** (Node puro, sem dependências), copiado dentro de `ll-implement`, `ll-verify` e `ll-close` na instalação, com 12 comandos: `state`, `waves`, `plan-lint`, `tdd-gate`, `spot-check`, `dec-reserve`, `passes`, `heartbeat`, `ledger`, `backlog-reconcile`, `epilogue`, `phase-stats`.
+- **Estado em arquivos do repositório:** `PLAN.md` (contrato), `ROADMAP.md` (fases e critérios), `PROGRESS.md` (bloco `ll-state` + epílogo), `BACKLOG.md` (itens com condição executável), `VERIFICATION.md` (ledger e veredito), `decisions/` (`DEC-NNNN`, numeração reservada pelo helper), `phases/NN/` (`DECISIONS.md`, `CODE-CONTEXT.md`, `PLAN.md`).
+- **`assets/settings.suggested.json`**: política sugerida (deny list, `autoCompactWindow`, cache, modelos) que o instalador **imprime** e nunca escreve.
+- `publish.yml`: a confirmação no registro espera a propagação por até 60 s em vez de consultar no mesmo segundo do publish (a 1.0.1 publicou com sucesso mas o job marcou falha por isso).
+
+
+### Migração
+
+- A primeira instalação 2.x poda as 8 skills antigas e `agents/ll-implementador.md` pelo manifesto sha256, mesmo sem manifesto anterior. Nada alheio a `skills/ll-*`, `agents/ll-*` e `hooks/ll-*` é tocado.
+- Projetos em andamento continuam funcionando: nada é renomeado no meio de uma fase, e `ll-resume` lê `PLANO.md`, `SPEC.md`, `PROGRESS.md` e `VERIFICACAO.md` pelos nomes antigos.
+- Limpeza da máquina (cache de plugin antigo) é **diagnosticada e impressa** pelo instalador, nunca executada.
 
 ## [1.0.1] - 2026-09-07
 

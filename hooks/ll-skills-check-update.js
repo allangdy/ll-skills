@@ -129,7 +129,7 @@ function reader(installed) {
   if (cache && cache.update_available && cache.installed === installed && cache.latest) {
     process.stdout.write(
       JSON.stringify({
-        systemMessage: `ll-skills desatualizado (instalado ${installed}, disponível ${cache.latest}) — rode /ll-atualizar`,
+        systemMessage: `ll-skills desatualizado (instalado ${installed}, disponível ${cache.latest}) — rode /ll-update`,
       }) + '\n'
     );
   }

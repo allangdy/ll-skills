@@ -1,3 +1,6 @@
 .playwright-mcp/
 node_modules/
 *.tgz
+
+# Local notes — never published
+pesquisa-local/

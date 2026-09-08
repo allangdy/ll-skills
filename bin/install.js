@@ -3,17 +3,20 @@
 
 // Instalador do ll-skills.
 //
-//   npx ll-skills@latest            instala/atualiza em ~/.claude (ou $CLAUDE_CONFIG_DIR)
-//   npx ll-skills@latest --local    instala em ./.claude do diretório atual
+//   npx ll-skills@latest              instala/atualiza em ~/.claude (ou $CLAUDE_CONFIG_DIR)
+//   npx ll-skills@latest --local      instala em ./.claude do diretório atual
+//   npx ll-skills@latest --no-settings   só imprime os hooks, não toca em settings.json
+//   npx ll-skills@latest --no-preamble   não escreve o bloco do preâmbulo no CLAUDE.md
+//   npx ll-skills@latest --yes           aprova o preâmbulo sem perguntar
 //   npx ll-skills@latest --uninstall
 //
-// Copia skills/ll-*, agents/ll-* e o hook de aviso de atualização para o diretório
-// de configuração do Claude Code, registra o hook em settings.json, grava
+// Copia skills/ll-*, agents/ll-*, os 3 hooks e o helper ll-tools.js para o diretório
+// de configuração do Claude Code, registra os hooks em settings.json (SessionStart +
+// PreCompact), escreve o bloco do preâmbulo no CLAUDE.md entre marcadores, grava
 // VERSION + manifesto com sha256 por arquivo e limpa o que ficou de instalações
-// anteriores (plugin legado por marketplace, arquivos órfãos, cache antigo).
+// anteriores (plugin legado por marketplace, skills 1.x, arquivos órfãos, cache antigo).
 //
-// Sem dependências, sem prompts. Tudo relativo ao próprio pacote (__dirname),
-// nunca ao cwd.
+// Sem dependências. Tudo relativo ao próprio pacote (__dirname), nunca ao cwd.
 
 const fs = require('fs');
 const path = require('path');
@@ -27,9 +30,42 @@ const PKG_NAME = PKG.name;
 const REPO_URL = 'https://github.com/allangdy/ll-skills.git';
 const LEGACY_PLUGIN_ID = 'll-skills@ll-skills';
 const LEGACY_MARKETPLACE = 'll-skills';
-const HOOK_FILE = 'll-skills-check-update.js';
-const HOOK_MATCHER = 'startup|resume';
-const PREFIXOS_PROPRIOS = ['skills/ll-', 'agents/ll-', 'hooks/ll-skills-', 'll-skills/'];
+
+// hooks registrados em settings.json
+const SESSION_HOOKS = [
+  { file: 'll-skills-check-update.js', timeout: 5 },
+  { file: 'll-state.js', timeout: 3 },
+];
+const PRECOMPACT_HOOK = { file: 'll-precompact.js', timeout: 3 };
+const SESSION_MATCHER = 'startup|resume|compact';
+const HOOK_EVENTS = ['SessionStart', 'PreCompact'];
+const OWN_HOOK_FILES = SESSION_HOOKS.map((h) => h.file).concat([PRECOMPACT_HOOK.file]);
+
+// helper copiado para dentro das skills que o usam (caminho relativo com --local quebraria require)
+const HELPER_SKILLS = ['ll-implement', 'll-verify', 'll-close'];
+const HELPER_SRC = path.join(PKG_ROOT, 'scripts', 'll-tools.js');
+
+// preâmbulo
+const PREAMBLE_SRC = path.join(PKG_ROOT, 'assets', 'preamble.md');
+const PREAMBLE_OPEN = '<!-- ll-skills:preamble v1 -->';
+const PREAMBLE_CLOSE = '<!-- /ll-skills:preamble -->';
+const POLICY_SRC = path.join(PKG_ROOT, 'assets', 'settings.suggested.json');
+
+const PREFIXOS_PROPRIOS = ['skills/ll-', 'agents/ll-', 'hooks/ll-', 'll-skills/'];
+
+// removidos mesmo sem manifesto (instalações 1.x e cópias manuais)
+const KNOWN_LEGACY = [
+  'skills/ll-atualizar',
+  'skills/ll-decidir-antes',
+  'skills/ll-desarmar',
+  'skills/ll-orquestrar',
+  'skills/ll-pesquisar',
+  'skills/ll-pesquisar-mercado',
+  'skills/ll-verificar-entrega',
+  'skills/ll-voltar-do-futuro',
+  'agents/ll-implementador.md',
+];
+const LEGACY_BASENAMES = new Set(KNOWN_LEGACY.map((r) => r.split('/')[1]));
 
 const CACHE_DIR = path.join(process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'), 'll-skills');
 
@@ -47,10 +83,13 @@ function fail(msg, code = 1) {
 }
 
 function parseArgs(argv) {
-  const args = { uninstall: false, local: false, help: false };
+  const args = { uninstall: false, local: false, help: false, settings: true, preamble: true, yes: false };
   for (const a of argv) {
     if (a === '--uninstall') args.uninstall = true;
     else if (a === '--local') args.local = true;
+    else if (a === '--no-settings') args.settings = false;
+    else if (a === '--no-preamble') args.preamble = false;
+    else if (a === '--yes' || a === '-y') args.yes = true;
     else if (a === '--help' || a === '-h') args.help = true;
     else fail(`argumento desconhecido: ${a} (use --help)`);
   }
@@ -61,9 +100,12 @@ function usage() {
   log(`ll-skills ${PKG.version}
 
 Uso:
-  npx ll-skills@latest              instala ou atualiza em $CLAUDE_CONFIG_DIR ou ~/.claude
-  npx ll-skills@latest --local      instala em ./.claude (só este projeto)
-  npx ll-skills@latest --uninstall  remove tudo que este pacote instalou
+  npx ll-skills@latest                instala ou atualiza em $CLAUDE_CONFIG_DIR ou ~/.claude
+  npx ll-skills@latest --local        instala em ./.claude (só este projeto)
+  npx ll-skills@latest --no-settings  não toca em settings.json; imprime os hooks
+  npx ll-skills@latest --no-preamble  não escreve o bloco do preâmbulo no CLAUDE.md
+  npx ll-skills@latest --yes          aprova o preâmbulo sem perguntar (-y)
+  npx ll-skills@latest --uninstall    remove tudo que este pacote instalou
   npx ll-skills@latest --help`);
 }
 
@@ -93,10 +135,25 @@ function readJson(file, fallback) {
   }
 }
 
+function readText(file) {
+  try {
+    return fs.readFileSync(file, 'utf8');
+  } catch {
+    return null;
+  }
+}
+
 function writeJsonAtomic(file, obj) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const tmp = `${file}.tmp.${process.pid}`;
   fs.writeFileSync(tmp, JSON.stringify(obj, null, 2) + '\n');
+  fs.renameSync(tmp, file);
+}
+
+function writeTextAtomic(file, text) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const tmp = `${file}.tmp.${process.pid}`;
+  fs.writeFileSync(tmp, text);
   fs.renameSync(tmp, file);
 }
 
@@ -118,12 +175,12 @@ function walk(dir, base = dir, out = []) {
   return out;
 }
 
-// Lista de arquivos do pacote a instalar: [{ src, rel }], rel relativo ao configDir.
+// Lista de arquivos do pacote a instalar: [{ src, rel, mode }], rel relativo ao configDir.
 function planFiles(pkgRoot) {
   const plan = [];
   const skillsDir = path.join(pkgRoot, 'skills');
   for (const name of fs.readdirSync(skillsDir)) {
-    if (!name.startsWith('ll-')) continue;
+    if (!name.startsWith('ll-') || LEGACY_BASENAMES.has(name)) continue;
     const dir = path.join(skillsDir, name);
     if (!fs.statSync(dir).isDirectory()) continue;
     for (const rel of walk(dir)) {
@@ -133,7 +190,7 @@ function planFiles(pkgRoot) {
   const agentsDir = path.join(pkgRoot, 'agents');
   if (fs.existsSync(agentsDir)) {
     for (const name of fs.readdirSync(agentsDir)) {
-      if (name.startsWith('ll-') && name.endsWith('.md')) {
+      if (name.startsWith('ll-') && name.endsWith('.md') && !LEGACY_BASENAMES.has(name)) {
         plan.push({ src: path.join(agentsDir, name), rel: `agents/${name}` });
       }
     }
@@ -141,10 +198,19 @@ function planFiles(pkgRoot) {
   const hooksDir = path.join(pkgRoot, 'hooks');
   if (fs.existsSync(hooksDir)) {
     for (const name of fs.readdirSync(hooksDir)) {
-      if (name.startsWith('ll-skills-') && name.endsWith('.js')) {
+      if (name.startsWith('ll-') && name.endsWith('.js')) {
         plan.push({ src: path.join(hooksDir, name), rel: `hooks/${name}`, mode: 0o755 });
       }
     }
+  }
+  if (fs.existsSync(HELPER_SRC)) {
+    const installed = new Set(plan.map((p) => p.rel.split('/')[1]));
+    for (const name of HELPER_SKILLS) {
+      if (!installed.has(name)) continue;
+      plan.push({ src: HELPER_SRC, rel: `skills/${name}/scripts/ll-tools.js`, mode: 0o755 });
+    }
+  } else {
+    log(`• AVISO: ${HELPER_SRC} não existe no pacote; as skills ficam sem o helper ll-tools.js`);
   }
   return plan;
 }
@@ -260,12 +326,31 @@ function removeManagedFile(configDir, rel) {
   return true;
 }
 
+// Remove um caminho gerenciado que pode ser diretório (skills 1.x) ou arquivo.
+function removeManagedPath(configDir, rel) {
+  if (!isOwnRel(rel)) return false;
+  const full = path.resolve(configDir, rel);
+  if (!insideDir(configDir, full)) return false;
+  if (!fs.existsSync(full)) return false;
+  try {
+    fs.rmSync(full, { recursive: true, force: true });
+  } catch {
+    return false;
+  }
+  removeEmptyDirsUpTo(path.dirname(full), configDir);
+  return true;
+}
+
 function pruneStale(configDir, oldManifest, newFiles) {
   const removed = [];
   const old = (oldManifest && oldManifest.files) || {};
   for (const rel of Object.keys(old)) {
     if (rel in newFiles) continue;
     if (removeManagedFile(configDir, rel)) removed.push(rel);
+  }
+  for (const rel of KNOWN_LEGACY) {
+    if (rel in newFiles) continue;
+    if (removeManagedPath(configDir, rel)) removed.push(rel);
   }
   return removed;
 }
@@ -303,29 +388,37 @@ function clearOldCache() {
 // settings.json
 // ---------------------------------------------------------------------------
 
-function hookCommand(configDir) {
-  const hookPath = path.join(configDir, 'hooks', HOOK_FILE);
+function hookCommand(configDir, file) {
+  const hookPath = path.join(configDir, 'hooks', file);
   // `node` bare: com nvm, um caminho absoluto para o binário quebra no próximo `nvm install`.
   return `command -v node >/dev/null 2>&1 && node "${hookPath}" || true`;
 }
 
-function buildHookEntry(configDir) {
+function buildHookEntries(configDir) {
   return {
-    matcher: HOOK_MATCHER,
-    hooks: [{ type: 'command', command: hookCommand(configDir), timeout: 5 }],
+    SessionStart: {
+      matcher: SESSION_MATCHER,
+      hooks: SESSION_HOOKS.map((h) => ({ type: 'command', command: hookCommand(configDir, h.file), timeout: h.timeout })),
+    },
+    PreCompact: {
+      hooks: [{ type: 'command', command: hookCommand(configDir, PRECOMPACT_HOOK.file), timeout: PRECOMPACT_HOOK.timeout }],
+    },
   };
 }
 
 function isOwnHook(h) {
-  return Boolean(h && typeof h.command === 'string' && h.command.includes(HOOK_FILE));
+  return Boolean(h && typeof h.command === 'string' && OWN_HOOK_FILES.some((f) => h.command.includes(f)));
 }
 
 function stripOwnHooks(settings) {
-  const ss = settings.hooks && settings.hooks.SessionStart;
-  if (!Array.isArray(ss)) return;
-  settings.hooks.SessionStart = ss
-    .map((e) => (e && Array.isArray(e.hooks) ? { ...e, hooks: e.hooks.filter((h) => !isOwnHook(h)) } : e))
-    .filter((e) => !(e && Array.isArray(e.hooks) && e.hooks.length === 0));
+  if (!settings.hooks || typeof settings.hooks !== 'object') return;
+  for (const ev of HOOK_EVENTS) {
+    const list = settings.hooks[ev];
+    if (!Array.isArray(list)) continue;
+    settings.hooks[ev] = list
+      .map((e) => (e && Array.isArray(e.hooks) ? { ...e, hooks: e.hooks.filter((h) => !isOwnHook(h)) } : e))
+      .filter((e) => !(e && Array.isArray(e.hooks) && e.hooks.length === 0));
+  }
 }
 
 function stripLegacyPluginKeys(settings) {
@@ -340,10 +433,11 @@ function stripLegacyPluginKeys(settings) {
 }
 
 function pruneEmptyHooks(settings) {
-  if (settings.hooks && Array.isArray(settings.hooks.SessionStart) && settings.hooks.SessionStart.length === 0) {
-    delete settings.hooks.SessionStart;
+  if (!settings.hooks || typeof settings.hooks !== 'object') return;
+  for (const ev of HOOK_EVENTS) {
+    if (Array.isArray(settings.hooks[ev]) && settings.hooks[ev].length === 0) delete settings.hooks[ev];
   }
-  if (settings.hooks && Object.keys(settings.hooks).length === 0) delete settings.hooks;
+  if (Object.keys(settings.hooks).length === 0) delete settings.hooks;
 }
 
 // Lê, aplica `mutate(settings)`, grava só se mudou. Retorna 'unchanged' | 'written' | 'invalid'.
@@ -359,30 +453,168 @@ function updateSettings(configDir, mutate) {
   return 'written';
 }
 
-function registerHook(configDir) {
+// Registra os 3 hooks (SessionStart + PreCompact) numa única mutação.
+function registerHooks(configDir) {
+  const entries = buildHookEntries(configDir);
   return updateSettings(configDir, (s) => {
     if (!s.hooks || typeof s.hooks !== 'object') s.hooks = {};
-    if (!Array.isArray(s.hooks.SessionStart)) s.hooks.SessionStart = [];
     stripOwnHooks(s);
-    s.hooks.SessionStart.push(buildHookEntry(configDir));
+    for (const ev of HOOK_EVENTS) {
+      if (!Array.isArray(s.hooks[ev])) s.hooks[ev] = [];
+      s.hooks[ev].push(entries[ev]);
+    }
     stripLegacyPluginKeys(s);
   });
 }
 
-function unregisterHook(configDir) {
+function unregisterHooks(configDir) {
   return updateSettings(configDir, (s) => {
     stripOwnHooks(s);
     pruneEmptyHooks(s);
   });
 }
 
-function printManualHookSnippet(configDir) {
+function printHookSnippet(configDir) {
+  const entries = buildHookEntries(configDir);
   log('');
-  log(`AVISO: ${path.join(configDir, 'settings.json')} não é um JSON válido; não foi alterado.`);
-  log('Corrija o arquivo e adicione manualmente em "hooks" > "SessionStart":');
+  log('Adicione manualmente em "hooks" de ' + path.join(configDir, 'settings.json') + ':');
   log('');
-  log(JSON.stringify(buildHookEntry(configDir), null, 2));
+  log(JSON.stringify({ hooks: { SessionStart: [entries.SessionStart], PreCompact: [entries.PreCompact] } }, null, 2));
   log('');
+}
+
+// Política sugerida da máquina: sempre impressa, nunca escrita.
+function printPolicy() {
+  const raw = readText(POLICY_SRC);
+  if (raw === null) return;
+  log('');
+  log('Política sugerida (NÃO foi escrita; aplique você mesmo em settings.json):');
+  log(raw.trimEnd());
+  log('');
+}
+
+// Diagnóstico de limpeza da máquina — só imprime, nunca executa.
+function diagnoseCleanup(configDir) {
+  const items = [];
+  const cache = path.join(os.homedir(), '.claude', 'plugins', 'cache', 'll-skills');
+  if (fs.existsSync(cache)) items.push(`rm -rf ${cache}   # cache do plugin legado`);
+
+  if (!items.length) return;
+  log('');
+  log('Limpeza sugerida (diagnóstico; nada foi executado):');
+  for (const i of items) log(`  • ${i}`);
+}
+
+// ---------------------------------------------------------------------------
+// preâmbulo no CLAUDE.md
+// ---------------------------------------------------------------------------
+
+function preambleFile(configDir) {
+  return path.join(configDir, 'CLAUDE.md');
+}
+
+// Texto canônico do bloco, com marcadores, sem newline final.
+function preambleText() {
+  const raw = readText(PREAMBLE_SRC);
+  if (raw === null) return null;
+  const lines = raw.replace(/\n+$/, '').split('\n');
+  if (lines[0].trim() !== PREAMBLE_OPEN || lines[lines.length - 1].trim() !== PREAMBLE_CLOSE) return null;
+  return lines.join('\n');
+}
+
+// Localiza o bloco: null (ausente), {start,end} ou {half:true}.
+function readPreambleBlock(text) {
+  const all = text.split('\n');
+  let start = -1, end = -1;
+  for (let i = 0; i < all.length; i++) {
+    if (start < 0 && all[i].trim() === PREAMBLE_OPEN) start = i;
+    else if (start >= 0 && all[i].trim() === PREAMBLE_CLOSE) { end = i; break; }
+  }
+  if (start < 0 && end < 0) return null;
+  if (start < 0 || end < 0) return { half: true };
+  return { start, end, all };
+}
+
+function diffLines(oldText, newText) {
+  const a = oldText === null ? [] : oldText.split('\n');
+  const b = newText.split('\n');
+  const setB = new Set(b), setA = new Set(a);
+  const out = [];
+  for (const l of a) if (!setB.has(l)) out.push('- ' + l);
+  for (const l of b) if (!setA.has(l)) out.push('+ ' + l);
+  return out;
+}
+
+function askTty(question) {
+  let fd = null;
+  try {
+    fd = fs.openSync('/dev/tty', 'r+');
+    fs.writeSync(fd, question);
+    const buf = Buffer.alloc(64);
+    const n = fs.readSync(fd, buf, 0, buf.length, null);
+    return buf.slice(0, n).toString('utf8').trim().toLowerCase();
+  } catch {
+    return null;
+  } finally {
+    if (fd !== null) try { fs.closeSync(fd); } catch { /* nada */ }
+  }
+}
+
+// 'skipped' | 'unchanged' | 'written' | 'declined' | 'invalid'
+function writePreamble(configDir, opts) {
+  if (opts.skip) return 'skipped';
+  const block = preambleText();
+  if (block === null) return 'invalid';
+
+  const file = preambleFile(configDir);
+  const cur = readText(file);
+  let next;
+  if (cur === null) {
+    next = block + '\n';
+  } else {
+    const loc = readPreambleBlock(cur);
+    if (loc && loc.half) return 'invalid';
+    if (loc) {
+      const all = loc.all.slice();
+      all.splice(loc.start, loc.end - loc.start + 1, ...block.split('\n'));
+      next = all.join('\n');
+    } else {
+      next = cur.replace(/\n*$/, '\n\n') + block + '\n';
+    }
+  }
+  if (cur !== null && next === cur) return 'unchanged';
+
+  if (!opts.yes) {
+    const interactive = process.stdin.isTTY === true && process.stdout.isTTY === true;
+    const answer = interactive ? askTty(`\nEscrever o bloco do preâmbulo em ${file}? [s/N] `) : null;
+    if (!answer || !/^(s|sim|y|yes)$/.test(answer)) {
+      log('');
+      log(`Preâmbulo NÃO escrito em ${file}. Diff proposto:`);
+      for (const l of diffLines(cur, next).slice(0, 80)) log('  ' + l);
+      log('  (rode de novo com --yes para aplicar, ou --no-preamble para nunca perguntar)');
+      return 'declined';
+    }
+  }
+  if (cur !== null) fs.copyFileSync(file, `${file}.ll-skills.bak`);
+  writeTextAtomic(file, next);
+  return 'written';
+}
+
+// 'missing' | 'unchanged' | 'written' | 'invalid'
+function stripPreamble(configDir) {
+  const file = preambleFile(configDir);
+  const cur = readText(file);
+  if (cur === null) return 'missing';
+  const loc = readPreambleBlock(cur);
+  if (!loc) return 'unchanged';
+  if (loc.half) return 'invalid';
+  const all = loc.all.slice();
+  all.splice(loc.start, loc.end - loc.start + 1);
+  while (all.length && all[0].trim() === '') all.shift();
+  const next = all.join('\n').replace(/\n{3,}/g, '\n\n');
+  fs.copyFileSync(file, `${file}.ll-skills.bak`);
+  writeTextAtomic(file, next);
+  return 'written';
 }
 
 // ---------------------------------------------------------------------------
@@ -407,24 +639,43 @@ function install(args) {
   const plan = planFiles(PKG_ROOT);
   const files = copyFiles(configDir, plan);
   const skillNames = [...new Set(Object.keys(files).filter((r) => r.startsWith('skills/')).map((r) => r.split('/')[1]))].sort();
-  const agentNames = Object.keys(files).filter((r) => r.startsWith('agents/')).map((r) => path.basename(r, '.md'));
+  const agentNames = Object.keys(files).filter((r) => r.startsWith('agents/')).map((r) => path.basename(r, '.md')).sort();
+  const hookNames = Object.keys(files).filter((r) => r.startsWith('hooks/')).map((r) => path.basename(r));
   log(`• ${skillNames.length} skills: ${skillNames.join(', ')}`);
-  if (agentNames.length) log(`• ${agentNames.length} agente: ${agentNames.join(', ')}`);
+  if (agentNames.length) log(`• ${agentNames.length} agentes: ${agentNames.join(', ')}`);
+  if (hookNames.length) log(`• ${hookNames.length} hooks: ${hookNames.join(', ')}`);
 
-  // 4. poda
+  // 4. poda (manifesto antigo + skills 1.x conhecidas)
   const pruned = pruneStale(configDir, oldManifest, files);
-  if (pruned.length) log(`• ${pruned.length} arquivo(s) órfão(s) removido(s) da instalação anterior`);
+  if (pruned.length) log(`• ${pruned.length} caminho(s) de instalação anterior removido(s)`);
 
   // 5. estado
   writeState(configDir, files, detectInstallSource(PKG_ROOT));
 
-  // 6. hook
-  const hookResult = registerHook(configDir);
-  if (hookResult === 'written') log('• hook de aviso de atualização registrado em settings.json');
-  else if (hookResult === 'unchanged') log('• hook de aviso de atualização já registrado');
+  // 6. hooks
+  let hookResult = 'skipped';
+  if (!args.settings) {
+    log('• --no-settings: settings.json não foi alterado');
+    printHookSnippet(configDir);
+  } else {
+    hookResult = registerHooks(configDir);
+    if (hookResult === 'written') log('• 3 hooks registrados em settings.json (SessionStart, PreCompact)');
+    else if (hookResult === 'unchanged') log('• hooks já registrados em settings.json');
+  }
 
-  // 7. cache antigo
+  // 7. política sugerida (impressa, nunca escrita) + diagnóstico de limpeza
+  printPolicy();
+  diagnoseCleanup(configDir);
+
+  // 8. cache antigo
   clearOldCache();
+
+  // 9. preâmbulo
+  const pre = writePreamble(configDir, { yes: args.yes, skip: !args.preamble });
+  if (pre === 'written') log(`• preâmbulo escrito em ${preambleFile(configDir)}`);
+  else if (pre === 'unchanged') log('• preâmbulo já atualizado');
+  else if (pre === 'skipped') log('• --no-preamble: CLAUDE.md não foi tocado');
+  else if (pre === 'invalid') log(`• AVISO: bloco do preâmbulo pela metade em ${preambleFile(configDir)}; corrija os marcadores à mão`);
 
   log('');
   if (legacy.manual.length) {
@@ -433,11 +684,12 @@ function install(args) {
     log('');
   }
   if (hookResult === 'invalid') {
-    printManualHookSnippet(configDir);
+    log(`AVISO: ${path.join(configDir, 'settings.json')} não é um JSON válido; não foi alterado.`);
+    printHookSnippet(configDir);
     log('Reinicie o Claude Code para que as skills ll-* apareçam.');
     process.exit(1);
   }
-  log('Pronto. Reinicie o Claude Code para que as skills ll-* apareçam (ex.: /ll-decidir-antes).');
+  log('Pronto. Reinicie o Claude Code para que as skills ll-* apareçam (ex.: /ll-implement).');
 }
 
 function uninstall(args) {
@@ -448,6 +700,7 @@ function uninstall(args) {
   const rels = manifest && manifest.files ? Object.keys(manifest.files) : planFiles(PKG_ROOT).map((p) => p.rel);
   let n = 0;
   for (const rel of rels) if (removeManagedFile(configDir, rel)) n++;
+  for (const rel of KNOWN_LEGACY) if (removeManagedPath(configDir, rel)) n++;
   log(`• ${n} arquivo(s) removido(s)`);
 
   try {
@@ -456,9 +709,13 @@ function uninstall(args) {
     /* melhor esforço */
   }
 
-  const hookResult = unregisterHook(configDir);
-  if (hookResult === 'written') log('• hook removido de settings.json');
-  else if (hookResult === 'invalid') log(`• AVISO: settings.json inválido; remova o hook "${HOOK_FILE}" manualmente`);
+  const hookResult = unregisterHooks(configDir);
+  if (hookResult === 'written') log('• hooks removidos de settings.json');
+  else if (hookResult === 'invalid') log('• AVISO: settings.json inválido; remova os hooks ll-* manualmente');
+
+  const pre = stripPreamble(configDir);
+  if (pre === 'written') log('• bloco do preâmbulo removido do CLAUDE.md');
+  else if (pre === 'invalid') log('• AVISO: bloco do preâmbulo pela metade no CLAUDE.md; remova à mão');
 
   clearOldCache();
   log('');
