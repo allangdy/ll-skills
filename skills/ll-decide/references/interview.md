@@ -98,5 +98,5 @@ PLAN §3. `decisions/README.md` carries the four counts (by owner / by rule / de
 assumptions), the against-recommendation list, the free answers verbatim with the ID each created,
 and the consciously accepted risks. The same header carries the counter
 `questions asked N / assumptions M / band-1 open K`; with `N = 0` and `M > 5` the session also appends to `PROGRESS.md`, under the
-phase heading, `- review assumptions: <M> ASM written with 0 questions asked (<date>)`. A decision attributed to the owner that he did not make is the
-error he corrects loudest ("as decisões tomadas — eu n tomei todas — refaça esse artefato").
+phase heading, `- review assumptions: <M> ASM written with 0 questions asked (<date>)`. A decision
+attributed to the owner that he did not make voids the artefact: it is rewritten, not patched.

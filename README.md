@@ -67,11 +67,9 @@ Uma vez por milestone, com a contagem de prompts seus por etapa:
 | `ll-verify` | 0 (citada no goal) | `VERIFICATION.md` com veredito e dois selos |
 | `ll-close` | 0–1 + 1 ratificação | `docs/DELIVERY.md`, retrospectiva, arquivo do milestone |
 
-Alvo: 5 a 7 prompts no ciclo do projeto, mais 0 a 1 por fase.
-
 ## Ciclo de uma fase
 
-`ll-implement N`, oito passos, tipicamente 7 a 10 agentes:
+`ll-implement N`, oito passos, com um executor por marco além do scout, do verificador e — quando há UI — do revisor:
 
 0. **State** — lê ROADMAP, PLAN, o bloco `ll-state` do PROGRESS e o git log; marcos com `passes: false` entram em modo retomada.
 1. **Conversation** — uma tela de mapa A/B/C, pulada com `--no-talk` ou se `phases/NN/DECISIONS.md` já existe.

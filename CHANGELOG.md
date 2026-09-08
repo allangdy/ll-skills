@@ -2,11 +2,18 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A skill `ll-update` lê este arquivo para mostrar o que mudou entre a versão instalada e a publicada.
 
+## [2.0.2] - 2026-09-08
+
+### Alterado
+
+- Textos de referência das skills revisados; exemplos com placeholders.
+- Smoke test: verificação opcional de termos por lista externa (`LL_FORBIDDEN_FILE`).
+
 ## [2.0.1] - 2026-09-08
 
 ### Alterado
 
-- Documentação e textos de referência limpos de exemplos com nomes de projetos e de anotações internas de desenvolvimento; sem mudança de comportamento das skills.
+- Documentação e textos de referência revisados: exemplos genéricos e vocabulário uniforme; sem mudança de comportamento das skills.
 - Instalador: diagnóstico de limpeza restrito ao cache do plugin legado.
 
 ## [2.0.0] - 2026-09-07
@@ -64,7 +71,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - **Helper `scripts/ll-tools.js`** (Node puro, sem dependências), copiado dentro de `ll-implement`, `ll-verify` e `ll-close` na instalação, com 12 comandos: `state`, `waves`, `plan-lint`, `tdd-gate`, `spot-check`, `dec-reserve`, `passes`, `heartbeat`, `ledger`, `backlog-reconcile`, `epilogue`, `phase-stats`.
 - **Estado em arquivos do repositório:** `PLAN.md` (contrato), `ROADMAP.md` (fases e critérios), `PROGRESS.md` (bloco `ll-state` + epílogo), `BACKLOG.md` (itens com condição executável), `VERIFICATION.md` (ledger e veredito), `decisions/` (`DEC-NNNN`, numeração reservada pelo helper), `phases/NN/` (`DECISIONS.md`, `CODE-CONTEXT.md`, `PLAN.md`).
 - **`assets/settings.suggested.json`**: política sugerida (deny list, `autoCompactWindow`, cache, modelos) que o instalador **imprime** e nunca escreve.
-- `publish.yml`: a confirmação no registro espera a propagação por até 60 s em vez de consultar no mesmo segundo do publish (a 1.0.1 publicou com sucesso mas o job marcou falha por isso).
+- `publish.yml`: a confirmação no registro espera a propagação por até 60 s em vez de consultar no mesmo segundo do publish.
 
 
 ### Migração

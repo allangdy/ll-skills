@@ -1,28 +1,26 @@
 # Decision policy
 
 Shared by `ll-brainstorm`, `ll-decide` and `ll-implement` (three byte-identical copies; master in
-`skills/ll-brainstorm/references/`). Source: 179 questions the owner received in 15 days; his words
-are quoted verbatim in Portuguese.
+`skills/ll-brainstorm/references/`).
 
 ## The three bands
 
 ### Band 1 — ask, never decide alone
-- Real money above the ceiling of the round (8 cost blocks, 0 delegations; the one dismissed with ESC ended the project).
+- Real money above the ceiling of the round. A cost question dismissed without an answer is not a delegation.
 - Irreversible outside the repo: push that deploys, merge to a protected main, `terraform apply`
   with destroys, a credential created or copied to a new place, a write to a production database,
   a load of personal data.
 - Price, packaging, a promise to a customer.
-- Scope cut of the round (4 of 6 times the owner cut more than recommended — keep the maximalist option on the table).
-- The number the owner will look at on screen: denominator, window, what counts as an event
-  ("Essas recusas tem q ser considerados retentativas").
+- Scope cut of the round — keep the maximalist option on the table.
+- The number the owner will look at on screen: denominator, window, what counts as an event.
 - A recorded rule contradicted by new evidence (asked first, alone); waiving "partial is failure".
 - A reference the owner cites that the session cannot open (prototype, document, link, artifact):
   ask him to attach or paste it. Its content is never assumed.
 In autonomous runs: freeze only that branch, record `WAITING`, continue what does not depend on
-it. Waiting is not authorization ("a espera não é autorização").
+it. Waiting is not authorization.
 
 ### Band 2 — decide, record, continue
-- Reversible technical detail inside a closed contract ("Claude decide e pode mudar conforme necessário").
+- Reversible technical detail inside a closed contract — decided now, changed later if needed.
 - A house pattern exists (infra, CI/CD, names, repo layout) — follow it.
 - Who executes: agent vs session, worktrees, model per wave.
 - A fact readable from the repo, the database or the infrastructure — look it up.
@@ -33,7 +31,7 @@ Recorded as `DEC-` with an id reserved by the session; executors return `BLOCKED
 instead of creating one. In an opening conversation these are the A items.
 
 ### Band 3 — decide, execute, flag for review
-- Overrun inside the agreed tolerance ("leve tolerancia, acima disso … diagnóstico").
+- Overrun inside the agreed tolerance; above it, stop and diagnose.
 - Copy or style with an independent blind opinion attached.
 - A constraint invented out of caution that restricts the product (masking data, hiding a number,
   limiting access) — "I masked X; review, reversible", never an invariant.
@@ -49,16 +47,16 @@ with a final round that shows `questions asked N / assumptions M / band-1 open K
 Silence of 10 minutes ratifies the recommended list (A), never a blocking item (B).
 
 ## Never ask (10 items)
-1. Who executes — agent vs session, worktrees, model per wave. 25% acceptance, the worst axis.
-2. A fact readable from the repo, the database or the infra ("eu n me lembrava q isso ja havia sido feito").
-3. Which pattern, when a house pattern exists ("eu não pedi para seguir o padrão vigente?").
-4. A reversible technical detail inside a closed contract. "Claude decide e pode mudar conforme necessário".
-5. Confirmation of what another session already decided with the owner. b70–b78: all ceremonial, all confirmed.
-6. A subject outside the round's scope. "Não tem relação com suporte" ×2; "Irrelevante, fora do seu escopo".
-7. A question whose answer changes no action. "Foi você quem parou?" held a paid campaign 5h47.
-8. Copy without impact on a commercial promise. The owner routes it to a blind subagent every time.
+1. Who executes — agent vs session, worktrees, model per wave. Decide it and record it.
+2. A fact readable from the repo, the database or the infra — look it up, including whether it was already done.
+3. Which pattern, when a house pattern exists — follow it.
+4. A reversible technical detail inside a closed contract — decide it now, change it later if needed.
+5. Confirmation of what another session already decided with the owner — ceremonial, it only gets confirmed.
+6. A subject outside the round's scope, however related it looks.
+7. A question whose answer changes no action — asking it stalls whatever is running.
+8. Copy without impact on a commercial promise. Route it to a blind judge instead.
 9. Industry defaults — data retention, performance target, error format, default auth. Recorded in Locked with backing.
-10. The same policy question a second time ("não me importa se vai reter ou não, tora o pau" — third phrasing in 13 min).
+10. The same policy question a second time, however it is rephrased.
 
 ## Silence, delegation, directives
 - Silence for 10 minutes in the hot window (harness AFK timeout) ratifies option A of a band-2/3 item or
@@ -68,13 +66,13 @@ Silence of 10 minutes ratifies the recommended list (A), never a blocking item (
 - An order against the recommendation is a directive: one challenge with the cost named, then
   obey; record it under "Against the recommendation — do NOT re-litigate".
 - Settled (the owner decided, or ratified) is never re-opened; cite the ID when it resurfaces. Only the
-  owner's ratification settles an item. When he corrects a premise in free text ("Não, na verdade…",
-  "Validei com o time e…"), write the dated decision and a `feedback` memory in the same turn.
+  owner's ratification settles an item. When he corrects a premise in free text ("na verdade…",
+  "validei com o time e…"), write the dated decision and a `feedback` memory in the same turn.
 
-## Constraints the owner has already rejected — do not re-raise
-- Masking or dropping customer data (PII) in internal logs, screens, fixtures or docs. "vi ai
-  falandos em PII, mas isso n é uma regra, quero sim os dados dos clientes" — the invented rule
-  cost a server rewrite, route tests, four documents and a dedicated deploy.
+## Prudence constraints to propose, never to assume
+- Masking or dropping customer data (PII) in internal logs, screens, fixtures or docs when no rule
+  in CLAUDE.md or the owner's words asks for it. Adopted silently, it spreads into the server, the
+  route tests, the documents and a deploy before anyone notices it was never a requirement.
 - "Never run in prod" when production is the reference environment or the oracle of the test.
 - Refusing to copy a credential between two known `.env.*` files. The copy happens; the value is
   never printed.
@@ -98,7 +96,7 @@ the execution back to the owner: ask in one line and execute; transfer only what
 - `header` ≤ 12 chars. `question` = `[D-NN-kk] Question n/N — <title> (impact HIGH|MED|LOW · revert:
   <cost>)` + `FACT:` with number and source + `CONTEXT: <term> = <plain words>` for any acronym + the
   decision in business words, ending with "?". Target ≤ 200 chars; over ~500, rewrite. Everything
-  inside the field — text in the previous turn does not reach the owner ("Não vi explicação").
+  inside the field — text in the previous turn does not reach the owner.
 - Options 2–3 (4 only multi-select); recommended first with `(Recommended)` and a traceable reason;
   each `description` = `<what becomes true> · <cost in R$/US$ or days> · <what is lost>`. Add "Claude
   decide" when the item is delegable. No "Other" — the tool provides it; free text is a new requirement.
@@ -108,8 +106,8 @@ the execution back to the owner: ask in one line and execute; transfer only what
 Example:
 ```
 question: "[D-07-01] Question 1/2 — cents mismatch (impact HIGH · revert: 1 migration)
-  FACT: 1.8% of 4,312 rows of the last close differ by ≤ R$0.05 (docs/runs/2026-09-05-
-  reconciliation.json); today the job stops at the first one.
+  FACT: <share>% of <n> rows of the last close differ by ≤ <tolerance> (<path to the run
+  output>); today the job stops at the first one.
   CONTEXT: reconciliation = matching provider payouts to our sales, row by row.
   When a row differs by cents, do we accept and flag it, or reject it?"
 header: "Cents"   multiSelect: false

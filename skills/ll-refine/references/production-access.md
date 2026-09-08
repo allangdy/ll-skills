@@ -10,7 +10,7 @@ name or the console.
 ```
 ## Production access
 - environment: production · base URL: https://app.example.com
-- credential: token named `TOKEN_HQ`, put in `.env` by the owner; the reviewer reads it through
+- credential: token named `UAT_TOKEN`, put in `.env` by the owner; the reviewer reads it through
   `node --env-file=.env scripts/uat-token-server.mjs` and never opens `.env` itself
 - login: /login → `[name=email]` `[name=password]` → submit → wait `[data-test=dashboard]`
 - User-Agent: `curl/8.0` — the default library UA is answered by Cloudflare with error 1010
@@ -23,13 +23,12 @@ name or the console.
 
 Two fields decide whether a round runs at all. **How the secret reaches the browser** — the standing
 rule that an agent never reads `.env` has no default path to Playwright, so the block names the one
-this repo uses; without it the last acceptance criterion of a goal failed four times in a row and the
-round closed short. **What is read-only** — a reviewer that has to guess treats every button as
+this repo uses; without it every acceptance criterion behind a login stays unexercised and the round
+closes short. **What is read-only** — a reviewer that has to guess treats every button as
 dangerous and stops, or treats none as dangerous and creates a real record.
 
 Absent block: one question to the owner naming the environment and the account, then write it and
-commit it before dispatching. Never a round that asks for a password mid-flight — one UAT round
-stalled 40 minutes over a password that was already in `PROGRESS.md`.
+commit it before dispatching. Never a round that asks for a credential mid-flight.
 
 ## What goes in the reviewer brief
 

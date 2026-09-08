@@ -28,7 +28,7 @@ OUTPUT — one table, then nothing
 |---|---|---|---|---|---|
 | A-03 | S3 | 200 | yes | [VERIFIED] | — |
 | A-07 | S21 | 404 | yes | [UNVERIFIED] | dead URL; excerpt saved, use Wayback |
-| A-11 | S14 | 200 | narrower | [UNVERIFIED] | source says 40 pages, claim says "most sites" |
+| A-11 | S14 | 200 | narrower | [UNVERIFIED] | source counts one vendor, claim says "most vendors" |
 
 Close with a count line: `n claims · n [VERIFIED] · n [UNVERIFIED] · n fabricated URLs`.
 </brief>

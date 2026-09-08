@@ -48,7 +48,7 @@ Fill the 4-part brief in `references/front-brief.md` — objective, questions, b
 
 Counter-evidence goes in the **second wave**, armed with the theses the first two fronts returned and not with the evidence supporting them: its job is to find who refutes them.
 
-**WebSearch degradation.** When the search quota is exhausted (200/200), switch, in this order: WebFetch on URLs already surfaced, official APIs and changelogs, local measurement — call the endpoint, install the package and run the minimal example, open the page and record the 403. The degradation goes in the method note.
+**WebSearch degradation.** When the search quota is exhausted, switch, in this order: WebFetch on URLs already surfaced, official APIs and changelogs, local measurement — call the endpoint, install the package and run the minimal example, open the page and record the 403. The degradation goes in the method note.
 
 An extra round exists only if the previous round produced a new finding and names the gap it targets. A front that returns empty is a vocabulary problem first: send the same agent onward via SendMessage with alternate vocabulary (practitioner term, academic term, product name, acronym, original language) before anyone writes "no public material exists".
 

@@ -83,7 +83,7 @@ read_first:
   - src/agent/effects/commit.ts:41-88 — the shape to copy: exported function, idempotency key, error path
   - test/effects/commit.test.ts:1-40 — test layout (describe per case, fixture in beforeEach)
 action: create `src/billing/reconcile.ts` exporting `reconcile(batch)`; key (provider, event_id) in
-        table `billing_events`; backoff 5× as in `src/worker/messages.ts:120` [PLAN §3 D-07-03]
+        table `<table>`; backoff as in `<analog file>:<line>` [PLAN §<n> DEC-<NNNN>]
 behavior (tdd: yes): same key twice → one row, second call `{skipped: true}` · provider timeout →
         retried 5×, then `ReconcileError` with the last status
 acceptance: `npm test -- reconcile.test.ts` exit 0; last line pasted in the return block

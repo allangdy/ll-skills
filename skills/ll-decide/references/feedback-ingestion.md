@@ -23,7 +23,7 @@ print(f'{len(comments)} comments')
 PY
 ```
 Attribute order inside `<w:comment>` varies between editors — the regexes above match by name,
-not position (the first attempt in the real case failed on this). Images in `word/media/` are read
+not position; a positional regex silently returns nothing. Images in `word/media/` are read
 with the `Read` tool; the document body is read as text with `T(doc)` split on `</w:p>` when the
 flow (which paragraph an image or comment sits in) matters.
 
@@ -73,15 +73,15 @@ claim usually lives in the menu, the hub, the README and a sibling page. An item
 is a question ("the review mentions X; I found no X — where does it live, or is it new?").
 
 ## Veracity gate
-Before any question, list the factual claims the material introduces or changes: durations
-("published in 30 minutes"), prices, counts, names, bios, credits, guarantees. Check each against
+Before any question, list the factual claims the material introduces or changes: durations,
+prices, counts, names, bios, credits, guarantees. Check each against
 `PRODUCT.md`, the project CLAUDE.md, the code and the owner's memories. Output:
 ```
 | claim | source in the material | what the product says (file:line) | status: matches · diverges · unknown |
 ```
-Diverging and unknown claims are the first questions of the triage, ahead of money; the real case
-had "livro publicado em 30 minutos" pass through a judge brief before the owner caught that only
-the file is ready in 30 minutes. A brief that carried a wrong fact is rebuilt, not patched.
+Diverging and unknown claims are the first questions of the triage, ahead of money: an unchecked
+claim travels into judge briefs and copy before anyone notices the product does not do that. A
+brief that carried a wrong fact is rebuilt, not patched.
 
 ## Delivery format for humans
 When the request names a recipient outside the session ("para o time", "compartilhar", a person's

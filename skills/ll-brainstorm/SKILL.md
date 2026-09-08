@@ -69,8 +69,8 @@ A band-1 item in A is a bug. Never in B: who executes; a fact readable from repo
 which pattern when a house pattern exists; a reversible detail inside a closed contract;
 confirmation of another session's decision; a subject outside the round; a question whose answer
 changes no action; copy without a commercial promise; industry defaults (retention, performance
-target, error format, auth); the same policy question a second time. Full list with the owner's
-words in `references/decision-policy.md`. Whatever the owner or the external document already
+target, error format, auth); the same policy question a second time. Full list in
+`references/decision-policy.md`. Whatever the owner or the external document already
 settled is cited by ID, never re-opened.
 
 ### 3. The map (first visible message)
@@ -150,7 +150,7 @@ recommendation) · <m> deferred · 0 band-1 items open.
 
 Append-only; IDs never recycled; a later change is one line `D-NN-03 superseded by D-MM-02 on
 <date>: <reason>`, never an edit. Who decided each item is written: attributing to the owner a
-decision he did not make is the error he corrects loudest. Band-1 items and items that cross
+decision he did not make is a defect, not a rounding. Band-1 items and items that cross
 phases also get `decisions/DEC-NNNN-<slug>.md`. The helper `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/ll-implement/scripts/ll-tools.js` is used only if it exists — this skill does not ship it; when it is absent,
 the DEC id is the next number after the highest in `decisions/`; with it, `dec-reserve <n>`.
 
@@ -174,7 +174,7 @@ nothing to run (chat route).
 
 ## References
 
-- Bands, never-ask list, silence rule, rejected constraints, repo permissions, canonical question
+- Bands, never-ask list, silence rule, prudence constraints, repo permissions, canonical question
   format: [references/decision-policy.md](references/decision-policy.md) — read at step 2.
 - Idea-generation techniques: [references/techniques.md](references/techniques.md) — only when the
   owner asks for ideas ("me dá ideias", "give me options").

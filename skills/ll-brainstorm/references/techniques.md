@@ -11,7 +11,8 @@ ceremony for a phase that already has a scope.
 **Assumption reversal** — when an A item feels like caution rather than a requirement.
 List every assumption baked into the phase, flip each to its opposite, rebuild the design on the
 inverted set. Any assumption whose flip costs nothing was a rule you invented: mark it
-`[revisable — my constraint, not yours]`. This is the technique that would have caught the PII mask.
+`[revisable — my constraint, not yours]`. This is the technique that catches a prudence rule the
+plan adopted on its own, before it spreads into code, tests and documents.
 
 **Constraint mapping** — when the phase looks over-constrained.
 Write every constraint; sort each into "business" (band 1, the owner's) or "self-imposed"
@@ -62,8 +63,8 @@ moves from A to B.
 
 **One feature only / ship in 60 minutes** — for scope questions.
 "You keep exactly one capability" and "you launch in one hour with what is on hand — name what
-you cut, fake or borrow." The owner cuts more than recommended 4 times in 6: offer the cut as an
-option, with the maximalist option next to it.
+you cut, fake or borrow." An owner asked to cut usually cuts deeper than the recommendation, so
+offer the cut as an option with the maximalist option next to it.
 
 **Backcasting** — when success criteria are vague.
 Describe the finished phase in observable terms (the screen, the number, the command that proves

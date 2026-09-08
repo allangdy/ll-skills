@@ -58,7 +58,7 @@ Evidence strength, the vocabulary of the whole dossier — each subsection opens
 | HYPOTHESIS | plausible reasoning, no direct evidence — becomes a test item, not a product item |
 | REFUTED | famous effect that failed replication with realistic stimuli |
 
-Rules that make the labels operational: every number carries a linked source and a date, or it does not enter. Distinguish verified data, third-party projection, estimate of this research, and structural inference. Revealed preference beats stated preference — price actually paid, abandonment, piracy, waiting lists, product longevity beat any intention survey. Ask **who benefits from this number**: sector associations inflate markets, solution vendors inflate conversion benchmarks. An unaudited vendor claim ("20k students", "98% satisfaction") is reported as a claim with attribution, never as a fact. Name the study, the year and the design, or the label is decoration.
+Rules that make the labels operational: every number carries a linked source and a date, or it does not enter. Distinguish verified data, third-party projection, estimate of this research, and structural inference. Revealed preference beats stated preference — price actually paid, abandonment, piracy, waiting lists, product longevity beat any intention survey. Ask **who benefits from this number**: sector associations inflate markets, solution vendors inflate conversion benchmarks. An unaudited vendor claim ("<n>k users", "98% satisfaction") is reported as a claim with attribution, never as a fact. Name the study, the year and the design, or the label is decoration.
 
 ## Competitor table
 

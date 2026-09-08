@@ -1,10 +1,9 @@
 # Decision room — docs/decide/OPTIONS.html
 
-Read at project step 4. The owner asked for it in these words: "faça a construção do artefato de
-forma que nele tenha as opções para eu escolher o melhor desenho, arquitetura, fluxo, modelo de
-dados" and "precisa ser construido o artefato com as alternativas quando acabar de rodar os
-subagentes para dai sim me entrevistar". So: the file exists, with the judge's opinion in it,
-before the first interview question, and every interview option points at a row of it.
+Read at project step 4. The artefact carries the alternatives the owner picks from — design,
+architecture, flow, data model — and it is built after the subagents finish and before he is
+interviewed. So: the file exists, with the judge's opinion in it, before the first interview
+question, and every interview option points at a row of it.
 
 ## Structure (self-contained HTML, no external resources, inline CSS only)
 ```

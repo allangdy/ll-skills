@@ -16,23 +16,22 @@ kubectl config current-context 2>&1; kubectl get ns 2>&1 | head -3
 ```
 
 Anything that returns a permission wall is a **band 1 question in the first turn**, with the command
-ready to paste and what it does next to it — not at the end of the plan. The same `apply` was blocked
-four times in eleven days, each block costing one to three re-authorization turns, and once ending the
-session in an impasse.
+ready to paste and what it does next to it — not at the end of the plan, where each wall costs another
+re-authorization turn and can end the session in an impasse.
 
 ## Layer checklist — exercise the exact operation
 
-Each line is a check that runs before the first push, not a principle. Every one of them was a
-separate deploy round that failed one at a time.
+Each line is a check that runs before the first push, not a principle. Each one closes a failure that
+otherwise surfaces alone, one deploy round at a time.
 
-| Layer | Check | Incident it closes |
+| Layer | Check | Failure it closes |
 |---|---|---|
-| credential | diff the keys of the app secret against the envs referenced by the cronjob and by the migrate job | the key existed in `web-secrets`, the migrate container never received `OWN_PG_DSN` |
-| credential | the DSN is quoted before it reaches the store — `&` in a connection string breaks the parse | one round lost to an unquoted `&` |
-| container | the image tag the deployment will pull exists in the registry, and the job's container spec names the same secret as the web one | a job pointed at a secret nobody had sealed |
-| TLS | fetch the target over TLS from inside the cluster, not only from the laptop | `SELF_SIGNED_CERT_IN_CHAIN` on the first migration |
+| credential | diff the keys of the app secret against the envs referenced by the cronjob and by the migrate job | the key exists for the web container and the migrate container never receives the DSN |
+| credential | the DSN is quoted before it reaches the store — `&` in a connection string breaks the parse | an unquoted `&` truncates the connection string |
+| container | the image tag the deployment will pull exists in the registry, and the job's container spec names the same secret as the web one | a job points at a secret nobody sealed |
+| TLS | fetch the target over TLS from inside the cluster, not only from the laptop | `SELF_SIGNED_CERT_IN_CHAIN` inside the cluster, on a host that works from outside |
 | privilege | the DB user can `CREATE SCHEMA` — run it in a transaction and roll back | `permission denied` on the first migration run |
-| schema | no Job with the same name is in flight; a Job name is a lock nobody holds | an anti-collision `kubectl delete` killed a rerun one second after dispatch |
+| schema | no Job with the same name is in flight; a Job name is a lock nobody holds | a delete meant to avoid a name collision kills the run just dispatched |
 
 A pre-deploy that only lints manifests proves nothing about any of these. Run the operation against
 the real target with the real identity, on a resource that is safe to touch.

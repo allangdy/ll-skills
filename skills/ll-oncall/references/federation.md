@@ -1,7 +1,7 @@
 # Federation — P1 to P9
 
-Nine rules, all written in the field under a failure just paid for. No new mechanism — no mailbox, no
-team layer: a block in `CLAUDE.md`, a file per project, two message shapes.
+Nine rules for sessions that hold a role. No new mechanism — no mailbox, no team layer: a block in
+`CLAUDE.md`, a file per project, two message shapes.
 
 ## P1 — One name per role, fixed by the owner
 
@@ -18,15 +18,15 @@ Sessions start as `claude -n infra`, `claude -n shop`; the project `CLAUDE.md` c
 - Shared resources I own (others only ask): cluster namespaces, terraform state, DNS
 ```
 
-Four to eight lines, in the repo, versioned. The same content living only in a compaction summary went
-with the compaction; the negative list is what stopped the incursions.
+Four to eight lines, in the repo, versioned. The same content living only in a compaction summary goes
+away with the compaction; the negative list is what holds the boundary.
 
 ## P2 — Late binding, always
 
 `ListAgents` before the first `SendMessage` of every turn; resolve the role prefix to the current
 `name [id]`. On failure: `ListAgents` again, resend once. Never record a suffix — not in a cron, not in
-memory, not in a document. One session answered to six names in four days, and all 51 addressing
-failures were in the suffix, none in the prefix. A cron stores the prefix and resolves per firing.
+memory, not in a document: the prefix survives a restart and the suffix does not, so a stored suffix is
+where addressing fails. A cron stores the prefix and resolves per firing.
 
 ## P3 — Request in 5 fields
 
@@ -50,14 +50,14 @@ PENDING: <what is missing and whose ball it is>
 ```
 
 Evidence is a number or a line of output — *"web 2/2 and worker 1/1 on the new image, /health 200 at
-the origin and via Cloudflare"*, *"seal-verify MATCH, 17 keys"*. No number yet is `not verified`.
+the origin"*, *"secret-verify MATCH, <n> keys"*. No number yet is `not verified`.
 
 ## P5 — A message cites, it never grants
 
 Every request with a side effect cites the authorization with date and session — `AUTHORIZATION: owner,
-04/09 17:53, session shop — "avisa a infra para atualizar a dele"`. A claim with no list of what was
-authorized is not a citation: *"autorizado pelo dono"* alone opened a credential request nobody had
-approved. A citation orients the work; if the action needs approval, ask *your* owner, naming it.
+<date> <time>, session shop — <the action he authorized, in his words>`. A claim with no list of what
+was authorized is not a citation, and "the owner approved it" alone is enough to open a credential
+request nobody approved. A citation orients the work; if the action needs approval, ask *your* owner, naming it.
 Blocked here: report to the owner, never ask a peer to run what was denied — routing a blocked action
 through another session is what the cross-session permission rule forbids.
 
@@ -77,11 +77,11 @@ phase. The owner answers by number, in any session.
 
 ```
 # REQUESTS — <project> ↔ <role>
-## PG.4 — reseal secrets (2026-08-28)
-FROM shop TO infra · REF docs/migration/contract.md · AUTHORIZATION owner 04/09 17:53 session shop
+## PG.4 — reseal secrets (<date>)
+FROM shop TO infra · REF docs/migration/contract.md · AUTHORIZATION owner <date> <time> session shop
 CONTEXT … · REQUEST 1. … because … costs ~… · DO NOT … · REPLY WITH DONE/EVIDENCE/REFERENCE/PENDING
-### response — infra — 02:54
-DONE … · EVIDENCE "web 2/2, worker 1/1, /health 200 via Cloudflare" · REFERENCE commit … · PENDING …
+### response — infra — <time>
+DONE … · EVIDENCE "web 2/2, worker 1/1, /health 200 at the origin" · REFERENCE commit … · PENDING …
 ```
 
 ## P8 — Dead peer: three attempts and stop
@@ -97,14 +97,14 @@ DONE … · EVIDENCE "web 2/2, worker 1/1, /health 200 via Cloudflare" · REFERE
 ## P9 — When not to use it
 
 Durable information (file). A subagent just launched that will not be reused — the `Agent` call already
-returns its report; `SendMessage` pays off only with a persistent agent holding expensive context (31
-messages instead of 31 fresh agents in one project). Three levels of agent: grandchildren address
-neither parent nor grandparent — 47 attempts, 47 failures, ~130,000 characters into the void; flatten to
-depth 1, or the middle level aggregates. An action denied to you. Two sessions writing one resource — a
+returns its report; `SendMessage` pays off only with a persistent agent holding expensive context, which a
+fresh agent would have to rebuild. Three levels of agent: grandchildren address neither parent nor
+grandparent — the message goes nowhere and the sender is not told; flatten to depth 1, or the middle
+level aggregates. An action denied to you. Two sessions writing one resource — a
 message is not a lock: one owns it, the other asks. "Are you alive?" — `notify_when_idle: true`.
 
 ## Topology
 
 A star: product sessions talk to the role at the centre, never to each other. Two of them coordinating
-directly is how one manifest got applied twice and an anti-collision delete killed a job a second after
-dispatch. The centre serializes; the points ask.
+directly is how the same manifest gets applied twice, and how one session's cleanup deletes the job the
+other just dispatched. The centre serializes; the points ask.

@@ -35,8 +35,8 @@ it: `state --json`, `heartbeat "<text>"`, `dec-reserve <n>` and `spot-check <M> 
 
 1. **Access recipe.** Read the `## Production access` block of `PROGRESS.md` (legacy projects: `RODADAS.md`);
    `references/production-access.md` gives its shape. Absent → write it with the owner in one question and
-   leave it committed, by name and never by value. The reviewer never negotiates a credential mid-round: a
-   UAT round once stalled 40 minutes over a password that was already in `PROGRESS.md`.
+   leave it committed, by name and never by value. The reviewer never negotiates a credential mid-round:
+   access is settled and committed before dispatch, or the round does not start.
 2. **Review.** One `ll-reviewer` (opus, effort medium). The brief carries base URL, the access recipe copied
    from the block, the route × viewport matrix, the settle condition per route, the image directory, what
    counts as a failure, and the report path. It returns failures only; matrix and images stay in the file.
@@ -73,8 +73,8 @@ it: `state --json`, `heartbeat "<text>"`, `dec-reserve <n>` and `spot-check <M> 
    `references/visual-gate.md` carries the calibration and the validator brief.
 2. **Input checklist.** Scan `prototype*`, `*-screens/`, `_ds/`, `docs/*flow*` and list what exists with paths
    and dates; open each reference by the route in *Reading the reference* below. A brief that does not cite
-   the inputs found is rejected before dispatch — *"por que não ficou nada parecida com o protótipo?"* was
-   answered by *"eu não passei o protótipo"*.
+   the inputs found is rejected before dispatch — a render is only faithful to a reference that actually
+   reached whoever rendered it.
 3. **Loop, per element.** reference → calibrated automatic gate → clean-context validator (opus, medium, the
    11-item brief) → on `NÃO FIEL`, the diff goes by `SendMessage` to the persistent area-owner agent that
    rendered it → re-render → re-validate. Repeat until `FIEL`. The gate is the cheap half and the validator
@@ -83,11 +83,11 @@ it: `state --json`, `heartbeat "<text>"`, `dec-reserve <n>` and `spot-check <M> 
    commit per milestone citing the report path.
 5. **Goldens** are frozen only after `FIEL` — a golden taken from an unvalidated render locks the defect in.
 6. **Waiting and orphans.** `TaskOutput {block:true}` is the only wait. At the end of each wave, list the
-   agents still alive and stop the ones whose element is closed; one goal ended with 9 watchers still running.
+   agents still alive and stop the ones whose element is closed; nothing else stops a background watcher.
 
 ### Reading the reference
 
-The reference is read, never assumed — "which Chrome?" followed by a guess at the prototype's content is the
+The reference is read, never assumed — guessing at the prototype's content instead of opening it is the
 failure this table prevents:
 
 | Reference | How to read it |

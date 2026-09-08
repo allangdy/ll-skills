@@ -22,7 +22,7 @@ Reply to the owner in Portuguese; docs/GOAL.md is in English.
 | the text in the conversation | what the owner copies into `/goal` | ≤4,000 chars, no fence, no commentary around it |
 
 The goal is a versioned file. A goal aimed at a published artifact or an untracked path has no
-contract behind it — that failure cost a full rebuild.
+contract behind it: every path it names is tracked, or the goal is not emitted.
 
 ## Flow
 

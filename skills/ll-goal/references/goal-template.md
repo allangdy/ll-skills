@@ -71,8 +71,7 @@ complete the goal.
 
 Operational rules — do not read `.env`, do not kill processes by name, do not build the front end
 with production up, do not touch `<other repo>` — are settings, not goal text. They belong in the
-project CLAUDE.md, in `settings.json` deny rules, or in a hook. Seven of the eleven rules in the
-last hand-written goal were of this kind, retyped every run.
+project CLAUDE.md, in `settings.json` deny rules, or in a hook — written once, not retyped every run.
 
 ## Checklist before emitting
 
@@ -83,8 +82,8 @@ last hand-written goal were of this kind, retyped every run.
    nothing is judged by opinion, because the evaluator sees only the conversation.
 4. The verifier is clean-context; no milestone is proven by whoever built it.
 5. Part 4 is the fixed block, unchanged; no operational rule anywhere in the text.
-6. EXECUTION names the skill and the phase (`ll-implement <NN>`) — the goal that omitted it was
-   pasted three times before it ran.
+6. EXECUTION names the skill and the phase (`ll-implement <NN>`); without it the text is not
+   actionable and the run does not start.
 7. The budget reads as a ceiling and says what happens when it is reached.
 8. Every band-1 decision has an owner and a channel; nothing irreversible is left to absence.
 9. No paragraph of PLAN.md, ROADMAP.md or a decision file is repeated — each appears as a pointer.

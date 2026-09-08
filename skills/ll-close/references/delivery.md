@@ -15,13 +15,13 @@ product <OK|FAIL> · process <OK|FAIL> · slice <branch> <sha..sha>
 
 ## 1. What changed, for the manager
 <3 to 8 lines, no jargon: what a person can now do that they could not before, where, and from
-when. Numbers where the change is numeric (a report that took 4h now takes 82 min). No file names
+when. Numbers where the change is numeric (before and after, in the same unit). No file names
 here — this section survives being pasted into a message.>
 
 ## 2. Findings → done
 | # | finding (as reported) | what was done | evidence |
 |---|---|---|---|
-| F-03 | "os números do topo não batem com o relatório" | recalculation moved to the same query | `npm test -- kpi.test.ts` exit 0 |
+| F-03 | "<the finding, in the words it was reported in>" | <what was done> | `npm test -- <feature>.test.ts` exit 0 |
 <One row per finding that entered this round, including the ones deliberately left out — those get
 "not done, see §6" in the third column. The finding is quoted as it was reported, in the words used.>
 

@@ -17,11 +17,11 @@ Fixed; batch it into one Bash with several commands plus one parallel block of R
 
 1. **Epilogue** — already in context. Never re-read it.
 2. **Project memory** — content plus its age in days; memory older than the newest commit is a
-   suspect, not a source (8 days stale once produced a plausible, wrong status).
+   suspect, not a source, and a stale one reads as a plausible status that is wrong.
 3. **`git log` across all refs**, not only the current branch — work lands on agent branches:
    `git log --all --oneline -25 --format='%h %ad%d %s' --date=short`.
 4. **Dirty worktrees and branches ahead of main** — `git status --short`, `git worktree list`,
-   `git branch -vv`. 651 finished lines were once lost in a forgotten agent worktree.
+   `git branch -vv`. Finished work goes missing in a forgotten agent worktree, not in the log.
 5. **State** — The helper `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/ll-implement/scripts/ll-tools.js` is used only if it exists — this skill does not ship it; when it is absent,
    read the `<!-- ll-state -->` block of PROGRESS. With it, `state --json` → `{phase,
    milestones:{total,passed,list}, last_commit, git, waiting, epilogue_present, active_phase_plan}`.
@@ -29,8 +29,8 @@ Fixed; batch it into one Bash with several commands plus one parallel block of R
 7. **Live parallel sessions** — `ListAgents`, when that tool is available.
 8. **Active goal** — is there a `docs/GOAL.md`, and does the evidence say it is still running?
 
-Confront the owner's premise against the evidence before asking anything — "em prod foi abortado"
-and "o goal foi marcado como concluído" were both false, and each cost a session. Ask nothing
+Confront the owner's premise against the evidence before asking anything — what he remembers about a
+deploy or a finished goal is the premise most worth checking against the repo. Ask nothing
 unless what he stated contradicts what you found; then that one question, isolated, after the
 briefing. What no tool showed you goes out as `não verificado`, not as fact.
 

@@ -14,7 +14,7 @@ Source material: <files, with the inventory count>. Decisions: <n> · rejected: 
 
 ## Decision log
 | # | item (inventory id) | reviewer's proposal | decision | by | note |
-| 1 | C3 | "R$ 297 → R$ 247" | rejected — price stays (owner, Q2/16) | owner | Greenn is the source of truth |
+| 1 | C<n> | "<old price> → <new price>" | rejected — price stays (owner, <question id>) | owner | <the system that is the source of truth> |
 (every inventory item appears here or in §Deferred; rejected items stay, with the reason)
 
 ## §1 <Page or area> — <target file(s)>
@@ -26,12 +26,13 @@ Conventions that bind: <tracking params, component, price table, max title/descr
 
 ## §Sweep — what became obsolete
 | grep | expected hits after the change | where else it lives |
-| `grep -rn "R\$ 297" src/` | 0 | menu, hub, README |
-(after any change of price, offer, name or claim; 9 real divergences sat in files nobody would open)
+| `grep -rn "<old price>" src/` | 0 | <pages that showed the old value> |
+(after any change of price, offer, name or claim; the old value usually also sits in files nobody
+would think to open)
 
 ## §External dependencies
 | dependency | section | detail needed | owner (person) | placeholder in the code |
-| checkout link for <product> | §2 | Greenn URL | Lucas | `TODO(checkout): <product>` + WhatsApp CTA |
+| checkout link for <product> | §2 | checkout URL | <person> | `TODO(checkout): <product>` + fallback CTA |
 Placeholder rule: never ship a dead button or a guessed URL — the CTA points to a working
 fallback and the code carries `TODO(<kind>): <item>` so `grep -rn "TODO(checkout)"` is the index
 of what the sheet closes.
@@ -66,9 +67,9 @@ At most 150 words, in this order:
 </output_contract>
 Do not restate the versions; do not soften the verdict to a tie.
 ```
-4 of 5 judges in the real case proposed a better D. The verdict comes back into the numbered
-question as "(retomada)" with D as an option; the owner decides; the log records "settled by
-blind judge — final".
+Judges propose a D often enough that the option is always offered. The verdict comes back into the
+numbered question as "(retomada)" with D as an option; the owner decides; the log records "settled
+by blind judge — final".
 
 ## External contract — the .xlsx
 Generated from §External dependencies, committed in `docs/`, one row per dependency:

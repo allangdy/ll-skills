@@ -7,7 +7,7 @@ validator catches the wrong content in the right place.
 ## The ruler
 
 Written once, before the first delivery, at the top of the round file. Reference by path, never by
-description — no ruler means no delivery: "está parecido" becomes the acceptance criterion.
+description — no ruler means no delivery, and "looks close enough" becomes the acceptance criterion.
 
 ```
 Judge:     clean-context Opus validator — never the agent that rendered the element
@@ -28,7 +28,7 @@ None works → band-1 question (attach or paste), never an assumption; "fiel" ma
 
 ## Calibration
 
-Defaults measured on 179 pages of a real book engine (`CALIBRACAO-GATE1.md`):
+Starting defaults, recorded in the round's calibration file and adjusted by the pass below:
 
 | Signal | Threshold | Role |
 |---|---|---|
@@ -67,9 +67,9 @@ Return: the report path, pages FIEL n / NÃO FIEL n, and the failing lines only.
 
 ## Dispatch to the area owner
 
-A divergence goes by `SendMessage` to the persistent agent that owns the area, never to a new one: 31
-messages replaced 31 fresh agents in one project, each landing on someone who already had the code in
-context. The message carries a pointer, not the report:
+A divergence goes by `SendMessage` to the persistent agent that owns the area, never to a new one — it
+already holds the code in context, and a fresh agent pays for that context again. The message carries a
+pointer, not the report:
 
 ```
 Round <n> of fidelity, area <engine|web|server>. An independent validator compared the render
@@ -84,7 +84,7 @@ Then re-render, re-run the gate, re-validate — with a validator that has not s
 
 ```
 # Validation E<n> — <milestone> — <date>
-gate: displacement ≤ 1.5 mm · SSIM ≥ 0.55 · bleed 3 mm      (CALIBRACAO-GATE1.md)
+gate: displacement ≤ 1.5 mm · SSIM ≥ 0.55 · bleed 3 mm      (<calibration file>)
 | page | reference | render | displacement | SSIM | verdict | item |
 | p-04 | ref/a/p-04.png | out/a/p-04.png | 0.4 mm | 0.91 | FIEL | — |
 | p-07 | ref/a/p-07.png | out/a/p-07.png | 3.2 mm | 0.62 | NÃO FIEL | 3 — caption block 3.2 mm low |
@@ -96,5 +96,5 @@ One report per round, appended as `E1 … En`, never rewritten — the sequence 
 converged, and the milestone's closing commit cites the path. Goldens are recorded only after the
 milestone reads `FIEL` on every page; one taken from an unvalidated render freezes the defect in.
 
-At the end of each wave, stop the agents whose area is closed — one goal ended with 9 background
-watchers alive hours later. `TaskOutput {block:true}` is the wait; a Bash polling loop made those.
+At the end of each wave, stop the agents whose area is closed — nothing else ends a background watcher,
+and they outlive the round. `TaskOutput {block:true}` is the wait; a Bash polling loop is not.

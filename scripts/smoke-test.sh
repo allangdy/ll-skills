@@ -333,7 +333,8 @@ check "uninstall removeu o preâmbulo" '! grep -q "ll-skills:preamble" "$CMD"'
 check "uninstall preservou as sentinelas" 'grep -q "SENTINEL-TOP" "$CMD" && grep -q "SENTINEL-BOTTOM" "$CMD"'
 
 
-# --- publicação: nenhum termo interno em arquivos rastreados
-FORBID="$(echo 'mn:ma|h:q|liv:reria|al:lan|DEC:-F|PS:-F|pesquisa:-local' | tr -d :)"
-check "sem termos internos nos arquivos rastreados" '! git ls-files | grep -v "^\.gitignore$" | xargs grep -n -i -w -E "$FORBID" 2>/dev/null | grep -q .'
+# --- optional private word list (never shipped): LL_FORBIDDEN_FILE=<path> enables the check
+if [ -n "${LL_FORBIDDEN_FILE:-}" ] && [ -f "$LL_FORBIDDEN_FILE" ]; then
+  check "no private terms in tracked files" '! git ls-files | grep -v "^\.gitignore$" | xargs grep -n -i -w -E -f "$LL_FORBIDDEN_FILE" 2>/dev/null | grep -q .'
+fi
 echo "smoke test OK — $N checks"
