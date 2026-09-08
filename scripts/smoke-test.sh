@@ -103,6 +103,7 @@ $HELPER tdd-gate M1 --json > "$TMP/tdd1.json"
 check "tdd-gate M1 passa"             'grep -q "\"tdd\":\"pass\"" "$TMP/tdd1.json"'
 check "tdd-gate M1 ignora M10"        '! grep -q "M10" "$TMP/tdd1.json"'
 check "tdd-gate M2 reprova"           '$HELPER tdd-gate M2 --json | grep -q "\"tdd\":\"fail\""'
+check "tdd-gate acha o id entre posicionais" '$HELPER tdd-gate phases/07/PLAN.md M1 --json | grep -q "\"tdd\":\"pass\""'
 
 check "spot-check M1 passa"           '$HELPER spot-check M1 --files src/a.ts,test/a.test.ts --json | grep -q "\"verdict\":\"pass\""'
 check "state: fase 07, 1/3"           '$HELPER state --json | grep -q "\"total\":3,\"passed\":1"'

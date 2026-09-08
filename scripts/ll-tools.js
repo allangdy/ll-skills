@@ -86,6 +86,7 @@ function rootOf(a, strict) {
  }
  return root;
 }
+const mid = (a) => a._.find((x) => /^(M\d+|G-\d+)$/.test(x)) || die('missing milestone id');
 function resolveIn(root, p, fb) {
  const t = p || fb || die('missing file argument');
  if (/^\d{1,2}$/.test(t)) return J(root, 'phases', t.padStart(2, '0'), 'PLAN.md');
@@ -300,7 +301,7 @@ C.waves = (a) => {
 };
 
 C['tdd-gate'] = (a) => {
- const root = rootOf(a), id = a._[0] || die('missing milestone id'), re = commitRe(id).full;
+ const root = rootOf(a), id = mid(a), re = commitRe(id).full;
  let test = null, feat = null;
  gitLog(root, a.flags.since ? [a.flags.since + '..HEAD'] : null).reverse().forEach((e, i) => {
   const m = re.exec(e.subject);
@@ -318,7 +319,7 @@ C['tdd-gate'] = (a) => {
 };
 
 C['spot-check'] = (a) => {
- const root = rootOf(a), top = gitTop(root), id = a._[0] || die('missing milestone id');
+ const root = rootOf(a), top = gitTop(root), id = mid(a);
  const exp = String(a.flags.files || '').split(',').map((s) => s.trim()).filter(Boolean);
  if (!exp.length) die('missing --files a,b');
  const miss = exp.filter((f) => !fs.existsSync(resolveIn(top, f))), re = commitRe(id).loose;
@@ -376,7 +377,7 @@ function stateLine(indent, id, f) {
 }
 
 C.passes = (a) => {
- const root = rootOf(a, true), id = a._[0] || die('missing milestone id');
+ const root = rootOf(a, true), id = mid(a);
  if (!/^(M\d+|G-\d+)$/.test(id)) die('bad milestone id: ' + id);
  const arg = String(a._[1] || '').toLowerCase();
  if (arg !== 'true' && arg !== 'false') die('expected true|false');
