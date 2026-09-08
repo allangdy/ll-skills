@@ -1,5 +1,5 @@
 {
-  "max_turns": 30,
+  "max_turns": 45,
   "history": true,
   "min_pass": 2,
   "agent": null,
