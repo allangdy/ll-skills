@@ -64,7 +64,7 @@ function parseStateBlockLite(bl) {
     if (!line.trim() || /^\s*#/.test(line)) continue;
     let m = /^phase:\s*(.*)$/.exec(line);
     if (m) { st.phase = String(llScalar(m[1])); inM = false; continue; }
-    if (/^milestones:\s*$/.test(line)) { inM = true; continue; }
+    if (/^milestones:\s*(\{\s*\})?$/.test(line)) { inM = true; continue; }
     m = /^(\s*)(M\d+|G-\d+):\s*\{(.*)\}\s*$/.exec(line);
     if (m && inM) {
       st.milestones[m[2]] = llScalar('{' + m[3] + '}');

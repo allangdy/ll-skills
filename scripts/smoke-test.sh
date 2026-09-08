@@ -122,6 +122,9 @@ check "passes M2 true grava"          'grep -q "\"passes\":true" "$TMP/passes.js
 check "passes muda exatamente 2 linhas" \
   '[ "$(diff "$TMP/progress-before" PROGRESS.md | grep -c "^[<>]")" -eq 2 ]'
 check "passes M9 cria a linha"        '$HELPER passes M9 true --json | grep -q "\"created\":true"'
+mkdir -p "$TMP/emptymap" && sed 's/^milestones:$/milestones: {}/' "$TMP/progress-before" | awk '/^milestones: \{\}$/{print; skip=1; next} skip && /^  (M[0-9]+|G-[0-9]+):/{next} {skip=0; print}' > "$TMP/emptymap/PROGRESS.md"
+check "passes com milestones: {} cria a entrada" \
+  '$HELPER passes M1 true --cwd "$TMP/emptymap" --json | grep -q "\"created\":true" && grep -q "^milestones:$" "$TMP/emptymap/PROGRESS.md" && grep -q "^  M1: {" "$TMP/emptymap/PROGRESS.md"'
 
 check "dec-reserve 2 → 0042/0043"     '$HELPER dec-reserve 2 --json | grep -q "\"DEC-0042\",\"DEC-0043\""'
 check "dec-reserve 2 → 0044/0045"     '$HELPER dec-reserve 2 --json | grep -q "\"DEC-0044\",\"DEC-0045\""'

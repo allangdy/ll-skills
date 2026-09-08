@@ -159,7 +159,7 @@ function parseStateBlockLite(bl) {
     if (!line.trim() || /^\s*#/.test(line)) continue;
     let m = /^phase:\s*(.*)$/.exec(line);
     if (m) { st.phase = String(llScalar(m[1])); inM = false; continue; }
-    if (/^milestones:\s*$/.test(line)) { inM = true; continue; }
+    if (/^milestones:\s*(\{\s*\})?$/.test(line)) { inM = true; continue; }
     m = /^(\s*)(M\d+|G-\d+):\s*\{(.*)\}\s*$/.exec(line);
     if (m && inM) {
       st.milestones[m[2]] = llScalar('{' + m[3] + '}');
@@ -401,8 +401,9 @@ C.passes = (a) => {
  } else {
   created = true;
   let anchor = -1;
-  for (let i = block.start + 1; i < block.end; i++) if (/^milestones:\s*$/.test(all[i].trim())) { anchor = i; break; }
+  for (let i = block.start + 1; i < block.end; i++) if (/^milestones:\s*(\{\s*\})?$/.test(all[i].trim())) { anchor = i; break; }
   if (anchor < 0) die('no `milestones:` key in the ll-state block');
+  all[anchor] = all[anchor].replace(/\s*\{\s*\}\s*$/, '');
   at = state.order.reduce((acc, o) => Math.max(acc, block.start + 2 + o.index), anchor + 1);
   all.splice(at, 0, stateLine(state.order.length ? state.order[0].indent : '  ', id, f));
  }
