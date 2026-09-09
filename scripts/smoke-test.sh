@@ -113,6 +113,10 @@ check "phase-stats: 5 dias com trabalho" '$HELPER phase-stats --json | grep -q "
 check "phase-stats: fase 07 com questions/owner_prompts" \
   '$HELPER phase-stats --json | grep -q "\"phase\":\"07\"" && $HELPER phase-stats --json | grep -q "\"questions\":3" && $HELPER phase-stats --json | grep -q "\"owner_prompts\":2"'
 check "phase-stats: targets presente"   '$HELPER phase-stats --json | grep -q "\"targets\""'
+mkdir -p "$TMP/ep" && awk '/^## Epilogue — phase 07/{print "## Epilogue — phase 06 — 2026-09-08"; print "passed: M1 · left: none"; print ""} {print}' PROGRESS.md | sed 's/· amendments 1 · verification:/· amendments 1 (M3) · verification:/' > "$TMP/ep/PROGRESS.md"
+$HELPER phase-stats --cwd "$TMP/ep" --json > "$TMP/ep.json"
+check "phase-stats: epílogo sem linha de contagem não rouba a da fase seguinte" 'grep -q "\"phase\":\"06\",\"count_line\":false" "$TMP/ep.json"'
+check "phase-stats: parêntese após amendments é aceito" 'grep -q "\"amendments\":1,\"verdict\":\"APPROVED\",\"verification\":\"phases/07/VERIFICATION.md\"" "$TMP/ep.json"'
 check "epilogue 07 humano traz targets" '$HELPER epilogue 07 | grep -q "targets:"'
 check "plan-lint reprova o PLAN"      '$HELPER plan-lint phases/07/PLAN.md --json | grep -q "\"verdict\":\"fail\""'
 check "plan-lint acusa acceptance-missing em M6" '$HELPER plan-lint phases/07/PLAN.md --json | grep -q "acceptance-missing"'

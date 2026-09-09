@@ -544,8 +544,9 @@ function phaseEpilogues(root) {
  all.forEach((l, i) => {
   const h = /^## Epilogue — phase (\S+)/.exec(l);
   if (!h) return;
-  const op = all.slice(prev, i).filter((x) => /^- \[[^\]]+\] owner:/.test(x)).length; prev = i; // owner heartbeats since the prior epilogue
-  const m = /milestones passed (\d+)\/(\d+) · questions asked (\d+) \/ assumptions (\d+)[^/]*\/ band-1 open (\d+)[^·]*· amendments (\d+) · verification:\s*(\S+)\s+(\S+)/.exec(all.slice(i).join('\n'));
+  const op = all.slice(prev, i).filter((x) => /^- \[[^\]]+\] owner:/.test(x)).length; prev = i;
+  const end = all.findIndex((x, k) => k > i && /^## /.test(x)), sec = all.slice(i, end < 0 ? 1e9 : end).join('\n');
+  const m = /milestones passed (\d+)\/(\d+) · questions asked (\d+) \/ assumptions (\d+)[^/]*\/ band-1 open (\d+)[^·]*· amendments (\d+)[^·]*· verification:\s*(\S+)\s+(\S+)/.exec(sec);
   out.push(m ? { phase: h[1], passed: +m[1], total: +m[2], questions: +m[3], assumptions: +m[4], band1_open: +m[5],
    amendments: +m[6], verdict: m[8], verification: m[7], owner_prompts: op } : { phase: h[1], count_line: false, owner_prompts: op });
  });
