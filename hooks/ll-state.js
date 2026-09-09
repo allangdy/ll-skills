@@ -162,6 +162,13 @@ function stateRoot(cwd) {
     }
   };
   walk(cwd, 1);
+  if (found.length > 1) {
+    // several candidates: keep those with an ll-state block, then the most recently written
+    const stamp = (d) => { try { return fs.statSync(path.join(d, 'PROGRESS.md')).mtimeMs; } catch { return 0; } };
+    const withState = found.filter((d) => { try { return /<!--\s*ll-state\s*-->/.test(fs.readFileSync(path.join(d, 'PROGRESS.md'), 'utf8')); } catch { return false; } });
+    const pool = withState.length ? withState : found;
+    return pool.sort((a, b) => stamp(b) - stamp(a))[0];
+  }
   return found.length === 1 ? found[0] : cwd;
 }
 
