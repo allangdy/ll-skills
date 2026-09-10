@@ -341,3 +341,9 @@ new: eval case `goal-autonomous` (own healthy fixture, real rep PASS, /home/gree
 left: none. waiting: none. backlog open: 0.
 smoke: 202 → 220 checks; lint 0 violations; clean checkout green.
 ▶ Next — /clear, then ll-close --milestone 3.0.0
+### HF-1 — 2026-09-10 19:15
+built: lint rule 3 parses `npm pack --dry-run --json` in both shapes (npm ≤ 11 list, npm 12 object keyed by package name) and honours `LL_PACK_JSON=<file>` for tests — the publish workflow (npm@latest = 12.0.2) failed on the object shape (run 34535624727).
+commits: 53ee836 test(HF-1) · 236a38c feat(HF-1)
+commands: `npm run lint` → "ok — 7 rule(s), 0 violation(s)" · `npm test` → "smoke test OK — 222 checks" · `LL_PACK_JSON=/tmp/pack12.json bash scripts/lint-prompts.sh` exit=0
+deviations: none · questions: none · backlog: none
+not_verified: the GitHub run itself — the tag v3.0.0 is moved to this commit and pushed again to retrigger publish.yml
