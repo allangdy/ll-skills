@@ -114,3 +114,4 @@ Which test key to use → none needed. What is missing → nothing for phases 01
 `decisions/DEC-0003-no-spend-ceiling.md` · `decisions/DEC-0004-goal-stays-as-text.md` ·
 design page "ll-auto" (artifact, 2026-09-10, versions 1–4) · `~/.claude/gsd-core/workflows/autonomous.md` (read 2026-09-10).
 ## Errata (append-only; the only section that changes after freezing)
+- 2026-09-10 — I-09 narrowed to files that still carry the owner's uncommitted edits (`hooks/ll-state.js`, `hooks/ll-precompact.js`); `scripts/smoke-test.sh` is clean since 122a3bb and editable (DEC-0009, session, band 2).
