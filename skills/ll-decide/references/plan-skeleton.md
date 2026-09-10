@@ -61,7 +61,7 @@ never proceeds alone. External block (balance, key, host, limit) = record the ex
 PROGRESS.md and stop without marking done. TDD on by default; exceptions: <UI/layout/config/glue/migration>.
 
 ## §8 Phases
-<pointer to ROADMAP.md, or the 1–3 phases inline: NN — name — REQs — 2–5 success criteria SC-nn>. Current phase: 01.
+<pointer to ROADMAP.md when phases > 3; with ≤3 phases, the same table ROADMAP.md uses, inline: `| phase | name | depends_on | requirements | state |` header, then one row per phase, e.g. `| 01 | <…> | — | REQ-a | PLANNED |`>. Current phase: 01.
 
 ## §9 Environment · keys · materials (names, never values)
 <env var names, key names and where they live, fixtures, design files, credentials recipe by name>.

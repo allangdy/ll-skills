@@ -642,6 +642,23 @@ check "assert auto-dry-run rejeita captura com tool_use Skill" \
   '! auto_assert auto-dry-run "$ROOT/scripts/fixtures/evals-auto/auto-dry-run/pass.txt" "$CAP_SKILL"'
 check "assert auto-empty-repo rejeita captura com tool_use Skill" \
   '! auto_assert auto-empty-repo "$ROOT/scripts/fixtures/evals-auto/auto-empty-repo/pass.txt" "$CAP_SKILL"'
+
+# goal-autonomous: o assert espera docs/GOAL.md já no lugar (um `ll-goal --autonomous` real
+# escreve e comita o arquivo antes de imprimir o texto colável), não só o out.json do harness.
+goal_autonomous_assert() { # goal_autonomous_assert <arquivo de resposta> [captura]
+  local w="$EV/goal-autonomous"
+  rm -rf "$w"; mkdir -p "$w/docs"
+  git -C "$w" init -q -b main
+  printf 'mode: autonomous\nphase: all\n' > "$w/docs/GOAL.md"
+  git -C "$w" add -A && git -C "$w" -c user.email=t@t -c user.name=t commit -q -m "docs: GOAL.md"
+  printf '%s' "${2:-$CAP_CLEAN}" > "$w/out.json"
+  bash "$ROOT/scripts/evals/cases/goal-autonomous/assert.sh" "$w" "$w/out.json" "$1" > "$EV/goal-autonomous.log" 2>&1
+}
+check "assert goal-autonomous aceita a resposta boa" \
+  'goal_autonomous_assert "$ROOT/scripts/fixtures/evals-auto/goal-autonomous/pass.txt"'
+check "assert goal-autonomous rejeita resposta vazia" \
+  '! goal_autonomous_assert "$EV/wrong.txt"'
+echo "evals-auto: goal-autonomous pair asserted"
 fi
 
 # ---------------------------------------------------------------------------

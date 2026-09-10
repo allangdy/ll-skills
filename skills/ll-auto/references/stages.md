@@ -14,7 +14,8 @@ table twice. Every entry answers `{id, status, evidence}` with status `todo`, `h
 | `verify-NN` | `phases/NN/VERIFICATION.md` exists | never | the path, or what is missing |
 | `close` | `docs/DELIVERY.md` exists and the last ROADMAP phase has an epilogue | never | the path, or what is missing |
 
-One `phase-NN` per row of the ROADMAP table; with no ROADMAP, one per inline phase of `PLAN.md` §8;
+One `phase-NN` per row of the ROADMAP table; with no ROADMAP.md, the phases come from the same
+table inline at `PLAN.md` §8, same columns (`| phase | name | depends_on | requirements | state |`);
 with no `PLAN.md`, none. One `verify-NN` per phase row. `close` is always last.
 
 A phase with an epilogue over a board that still shows a milestone `passes: false` is `half`, not
