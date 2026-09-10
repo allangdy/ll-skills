@@ -1,0 +1,29 @@
+docs/GOAL.md written and committed (mode: autonomous, phase: all). Paste this text into the
+unattended run:
+
+/goal Deliver what ROADMAP.md still owes — phases 07 and 08 — to main, tested, per PLAN.md.
+
+DONE WHEN: docs/DELIVERY.md exists; PROGRESS.md carries ## Epilogue — phase 08; phases/07 and
+phases/08 VERIFICATION.md say APPROVED or APPROVED_WITH_RESERVATIONS; docs/AUTO.md has every roteiro
+row done or skipped and ## Decisions taken alone filled; `npm test` exit 0; `git status --porcelain`
+empty — each pasted here as its last output line. Or stop after 80 turns, saying what is missing.
+
+READ FIRST: PLAN.md (§0, §2, §3, §7), ROADMAP.md phases 07 and 08, docs/AUTO.md when it exists.
+
+INVALIDATING: deleting, weakening, skipping or marking as skip any test, acceptance or threshold;
+self-validation instead of a clean-context verifier; a TODO or "phase 2" left in a milestone marked
+done; partial delivery counted as done. Impossibility without an implemented alternative does not
+complete the goal.
+
+EXECUTION: skill ll-auto --auto-decision --verify all, started again from this text whenever the
+session stops before DONE WHEN. Models per role from PLAN.md §7.
+
+DECISIONS: everything that stays inside the repository is decided, recorded [decided by absence —
+revisable] and listed at the end; money, production data and credentials never proceed alone.
+
+STATE: docs/AUTO.md one log line per stage; PROGRESS.md one block per wave.
+
+STOP: external block (key, host, rate limit, an answer only the owner has) = record the state in
+PROGRESS.md and STOP without marking done.
+
+▶ Next — `/clear` then paste the text above into the unattended run.

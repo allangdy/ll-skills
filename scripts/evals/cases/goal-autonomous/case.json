@@ -1,0 +1,8 @@
+{
+  "max_turns": 12,
+  "history": false,
+  "min_pass": 1,
+  "agent": null,
+  "permission_mode": "bypassPermissions",
+  "note": "Shared fixture: scripts/fixtures/project (phase-07 ACTIVE, phase-08 PLANNED). Proves the --autonomous branch of ll-goal: one pasted /goal text for the whole delivery (EXECUTION = ll-auto --auto-decision, no BUDGET), docs/GOAL.md with `mode: autonomous` and `phase: all` committed, nothing asked. max_turns 12: the run reads PLAN.md, ROADMAP.md and PROGRESS.md, calls the ll-auto detect helper, then writes and commits docs/GOAL.md — the skill's `!` preprocessor Bash and the model's own tool calls each add to num_turns."
+}
