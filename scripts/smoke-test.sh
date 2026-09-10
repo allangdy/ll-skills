@@ -16,9 +16,10 @@ while [ $# -gt 0 ]; do
     *) echo "uso: smoke-test.sh [--only <seção>]" >&2; exit 2 ;;
   esac
 done
-# Pré-requisitos: a seção 6 lê o CLAUDE_CONFIG_DIR e o log que a 5 monta, e a 8 desinstala o
-# que a 5 instalou e o preâmbulo que a 6 escreve. --only puxa essas seções antes da pedida.
-prereq() { case "$1" in 6) echo "5" ;; 8) echo "5 6" ;; *) echo "" ;; esac; }
+# Pré-requisitos: a seção 4 usa o $EMPTY que a 2 monta e o $FIX que a 3 monta, a 6 lê o
+# CLAUDE_CONFIG_DIR e o log que a 5 monta, e a 8 desinstala o que a 5 instalou e o preâmbulo que a 6
+# escreve. --only puxa essas seções antes da pedida.
+prereq() { case "$1" in 4) echo "2 3" ;; 6) echo "5" ;; 8) echo "5 6" ;; *) echo "" ;; esac; }
 RUN=""
 [ -z "$ONLY" ] || RUN=" $(prereq "$ONLY") $ONLY "
 section() { [ -z "$ONLY" ] || case "$RUN" in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
@@ -30,6 +31,7 @@ N=0
 check() { N=$((N + 1)); if ! eval "$2"; then echo "FALHOU: $1"; exit 1; fi; }
 
 HELPER="node $ROOT/scripts/ll-tools.js"
+AUTO="node $ROOT/skills/ll-auto/scripts/ll-auto.js"
 region() { awk '/^\/\/ <ll-shared:state>$/,/^\/\/ <\/ll-shared:state>$/' "$1"; }
 
 # ---------------------------------------------------------------------------
@@ -240,15 +242,30 @@ fi
 # 4c. helper ll-auto: detect
 # ---------------------------------------------------------------------------
 if section 4c; then
-AUTO="node $ROOT/skills/ll-auto/scripts/ll-auto.js"
+# ids e status exatos de um detect --json: renomear um status ou perder um estágio reprova
+auto_ids() { node -e 'const o=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log(o.stages.map((s)=>s.id).join(","))' "$1"; }
+auto_status_set() { node -e 'const o=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log([...new Set(o.stages.map((s)=>s.status))].sort().join(","))' "$1"; }
 check "ll-auto detect: fixture project → decide done, 07 half" \
   '$AUTO detect --cwd "$ROOT/scripts/fixtures/project" --json > "$TMP/auto-project.json" \
    && grep -q "\"id\":\"decide\",\"status\":\"done\"" "$TMP/auto-project.json" \
    && grep -q "\"id\":\"phase-07\",\"status\":\"half\"" "$TMP/auto-project.json"'
-check "ll-auto detect: fixture empty → tudo todo" \
+check "ll-auto detect: fixture empty → os 4 estágios exatos, todos todo" \
   '$AUTO detect --cwd "$ROOT/scripts/fixtures/empty" --json > "$TMP/auto-empty.json" \
-   && grep -q "\"stages\":\[{" "$TMP/auto-empty.json" \
-   && ! grep -qE "\"status\":\"(done|half)\"" "$TMP/auto-empty.json"'
+   && [ "$(auto_ids "$TMP/auto-empty.json")" = "research,brainstorm,decide,close" ] \
+   && [ "$(auto_status_set "$TMP/auto-empty.json")" = "todo" ]'
+check "ll-auto detect: sem ROADMAP.md as fases saem da tabela do §8 do PLAN" \
+  '$AUTO detect --cwd "$ROOT/scripts/fixtures/auto-noroadmap" --json > "$TMP/auto-noroadmap.json" \
+   && [ "$(auto_ids "$TMP/auto-noroadmap.json")" = "research,brainstorm,decide,phase-01,phase-02,verify-01,verify-02,close" ] \
+   && grep -q "\"id\":\"phase-01\",\"status\":\"done\"" "$TMP/auto-noroadmap.json" \
+   && grep -q "\"id\":\"phase-02\",\"status\":\"todo\"" "$TMP/auto-noroadmap.json"'
+check "ll-auto detect: DELIVERY.md + epílogo da última fase → close done" \
+  '$AUTO detect --cwd "$ROOT/scripts/fixtures/auto-closed" --json > "$TMP/auto-closed.json" \
+   && grep -q "\"id\":\"close\",\"status\":\"done\",\"evidence\":\"docs/DELIVERY.md + epilogue for phase 02\"" "$TMP/auto-closed.json" \
+   && grep -q "\"id\":\"phase-02\",\"status\":\"done\"" "$TMP/auto-closed.json" \
+   && [ "$(auto_status_set "$TMP/auto-closed.json")" = "done,todo" ]'
+check "ll-auto detect: diretório inexistente → ok:false e exit 0" \
+  '$AUTO detect --cwd /nonexistent --json > "$TMP/auto-nodir.json" 2>/dev/null; [ $? -eq 0 ] \
+   && grep -q "\"ok\":false" "$TMP/auto-nodir.json" && grep -q "not a directory" "$TMP/auto-nodir.json"'
 check "ll-auto detect --json é JSON válido" \
   '$AUTO detect --cwd "$ROOT/scripts/fixtures/project" --json \
    | node -e "JSON.parse(require(\"fs\").readFileSync(0,\"utf8\"))"'
@@ -275,6 +292,17 @@ check "ll-auto roteiro: repo vazio com objetivo → research, brainstorm, decide
      --flags "--research --brainstorm" --json > "$TMP/auto-vazio2.json" \
    && grep -q "\"stage\":\"research\".*\"stage\":\"brainstorm\".*\"stage\":\"decide\".*\"stage\":\"close\"" "$TMP/auto-vazio2.json" \
    && grep -q "\"needs_objective\":false" "$TMP/auto-vazio2.json"'
+check "ll-auto roteiro: --interactive --redo phase-05 --pause-at 8" \
+  '$AUTO roteiro --cwd "$ROOT/scripts/fixtures/project" \
+     --flags "--interactive --redo phase-05 --pause-at 8" --json > "$TMP/auto-redo.json" \
+   && grep -q "\"stage\":\"phase-05\",\"command\":\"ll-implement 05\",\"status\":\"done\"" "$TMP/auto-redo.json" \
+   && ! grep -q "ll-implement 05 --no-talk" "$TMP/auto-redo.json" \
+   && grep -q "\"stage\":\"phase-08\",\"command\":\"ll-implement 08\",\"status\":\"todo\",\"pause_after\":true" "$TMP/auto-redo.json"'
+check "ll-auto roteiro: epílogo que pede ll-verify 01 insere verify-01 sem --verify all" \
+  '$AUTO roteiro --cwd "$ROOT/scripts/fixtures/auto-verify-next" --flags "" --json > "$TMP/auto-vnext.json" \
+   && grep -q "\"stage\":\"phase-01\",\"command\":\"ll-implement 01 --no-talk\".*\"stage\":\"verify-01\",\"command\":\"ll-verify 01\"" "$TMP/auto-vnext.json" \
+   && $AUTO roteiro --cwd "$ROOT/scripts/fixtures/project" --flags "" --json > "$TMP/auto-noverify.json" \
+   && ! grep -q "\"stage\":\"verify-" "$TMP/auto-noverify.json"'
 check "ll-auto next-cmd: o epílogo da fixture aponta ll-implement 8" \
   '[ "$($AUTO next-cmd "$ROOT/scripts/fixtures/project/PROGRESS.md")" = "ll-implement 8" ]'
 check "ll-auto next-cmd: arquivo sem ▶ Next → saída vazia, exit 0" \
@@ -492,7 +520,10 @@ contract_root() { node "$ROOT/scripts/lint-contract.cjs" --rule 6 --root "$1" >/
 contract_fails() { node "$ROOT/scripts/lint-contract.cjs" --rule 6 --root "$1" 2>/dev/null | grep -c "^FAIL 6 " || true; }
 check "contrato 6: next-bad falha"        '! contract_root scripts/fixtures/next-bad'
 # a contagem é fixa: afrouxar uma das formas rejeitadas reprova aqui, não só o exit
-check "contrato 6: next-bad com 4 FAIL"   '[ "$(contract_fails scripts/fixtures/next-bad)" -eq 4 ]'
+check "contrato 6: next-bad com 6 FAIL"   '[ "$(contract_fails scripts/fixtures/next-bad)" -eq 6 ]'
+check "contrato 6: duas skills diferentes num ▶ Next fora de parêntese reprovam" \
+  'node "$ROOT/scripts/lint-contract.cjs" --rule 6 --root scripts/fixtures/next-bad > "$TMP/next-bad.out" 2>/dev/null; \
+   grep -q "lists alternatives outside a parenthetical —ll-bad or ll-nope" "$TMP/next-bad.out"'
 check "contrato 6: next-good passa"       'contract_root scripts/fixtures/next-good'
 check "contrato 6: raiz sem skills falha" '! contract_root scripts/fixtures/empty'
 

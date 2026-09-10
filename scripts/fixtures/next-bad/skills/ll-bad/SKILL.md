@@ -1,6 +1,6 @@
 ---
 name: ll-bad
-description: Fixture for lint-contract rule 6 — three handoff lines that the Next grammar must reject.
+description: Fixture for lint-contract rule 6 — handoff lines that the Next grammar must reject, one break per line.
 argument-hint: "[none]"
 disable-model-invocation: true
 ---
@@ -24,3 +24,7 @@ Right grammar, command that names no skill in this tree:
 Right grammar, but the same skill twice outside a parenthetical:
 
 ▶ Next — /clear, then ll-bad or ll-bad --resume
+
+Same grammar, two different skills to choose between, still outside a parenthetical:
+
+▶ Next — /clear, then ll-bad or ll-nope --resume
