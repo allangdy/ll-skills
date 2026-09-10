@@ -2,9 +2,9 @@
 # Smoke test do ll-skills: gate estático, hooks, helper, instalador, preâmbulo,
 # poda de skills antigas e uninstall. Tudo num CLAUDE_CONFIG_DIR isolado.
 # Uso: smoke-test.sh [--only <seção>]   (sem argumento roda tudo)
-# As seções são os blocos numerados (1, 2, 3, 4, 4b, 4c, 4d, 5..10), lint-orquestrador e
-# goal-autonomo; os blocos numerados montam estado uns para os outros, então --only serve aos
-# que rodam sozinhos (9, 10, lint-orquestrador, goal-autonomo).
+# As seções são os blocos numerados (1, 2, 3, 4, 4b, 4c, 4d, 5..10), lint-orquestrador,
+# goal-autonomo e evals-auto; os blocos numerados montam estado uns para os outros, então --only
+# serve aos que rodam sozinhos (9, 10, lint-orquestrador, goal-autonomo, evals-auto).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
@@ -561,6 +561,36 @@ check "exemplo autônomo entre 500 e 4000 bytes" \
   'n=$(goal_example | wc -c); [ "$n" -ge 500 ] && [ "$n" -le 4000 ]'
 check "goal-template ≤ 150 linhas" \
   '[ "$(wc -l < "$GOAL_TPL")" -le 150 ]'
+fi
+
+# ---------------------------------------------------------------------------
+# evals-auto. os asserts dos casos autônomos provados offline, sem nenhuma chamada paga
+# ---------------------------------------------------------------------------
+if section evals-auto; then
+cd "$ROOT"
+EV="$TMP/evals-auto"
+mkdir -p "$EV"
+# a resposta errada: não carrega nenhuma linha que os asserts exigem
+printf 'I ran nothing and wrote nothing.\n' > "$EV/wrong.txt"
+
+# uma árvore de trabalho limpa por chamada (os asserts leem `git status --porcelain` dela)
+# com a captura mínima: um único elemento result, sem nenhum bloco tool_use.
+auto_assert() { # auto_assert <caso> <arquivo de resposta>
+  local w="$EV/$1"
+  rm -rf "$w"; mkdir -p "$w"
+  git -C "$w" init -q -b main
+  printf '[{"type":"result","subtype":"success","is_error":false,"result":""}]' > "$w/out.json"
+  bash "$ROOT/scripts/evals/cases/$1/assert.sh" "$w" "$w/out.json" "$2" > "$EV/$1.log" 2>&1
+}
+
+check "assert auto-dry-run aceita a resposta boa" \
+  'auto_assert auto-dry-run "$ROOT/scripts/fixtures/evals-auto/auto-dry-run/pass.txt"'
+check "assert auto-dry-run rejeita resposta errada" \
+  '! auto_assert auto-dry-run "$EV/wrong.txt"'
+check "assert auto-empty-repo aceita a resposta boa" \
+  'auto_assert auto-empty-repo "$ROOT/scripts/fixtures/evals-auto/auto-empty-repo/pass.txt"'
+check "assert auto-empty-repo rejeita resposta errada" \
+  '! auto_assert auto-empty-repo "$EV/wrong.txt"'
 fi
 
 echo "smoke test OK — $N checks"
