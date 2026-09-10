@@ -6,7 +6,7 @@ copy of a fixture repository, and scores the answer and the work tree with a she
 
     bash scripts/evals/run.sh --dry-run --all              # print the commands, call nothing
     bash scripts/evals/run.sh --case router-small --reps 1 # one case, one rep
-    bash scripts/evals/run.sh --all                        # twelve cases, three reps
+    bash scripts/evals/run.sh --all                        # thirteen cases, three reps
 
 `--all` | `--case <id>` (repeatable) | `--reps N` (default 3) | `--model <id>` | `--dry-run`.
 Exit 0 when every selected case passed in at least `min_pass` reps (`case.json`, capped at the
@@ -20,11 +20,19 @@ per turn-block, so keep routing caps low. Dry run first, then one cheap case.
 
 ## Autonomous cases
 
-`auto-dry-run` and `auto-empty-repo` run `ll-auto` end to end: ≤ 6 turns and cost cents, like the
-router cases. The prompt is the slash command exactly as the owner types it (`/ll-auto --dry-run`,
-`/ll-auto`), which `claude -p` expands; there is no agent, no fan-out. Their assert scripts are
-proven offline, without calling `claude -p`, by `npm test` (section `evals-auto` in
-`scripts/smoke-test.sh`) against the fixed answers under `scripts/fixtures/evals-auto/<case>/pass.txt`.
+`auto-dry-run`, `auto-empty-repo` and `goal-autonomous` run the unattended path end to end: ≤ 12
+turns and cost cents, like the router cases. The prompt is the slash command exactly as the owner
+types it (`/ll-auto --dry-run`, `/ll-auto`, `/ll-goal --autonomous "Deliver phases 07 and 08"`),
+which `claude -p` expands; there is no agent, no fan-out. `goal-autonomous` scores the pasted `/goal`
+text (`ll-auto --auto-decision`, ≤ 4000 chars) and the committed `docs/GOAL.md` (`mode: autonomous`,
+`phase: all`). Their assert scripts are proven offline, without calling `claude -p`, by `npm test`
+(section `evals-auto` in `scripts/smoke-test.sh`) against the fixed answers under
+`scripts/fixtures/evals-auto/<case>/pass.txt`.
+
+`max_turns` is a budget, not a measurement: the `num_turns` the result reports counts the skill's `!`
+preprocessor Bash calls together with the model's own tool calls, and a run has ended `success` with
+`num_turns 7` under `--max-turns 4`. Pin each cap above the highest count real reps show (`case.json`
+`note`), so the cap only ever cuts a run that really went long.
 
 ## Results — outside the repo
 

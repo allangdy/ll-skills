@@ -1,8 +1,8 @@
 {
-  "max_turns": 4,
+  "max_turns": 10,
   "history": false,
   "min_pass": 1,
   "agent": null,
   "permission_mode": "bypassPermissions",
-  "note": "Own fixture holding only .gitkeep (an empty repository). Proves the empty-repo stop: two exact lines, no question, nothing written."
+  "note": "Own fixture holding only .gitkeep (an empty repository). Proves the empty-repo stop: two exact lines, no question, nothing written. max_turns 10 (B-018): the `num_turns` the result reports counts the skill's `!` preprocessor Bash calls and the model's own tool calls together — real reps of this case reported 3 and 7 while the cap was 4 and the run still ended `success`, so the two numbers are not the same unit. The cap is pinned above the highest count seen, so a rep that really runs long is cut instead of scoring."
 }

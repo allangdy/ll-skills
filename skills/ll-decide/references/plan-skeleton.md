@@ -1,13 +1,11 @@
 # Plan skeleton — PLAN.md, ROADMAP.md, decisions/, PROGRESS.md
 
-Read at project step 7. Templates are literal; text in `<…>` is filled, everything else stays.
-All four land at the repo root — `PLAN.md`, `ROADMAP.md`, `PROGRESS.md`, `decisions/`, alongside
-`BACKLOG.md`, `docs/decide/` and `phases/NN/`. Never under `docs/<project>/`: the hooks and
-`ll-tools.js state` expect the state at the git top, and a displaced tree is reported as
-`git_top ≠ root` and stops `ll-implement`. A root already occupied by a closed round is archived into
-`docs/history/<round-slug>/` first (SKILL.md step 0), with `decisions/` and `BACKLOG.md` left in
-place so the ids continue.
-PLAN.md has no length ceiling — it is the only file where length buys quality — but detail that
+Read at project step 7. Templates are literal; text in `<…>` is filled, everything else stays. All four land at the
+repo root — `PLAN.md`, `ROADMAP.md`, `PROGRESS.md`, `decisions/`, alongside `BACKLOG.md`, `docs/decide/` and
+`phases/NN/`. Never under `docs/<project>/`: the hooks and `ll-tools.js state` expect the state at the git top, and a
+displaced tree is reported as `git_top ≠ root` and stops `ll-implement`. A root already occupied by a closed round is
+archived into `docs/history/<round-slug>/` first (SKILL.md step 0), with `decisions/` and `BACKLOG.md` left in place
+so the ids continue. PLAN.md has no length ceiling — it is the only file where length buys quality — but detail that
 lives elsewhere enters by path, not by copy.
 
 ## PLAN.md
@@ -92,8 +90,7 @@ Success criteria (2–5, observable, "the user can…"): SC-01 <…> · SC-02 <�
 These are the verifier's contract, above whatever the phase plan says.
 Deferred ideas: <…> (the scope of a phase is fixed; new ideas land here, never widen the phase)
 ```
-States: PLANNED · ACTIVE · DONE (docs/history/<delivery>) · BLOCKED. Numbering is continuous for
-the life of the project; after a milestone, done phases collapse into `<details>`.
+States: PLANNED · ACTIVE · DONE (docs/history/<delivery>) · BLOCKED. Numbering is continuous for the life of the project; after a milestone, done phases collapse into `<details>`.
 
 ## decisions/DEC-NNNN-<slug>.md
 ```
@@ -112,9 +109,12 @@ the life of the project; after a milestone, done phases collapse into `<details>
 - superseded_by: — (append `superseded_by: DEC-0090 on <date>, reason: …`; never edit)
 - if decided by absence: [decided by absence — revisable] + the recommendation followed
 ```
-The id is `DEC-` + four digits + `-<slug>`, with no project or round prefix (`DEC-0007-cents-mismatch.md`,
-never `DEC-X-007`); one flat `decisions/` folder per repo, numbering continuous across rounds.
-The helper `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/ll-implement/scripts/ll-tools.js` is used only if it exists — this skill does not ship it; when it is absent, the id is the next number after the highest in the folder; with it, `dec-reserve <n>`. A number is never reused.
+The id is `DEC-` + four digits + `-<slug>`, with no project or round prefix (`DEC-0007-cents-mismatch.md`, never `DEC-X-007`); one flat `decisions/` folder per repo, numbering continuous across rounds. The helper `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/ll-implement/scripts/ll-tools.js` is used only if it exists — this skill does not ship it; when it is absent, the id is the next number after the highest in the folder; with it, `dec-reserve <n>`. A number is never reused.
+
+### `status: WAITING` — what `ll-decide --no-talk` writes instead of asking a band-1 question
+The same file, frozen at the question: `class: QUESTION`, `grounding` naming the owner reference this session could not read, the options table with the recommendation marked, and the two lines below. The recommendation is written, never applied — a WAITING DEC is not a decision.
+- status: WAITING — not asked (`--no-talk`, <date>); band 1: money, irreversible outside the repo, price or promise, scope cut, the number the owner will look at, a recorded rule contradicted by new evidence
+- stop: owner — <what stays blocked until the answer> · PLAN §3 lists the id with decision `— (WAITING)`, `ROADMAP.md` marks the first phase whose work depends on it with `stop: owner` in its section, and the closing report names each file by path. The contract is frozen with these open: the WAITING files, not the skill, are what stop the dependent work.
 
 ## decisions/README.md
 ```
