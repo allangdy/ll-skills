@@ -497,6 +497,14 @@ lint() { # lint <n>: roda uma regra e só imprime a saída quando ela falha
 check "lint 1: frontmatter das skills"  'lint 1'
 check "lint 2: frontmatter dos agentes" 'lint 2'
 check "lint 3: tetos de linhas"         'lint 3'
+printf '[{"unpackedSize":999999999}]' > "$TMP/pack-list-big.json"
+check "lint 3: honra LL_PACK_JSON na forma lista (npm ≤ 11) e reprova no teto sintético" \
+  '! LL_PACK_JSON="$TMP/pack-list-big.json" bash "$ROOT/scripts/lint-prompts.sh" --rule 3 > "$TMP/lint-pack-list.out" 2>&1; \
+   grep -q "unpackedSize 999999999 bytes, ceiling 921600" "$TMP/lint-pack-list.out"'
+printf '{"ll-skills":{"unpackedSize":999999999}}' > "$TMP/pack-object-big.json"
+check "lint 3: honra LL_PACK_JSON na forma objeto (npm 12) e reprova no teto sintético" \
+  '! LL_PACK_JSON="$TMP/pack-object-big.json" bash "$ROOT/scripts/lint-prompts.sh" --rule 3 > "$TMP/lint-pack-object.out" 2>&1; \
+   grep -q "unpackedSize 999999999 bytes, ceiling 921600" "$TMP/lint-pack-object.out"'
 check "lint 4: forma das SKILL.md"      'lint 4'
 check "lint 5: strings proibidas"       'lint 5'
 check "lint 6: cópias idênticas"        'lint 6'
