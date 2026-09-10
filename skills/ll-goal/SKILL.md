@@ -1,7 +1,7 @@
 ---
 name: ll-goal
-description: Writes the unattended-run text for /goal, with one numbered objective, literal proofs, invalidating rules, budget, decisions and a stop rule, saved as a versioned docs/GOAL.md.
-argument-hint: "[phase-number]"
+description: Writes the unattended-run text for /goal, with one numbered objective, literal proofs, invalidating rules, budget, decisions and a stop rule, saved as a versioned docs/GOAL.md; --autonomous covers the whole delivery.
+argument-hint: "[phase-number | --autonomous [\"<objective>\"]]"
 disable-model-invocation: true
 ---
 
@@ -18,7 +18,7 @@ Reply to the owner in Portuguese; docs/GOAL.md is in English.
 
 | File | Role | Mutability |
 | --- | --- | --- |
-| `docs/GOAL.md` | frontmatter (`date`, `plan`, `phase`, `ceiling_usd`, `max_turns`) + the 9-part text | rewritten whole on each run, committed |
+| `docs/GOAL.md` | frontmatter (`date`, `plan`, `phase`, `ceiling_usd` or `mode`, `max_turns`) + the 9-part text | rewritten whole on each run, committed |
 | the text in the conversation | what the owner copies into `/goal` | ≤4,000 chars, no fence, no commentary around it |
 
 The goal is a versioned file. A goal aimed at a published artifact or an untracked path has no
@@ -48,6 +48,24 @@ contract behind it: every path it names is tracked, or the goal is not emitted.
 5. **Write, check, paste.** Write `docs/GOAL.md` with the frontmatter and commit it
    (`docs: goal for phase NN`). Run the 10-line checklist at the end of the template; fix what it
    catches. Then paste the text into the conversation as plain lines, and print the next step.
+
+## Autonomous mode
+
+`--autonomous ["<objective>"]` writes the text for the whole delivery instead of one phase — the
+same five steps, with these differences:
+
+1. Pre-flight reads `PLAN.md` and `ROADMAP.md` at the git top; no phase plan is required, the run
+   writes the ones that are missing. The stages still owed come from
+   `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/ll-auto/scripts/ll-auto.js detect --json` when that
+   helper is installed, and from `ROADMAP.md` plus `PROGRESS.md` when it is not.
+2. Skipped: `--auto-decision` resolves each WAITING decision to its recommended option, and the text
+   says the end-of-run block lists every decision taken alone.
+3. Asks nothing when the invocation carries an objective or `PLAN.md` already holds one.
+4. Assembles the parts from the `## Autonomous variant` section of `references/goal-template.md`:
+   eight parts, no BUDGET, EXECUTION pointing at `ll-auto --auto-decision` until the delivery is
+   closed, and the three extra checklist lines.
+5. `docs/GOAL.md` carries `mode: autonomous` and `phase: all`; the commit message is
+   `docs: goal for the whole delivery`.
 
 ## Completion criterion
 
