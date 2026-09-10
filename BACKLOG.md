@@ -19,3 +19,6 @@
 | B-015 | 03 / d6cf404 | test-gap | a smoke check covers the `{"ok":false}` branch of `ll-auto.js` (`detect --cwd /nonexistent --json` → `"ok":false`) · exit 0 | OPEN |
 | B-016 | 04 / plan | eval-gap | `bash scripts/evals/run.sh --dry-run --case goal-autonomous` exit 0 (renders `ll-goal --autonomous` on a fixture and measures ≤ 4000 chars) | OPEN |
 | B-017 | 04 / 3b6198a | test-gap | a smoke check asserts the autonomous frontmatter rule of `goal-template.md` (`mode: autonomous`, no `ceiling_usd` in the variant section) · exit 0 | OPEN |
+| B-018 | 05 / ac13af4 | eval-gap | `auto-empty-repo` real rep reports `turns 7` under `max_turns 4`: explain the count (preprocessor turns?) and pin the cap · `bash scripts/evals/run.sh --case auto-empty-repo --reps 1` exit 0 with turns ≤ max_turns | OPEN |
+| B-019 | 05 / ac13af4 | test-gap | the offline `evals-auto` capture carries one assistant event so `no_tool_use` is not vacuous; `bash scripts/smoke-test.sh --only evals-auto` exit 0 with a capture that has ≥ 1 assistant event | OPEN |
+| B-020 | 05 / ac13af4 | test-gap | `no_tool_use` in `scripts/evals/lib/assert.sh` fails on a missing `out.json` instead of passing; `bash scripts/evals/cases/auto-dry-run/assert.sh <tree> /nonexistent <pass.txt>` exit 1 | OPEN |

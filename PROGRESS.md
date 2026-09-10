@@ -1,10 +1,12 @@
 # PROGRESS — ll-auto: manual skills, one orchestrator
 
 <!-- ll-state -->
-phase: 04
+phase: 05
 milestones:
-  M1: { passes: true, commit: 3b6198a, accepted_at: 2026-09-10T18:17:30Z }
-  M2: { passes: true, commit: dcea559, accepted_at: 2026-09-10T18:19:43Z }
+  M1: { passes: true, commit: 8e93103, accepted_at: 2026-09-10T18:39:33Z }
+  M2: { passes: true, commit: ed715a9, accepted_at: 2026-09-10T18:39:33Z }
+  M3: { passes: true, commit: ac13af4, accepted_at: 2026-09-10T18:45:03Z }
+  M4: { passes: true, commit: 4519fe9, accepted_at: 2026-09-10T18:47:37Z }
 <!-- /ll-state -->
 
 ## History
@@ -88,6 +90,16 @@ not_verified: nothing for this milestone
 - [2026-09-10T18:17:45Z] board switched to phase 04 (M1 true, M2 false) — the earlier passes M1 had landed on the phase 03 board; phase 03 M1 is 8201453 as recorded in its ### M1 block
 
 - [2026-09-10T18:19:43Z] phase 04: waves done 2/2 — clean-context verification dispatched (slice ae68dce..dcea559)
+
+- [2026-09-10T18:35:50Z] wave 1/3 — the two eval cases and their offline answers (M1, M2)
+
+- [2026-09-10T18:39:33Z] wave 2/3 — offline smoke section evals-auto and the real rep of both cases (M3)
+
+- [2026-09-10T18:45:03Z] wave 3/3 — release 3.0.0: package.json, CHANGELOG dated, evals README (M4)
+
+- [2026-09-10T18:47:00Z] phase 05: waves done 3/3 — clean-context verification dispatched (slice d19dd49..4519fe9)
+
+- [2026-09-10T18:47:37Z] M4: the session's first acceptance run extracted the YAML string without unescaping \\[ — rerun with the YAML value exit=0
 
 ## Epilogue — phase 01 — 2026-09-10
 passed: M1, M2, M3, M4, M5 (5/5) — every skill locked, preamble without a router, README/CHANGELOG updated, router eval cases assert the manual contract, lint and smoke test green in this worktree.
@@ -231,3 +243,50 @@ actions that need you:
 - reinstall so `ll-goal --autonomous` exists in your session: `node bin/install.js`
 milestones passed 2/2 · questions asked 0 / assumptions 5 / band-1 open 0 · amendments 0 · verification: phases/04/VERIFICATION.md APPROVED_WITH_RESERVATIONS
 ▶ Next — /clear, then ll-implement 5
+
+## Phase 05
+### M1 — 2026-09-10 18:42
+built: eval case `auto-dry-run` (case.json, prompt.txt, assert.sh), its offline answer fixture `scripts/fixtures/evals-auto/auto-dry-run/pass.txt` captured from the real helper, and SKILL.md step 0 now says the dry run prints the stage table from `detect` plus the roteiro, then stops.
+commits: 8e93103 feat(M1): eval case auto-dry-run
+commands: M1 acceptance, verbatim → "ok — 7 rule(s), 0 violation(s)" · exit=0 · negative control (a scratch tree holding `docs/AUTO.md`) → "FAIL: the working tree was changed: ?? docs/" exit 1
+deviations: the acceptance writes `out.json`/`fail.txt` inside the scratch work tree, so `assert.sh:18-25` filters out only the two paths handed in as `$OUT_JSON`/`$OUT_TXT`; anything else the run wrote still fails (negative control above)
+questions: none
+backlog: none
+not_verified: never run against a real `claude -p` (M3) · a model that reformats the roteiro into a markdown table is covered only in the "stage and command on one line" shape · smoke section `evals-auto` (M3)
+### M2 — 2026-09-10 15:40
+built: eval case auto-empty-repo (case.json, prompt.txt, assert.sh, fixture/.gitkeep) plus its offline pass.txt fixture, proving the "/ll-auto" empty-repo stop (two exact lines, no question, no path written) both offline and via `--dry-run`.
+commits: ed715a9 feat(M2): eval case auto-empty-repo
+commands: M2 acceptance, verbatim → exit=0 ("ok — 7 rule(s), 0 violation(s)")
+deviations: assert.sh filters git status output by `$(basename "$OUT_JSON")` before checking it is empty (scripts/evals/cases/auto-empty-repo/assert.sh:15-20), same reason as M1
+questions: none
+backlog: none
+not_verified: the real `claude -p` rep (M3) · npm test as a whole
+### M3 — 2026-09-10 15:44
+built: `scripts/smoke-test.sh` gained the standalone section `evals-auto` (4 Portuguese-labelled checks: each auto assert accepts its `scripts/fixtures/evals-auto/<case>/pass.txt` and rejects `I ran nothing and wrote nothing.` against a fresh `git init` scratch tree with a minimal `out.json`), registered in the header comment and selectable with `--only evals-auto`; and both auto cases passed one real `claude -p` rep with the prompts and turn caps as M1/M2 shipped them.
+commits: ac13af4 feat(M3): smoke section evals-auto; real rep of the auto cases
+commands: M3 acceptance, verbatim (executor) → "total cost USD 0.5073 · exit 0" · exit=0 · session rerun → exit=0, `results : /home/greenn/.claude/ll-skills-evals/2026-09-10-1543` (RESULTS.md there), `auto-dry-run rep 1 PASS turns 5`, `auto-empty-repo rep 1 PASS turns 3` · `results : /home/greenn/.claude/ll-skills-evals/2026-09-10-1542` (RESULTS.md at /home/greenn/.claude/ll-skills-evals/2026-09-10-1542/RESULTS.md) · `auto-dry-run rep 1 PASS cost 0.2473 22.7s turns 4` · `auto-empty-repo rep 1 PASS cost 0.2600 19.9s turns 7` · earlier confirming rep (pre-commit) → /home/greenn/.claude/ll-skills-evals/2026-09-10-1541, both PASS · `bash scripts/smoke-test.sh --only evals-auto` → "smoke test OK — 4 checks"
+deviations: none
+questions: none
+backlog: `auto-empty-repo` reported `turns 7` against `max_turns 4` — the cap and the reported turn count do not line up
+not_verified: `npm test` as a whole (session runs it below) · `claude -p` slash-command expansion proven on this CLI version only · reps beyond 1
+### M4 — 2026-09-10 15:52
+built: package.json at 3.0.0 with 12-skill description, CHANGELOG.md dated 2026-09-10 with the auto-eval bullet, scripts/evals/README.md updated to twelve cases plus an "Autonomous cases" paragraph
+commits: 4519fe9 feat(M4): release 3.0.0 — package.json, CHANGELOG, evals README
+commands: M4 acceptance, verbatim → "smoke test OK — 202 checks" · exit=0
+deviations: none
+questions: none
+backlog: none
+not_verified: no git tag or npm publish performed (owner's); the RESULTS.md path was read from PROGRESS.md, not regenerated
+
+## Epilogue — phase 05 — 2026-09-10
+passed: M1, M2, M3, M4 (4/4) — eval cases `auto-dry-run` and `auto-empty-repo` (slash command as the owner types it, offline answers under `scripts/fixtures/evals-auto/`), smoke section `evals-auto` (4 checks), real reps PASS/PASS three times (executor /home/greenn/.claude/ll-skills-evals/2026-09-10-1542/RESULTS.md · session /home/greenn/.claude/ll-skills-evals/2026-09-10-1543/RESULTS.md · verifier /home/greenn/.claude/ll-skills-evals/2026-09-10-1548/RESULTS.md), `ll-auto --dry-run` prints the stage table, package.json 3.0.0 (12 skills), CHANGELOG `## [3.0.0] - 2026-09-10`, evals README twelve cases.
+left: none in this phase. ROADMAP's "to a closed delivery" half of the phase objective is the deferred implement-to-close rep.
+waiting: none.
+new backlog: B-018 turn count vs cap in `auto-empty-repo` · B-019 offline capture with one assistant event · B-020 `no_tool_use` on a missing out.json.
+verification: phases/05/VERIFICATION.md APPROVED — 5/5 VERIFIED, no BLOCKS; not proven: clean-checkout `npm test` (owner's uncommitted hooks, I-09) and any stage transition inside `ll-auto` (both cases assert a stop).
+actions that need you:
+- commit your two hook edits: `git add hooks/ll-state.js hooks/ll-precompact.js && git commit -m "fix(hooks): skip PROGRESS.md under fixtures/ and test dirs"` (or say "pode commitar")
+- reinstall: `node bin/install.js`
+- publish when you want: `git tag v3.0.0 && npm publish` (never done by a session)
+milestones passed 4/4 · questions asked 0 / assumptions 6 / band-1 open 0 · amendments 0 · verification: phases/05/VERIFICATION.md APPROVED
+▶ Next — /clear, then ll-close
