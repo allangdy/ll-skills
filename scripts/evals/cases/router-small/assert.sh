@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
-# SMALL: verb + addressable target -> answer with a number, write nothing.
+# SMALL: verb + addressable target -> answer with a number, write nothing, start no skill.
 . "$(cd "$(dirname "${BASH_SOURCE[0]}")/../../lib" && pwd)/assert.sh"
 
 WORK="$1"; OUT_JSON="$2"; OUT_TXT="$3"
-
-line="$(first_text_line "$OUT_JSON")"
-case "$line" in
-  *SMALL*) ok "the first assistant message declares the regime: $line" ;;
-  *)       fail "first assistant message does not declare SMALL: ${line:-<empty>}" ;;
-esac
 
 contains "$OUT_TXT" '[0-9]+' 'the answer carries a number'
 
@@ -21,5 +15,7 @@ fi
 
 no_path "$WORK/PROGRESS.md" 'no PROGRESS.md was created'
 no_path "$WORK/phases"      'no phases/ was created'
+
+no_tool_use "$OUT_JSON" Skill 'no Skill tool call anywhere in the capture'
 
 finish

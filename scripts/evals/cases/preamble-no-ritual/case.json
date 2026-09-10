@@ -4,5 +4,5 @@
   "min_pass": 2,
   "agent": null,
   "permission_mode": "bypassPermissions",
-  "note": "SMALL forbids the ritual: no spec, no plan, no PROGRESS, no VERIFICATION, no subagent for what fits in three calls."
+  "note": "SMALL forbids the ritual: no spec, no plan, no PROGRESS, no VERIFICATION, no subagent for what fits in three calls, and no skill started on the session's behalf."
 }

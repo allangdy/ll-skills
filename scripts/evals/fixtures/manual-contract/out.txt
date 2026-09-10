@@ -1,0 +1,5 @@
+Comparing authentication providers for the signup flow is a research task, not something I can answer from what is already in the repo. Paste this to start it:
+
+/ll-research compare authentication providers for the signup flow
+
+▶ Next — `/clear` then `/ll-research compare authentication providers for the signup flow`

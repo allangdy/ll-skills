@@ -4,5 +4,5 @@
   "min_pass": 2,
   "agent": null,
   "permission_mode": "acceptEdits",
-  "note": "max_turns 1 keeps the case cheap: the regime line is the first assistant message, read out of the capture, so the run is scored before the skill it names starts spending. Own fixture without PROGRESS.md so the answer measures one signal only: the word pesquise routing to RESEARCH."
+  "note": "max_turns 1 keeps the case cheap: the session names the /ll-research command to paste and starts no skill, read out of the first assistant message before any tool spending. Own fixture without PROGRESS.md so the answer measures one signal only: the word pesquise pointing at /ll-research."
 }

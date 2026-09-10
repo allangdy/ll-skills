@@ -12,4 +12,6 @@ no_path "$WORK/VERIFICATION.md" 'no VERIFICATION.md was created'
 no_path "$WORK/phases"          'no phases/ was created'
 no_path "$WORK/PLAN.md"         'no PLAN.md was created'
 
+no_tool_use "$OUT_JSON" Skill 'no Skill tool call anywhere in the capture'
+
 finish

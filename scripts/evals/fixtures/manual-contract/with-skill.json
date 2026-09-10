@@ -1,0 +1,46 @@
+[
+  {
+    "type": "system",
+    "subtype": "init",
+    "session_id": "manual-contract-fixture-with-skill",
+    "model": "claude-sonnet-5"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "Comparing authentication providers for the signup flow is a research task, not something I can answer from what is already in the repo. Paste this to start it:\n\n/ll-research compare authentication providers for the signup flow\n\n▶ Next — `/clear` then `/ll-research compare authentication providers for the signup flow`"
+        }
+      ]
+    }
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01manualcontract",
+          "name": "Skill",
+          "input": {
+            "skill": "ll-research",
+            "args": "compare authentication providers for the signup flow"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "type": "result",
+    "subtype": "success",
+    "is_error": false,
+    "duration_ms": 2140,
+    "num_turns": 2,
+    "total_cost_usd": 0.0134,
+    "result": "Comparing authentication providers for the signup flow is a research task, not something I can answer from what is already in the repo. Paste this to start it:\n\n/ll-research compare authentication providers for the signup flow\n\n▶ Next — `/clear` then `/ll-research compare authentication providers for the signup flow`"
+  }
+]

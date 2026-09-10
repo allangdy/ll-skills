@@ -4,5 +4,5 @@
   "min_pass": 2,
   "agent": null,
   "permission_mode": "acceptEdits",
-  "note": "Own fixture, deliberately without PROGRESS.md: the RESUME rule fires on the first turn in a repo that has one, and would compete with SMALL."
+  "note": "Own fixture, deliberately without PROGRESS.md: the RESUME rule fires on the first turn in a repo that has one, and would compete with SMALL. The session answers directly, writes nothing and starts no skill."
 }
