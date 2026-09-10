@@ -77,7 +77,7 @@ Entre fases, `/clear`: sessão nova custa menos e erra menos que compactação.
 | `ll-brainstorm` | "tenho uma ideia", "vamos discutir", antes de abrir uma fase | `phases/NN/DECISIONS.md` ou `docs/decide/OPENING.md` |
 | `ll-research` | "pesquise", "compare A e B", restrição não validada; `--market` para mercado e preço | `docs/research-<tema>/` (SUMMARY + evidências + fontes datadas) |
 | `ll-decide` | "escreve o plano", segunda tentativa, ou feedback externo em docx/pdf/xlsx | `PLAN.md` §0–§11, `ROADMAP.md`, `decisions/`, ou `docs/review-<data>.md` |
-| `ll-goal` | antes de uma noite sem ninguém olhando | `docs/GOAL.md` + o texto de 9 partes para `/goal` |
+| `ll-goal` | antes de uma noite sem ninguém olhando; `ll-goal --autonomous ["<objetivo>"]` cobre a entrega inteira | `docs/GOAL.md` + o texto de 9 partes para `/goal`; no modo autônomo, o texto mantém `ll-auto --auto-decision` rodando até a entrega fechar |
 | `ll-implement` | "implementa a fase N", "continua" | a fase entregue, `phases/NN/PLAN.md`, PROGRESS carimbado |
 | `ll-verify` | "confere se terminou de verdade", contrato público, dinheiro, dado de cliente | `VERIFICATION.md` com ledger FRESH/STALE e dois selos |
 | `ll-close` | "fecha", "pode arquivar"; `--milestone` arquiva as fases | `docs/DELIVERY.md`, retrospectiva, ROADMAP colapsado |
@@ -105,6 +105,10 @@ Entre fases, `/clear`: sessão nova custa menos e erra menos que compactação.
 | `--resume` | retoma as flags gravadas em `docs/AUTO.md`, a partir da primeira linha que não é `done` |
 
 Num repositório vazio (sem pesquisa, sem `OPENING.md`, sem `PLAN.md`) e sem objetivo, `ll-auto` não pergunta nada: imprime o comando que completa (`/ll-auto "<objetivo>" [--research] [--brainstorm]`) e para. Toda decisão de dono tomada sozinha ao longo do run (com `--auto-decision`) entra listada no fim, cada uma marcada `[decided by absence — revisable]`.
+
+#### Para rodar sem parar
+
+`ll-goal --autonomous` escreve o texto, você cola em `/goal <texto>`, e o loop do `/goal` reinicia `ll-auto --auto-decision` sempre que a sessão parar antes da entrega; decisões tomadas sozinhas ficam listadas no fim (`[decided by absence — revisable]`); só dinheiro, produção ou dados de cliente param a corrida.
 
 ## Agentes
 

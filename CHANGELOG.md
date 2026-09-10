@@ -9,6 +9,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - **`ll-auto`**: skill que roda o ciclo inteiro a partir do estado em disco — research, brainstorm, decide, fases, verificações, close — seguindo o `SKILL.md` de cada etapa em vigor, com as flags `"<objetivo>"`, `--research`, `--brainstorm`, `--interactive`, `--auto-decision`, `--pause-at <stage|N>`, `--from N`, `--to N`, `--only N`, `--verify all`, `--redo <stage>`, `--dry-run` e `--resume`; escreve `docs/AUTO.md` (objetivo, flags, roteiro, status por etapa) e lista no final toda decisão tomada sozinha, marcada `[decided by absence — revisable]`.
 - Helper `skills/ll-auto/scripts/ll-auto.js` (Node puro, sem dependências, próprio da skill): `detect`, `roteiro`, `next-cmd`, `report`, `auto-md`.
 - `--no-talk` em `ll-decide` e `ll-close`: nenhum bloco de pergunta é enviado; itens de faixa 2/3 tomam a recomendação como `ASM-n [decided by absence — revisable]`, itens de faixa 1 viram decisão `WAITING`.
+- **`ll-goal --autonomous`**: modo que aponta o texto do `/goal` para `ll-auto --auto-decision` até a entrega inteira fechar, em vez de uma fase; sem a parte BUDGET, frontmatter com `mode: autonomous` em vez de `ceiling_usd`.
 
 ### Quebras
 
