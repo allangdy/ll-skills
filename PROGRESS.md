@@ -347,3 +347,9 @@ commits: 53ee836 test(HF-1) · 236a38c feat(HF-1)
 commands: `npm run lint` → "ok — 7 rule(s), 0 violation(s)" · `npm test` → "smoke test OK — 222 checks" · `LL_PACK_JSON=/tmp/pack12.json bash scripts/lint-prompts.sh` exit=0
 deviations: none · questions: none · backlog: none
 not_verified: the GitHub run itself — the tag v3.0.0 is moved to this commit and pushed again to retrigger publish.yml
+### HF-2 — 2026-09-10 19:12
+built: publish.yml confirmation step polls up to 5 min (30 × 10 s) — run 34536013259 published `ll-skills@3.0.0` (provenance signed) but the 60 s window expired before the registry served it.
+commits: b549a0e fix(ci): publish confirmation waits up to 5 minutes for the registry
+commands: yaml parse + greps → exit=0 · `npm view ll-skills version` → 3.0.0 (19:11:41) · `CLAUDE_CONFIG_DIR=<tmp> node package/bin/install.js --yes --no-settings` on the published tarball → "Pronto." VERSION 3.0.0 · `npx -y ll-skills@3.0.0` → same (the first npx attempt seconds after publish failed with "command not found", a cache race; the retry passed)
+deviations: none · questions: none · backlog: none
+not_verified: the widened window on a real run (next release)
