@@ -207,10 +207,25 @@ def rule3():
     if hb > 32768:
         bad.append(("scripts/ll-tools.js", "%d bytes, ceiling 32768" % hb))
     checked += 1
-    out = sh(["npm", "pack", "--dry-run", "--json"]).stdout
-    start = out.find("[")
+    pack_json_override = os.environ.get("LL_PACK_JSON")
+    if pack_json_override:
+        with open(pack_json_override, encoding="utf-8") as fh:
+            out = fh.read()
+    else:
+        out = sh(["npm", "pack", "--dry-run", "--json"]).stdout
+    starts = [i for i in (out.find("["), out.find("{")) if i != -1]
+    start = min(starts) if starts else -1
     try:
-        size = json.loads(out[start:])[0]["unpackedSize"]
+        data = json.loads(out[start:])
+        # npm <= 11 prints a list; npm 12 prints an object keyed by package name.
+        if isinstance(data, list):
+            entry = data[0]
+        elif isinstance(data, dict):
+            pkg_name = json.loads(read("package.json"))["name"]
+            entry = data[pkg_name] if pkg_name in data else next(iter(data.values()))
+        else:
+            raise ValueError("unexpected npm pack --dry-run --json shape")
+        size = entry["unpackedSize"]
     except Exception:
         bad.append(("package.json", "npm pack --dry-run --json did not report unpackedSize"))
     else:
