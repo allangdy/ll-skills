@@ -3,8 +3,8 @@
 # poda de skills antigas e uninstall. Tudo num CLAUDE_CONFIG_DIR isolado.
 # Uso: smoke-test.sh [--only <seção>]   (sem argumento roda tudo)
 # As seções são os blocos numerados (1, 2, 3, 4, 4b, 4c, 4d, 5..10), lint-orquestrador,
-# goal-autonomo e evals-auto; os blocos numerados montam estado uns para os outros, então --only
-# serve aos que rodam sozinhos (9, 10, lint-orquestrador, goal-autonomo, evals-auto).
+# goal-autonomo, evals-auto, lint-scratch e no-talk; os blocos numerados montam estado uns para
+# os outros, então --only puxa o pré-requisito de quem não roda sozinho (ver prereq abaixo).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
@@ -484,7 +484,10 @@ check "contrato 7: instalador × pacote"                        'contract 7'
 
 # regra 6 contra as fixtures da gramática do ▶ Next (bad falha, good passa, raiz sem skills falha)
 contract_root() { node "$ROOT/scripts/lint-contract.cjs" --rule 6 --root "$1" >/dev/null 2>&1; }
+contract_fails() { node "$ROOT/scripts/lint-contract.cjs" --rule 6 --root "$1" 2>/dev/null | grep -c "^FAIL 6 " || true; }
 check "contrato 6: next-bad falha"        '! contract_root scripts/fixtures/next-bad'
+# a contagem é fixa: afrouxar uma das formas rejeitadas reprova aqui, não só o exit
+check "contrato 6: next-bad com 4 FAIL"   '[ "$(contract_fails scripts/fixtures/next-bad)" -eq 4 ]'
 check "contrato 6: next-good passa"       'contract_root scripts/fixtures/next-good'
 check "contrato 6: raiz sem skills falha" '! contract_root scripts/fixtures/empty'
 
@@ -573,15 +576,22 @@ mkdir -p "$EV"
 # a resposta errada: não carrega nenhuma linha que os asserts exigem
 printf 'I ran nothing and wrote nothing.\n' > "$EV/wrong.txt"
 
+# a captura limpa: um evento assistant de texto (para o no_tool_use varrer algo) e o result.
+CAP_CLEAN='[{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"Rodei o dry run e nao escrevi nada."}]}},{"type":"result","subtype":"success","is_error":false,"result":""}]'
+# a mesma captura com uma chamada de skill por tool_use: o assert tem de reprovar.
+CAP_SKILL='[{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t1","name":"Skill","input":{"command":"ll-implement"}}]}},{"type":"result","subtype":"success","is_error":false,"result":""}]'
+
 # uma árvore de trabalho limpa por chamada (os asserts leem `git status --porcelain` dela)
-# com a captura mínima: um único elemento result, sem nenhum bloco tool_use.
-auto_assert() { # auto_assert <caso> <arquivo de resposta>
+auto_assert() { # auto_assert <caso> <arquivo de resposta> [captura]
   local w="$EV/$1"
   rm -rf "$w"; mkdir -p "$w"
   git -C "$w" init -q -b main
-  printf '[{"type":"result","subtype":"success","is_error":false,"result":""}]' > "$w/out.json"
+  printf '%s' "${3:-$CAP_CLEAN}" > "$w/out.json"
   bash "$ROOT/scripts/evals/cases/$1/assert.sh" "$w" "$w/out.json" "$2" > "$EV/$1.log" 2>&1
 }
+
+check "a captura offline tem ao menos um evento assistant" \
+  'node -e "const a=JSON.parse(process.argv[1]);process.exit(a.filter(e=>e.type===\"assistant\").length?0:1)" "$CAP_CLEAN"'
 
 check "assert auto-dry-run aceita a resposta boa" \
   'auto_assert auto-dry-run "$ROOT/scripts/fixtures/evals-auto/auto-dry-run/pass.txt"'
@@ -591,6 +601,58 @@ check "assert auto-empty-repo aceita a resposta boa" \
   'auto_assert auto-empty-repo "$ROOT/scripts/fixtures/evals-auto/auto-empty-repo/pass.txt"'
 check "assert auto-empty-repo rejeita resposta errada" \
   '! auto_assert auto-empty-repo "$EV/wrong.txt"'
+# o no_tool_use não é vazio: uma captura com tool_use Skill reprova o mesmo assert
+check "assert auto-dry-run rejeita captura com tool_use Skill" \
+  '! auto_assert auto-dry-run "$ROOT/scripts/fixtures/evals-auto/auto-dry-run/pass.txt" "$CAP_SKILL"'
+check "assert auto-empty-repo rejeita captura com tool_use Skill" \
+  '! auto_assert auto-empty-repo "$ROOT/scripts/fixtures/evals-auto/auto-empty-repo/pass.txt" "$CAP_SKILL"'
+fi
+
+# ---------------------------------------------------------------------------
+# lint-scratch. a regra 1 do lint-prompts contra SKILL.md ruins, numa árvore de rascunho
+# ---------------------------------------------------------------------------
+if section lint-scratch; then
+cd "$ROOT"
+LSCR="$TMP/lint-bad-scratch"
+mkdir -p "$LSCR"
+git ls-files -z | xargs -0 cp --parents -t "$LSCR"
+git -C "$LSCR" init -q
+mkdir -p "$LSCR/skills/ll-fake"
+# lint_bad <caso> <trecho esperado no FAIL>: planta a fixture como skills/ll-fake e roda a regra 1
+lint_bad() {
+  cp "$ROOT/scripts/fixtures/lint-bad/$1/SKILL.md" "$LSCR/skills/ll-fake/SKILL.md"
+  git -C "$LSCR" add -A
+  bash "$LSCR/scripts/lint-prompts.sh" --rule 1 > "$TMP/lint-bad-$1.out" 2>&1 && return 1
+  grep -q "^FAIL 1 .*skills/ll-fake/SKILL.md: $2" "$TMP/lint-bad-$1.out"
+}
+check "lint 1: descrição dobrada (>) em mais de uma linha reprova" \
+  'lint_bad folded-description "description is not one line"'
+check "lint 1: disable-model-invocation: false reprova" \
+  'lint_bad model-invocation-false "disable-model-invocation: true missing"'
+# sem a fixture a mesma árvore passa: o FAIL vem da SKILL.md ruim, não da cópia
+rm -rf "$LSCR/skills/ll-fake"
+git -C "$LSCR" add -A
+check "lint 1: a árvore de rascunho sem a fixture passa" \
+  'bash "$LSCR/scripts/lint-prompts.sh" --rule 1 > "$TMP/lint-bad-clean.out" 2>&1'
+fi
+
+# ---------------------------------------------------------------------------
+# no-talk. o modo silencioso continua declarado no argument-hint de quem o implementa
+# ---------------------------------------------------------------------------
+if section no-talk; then
+cd "$ROOT"
+hint_has_no_talk() { # hint_has_no_talk <SKILL.md>
+  sed -n '/^argument-hint:/p' "$1" > "$TMP/hint.txt"
+  grep -q -- "--no-talk" "$TMP/hint.txt"
+}
+for s in ll-decide ll-close; do
+  check "argument-hint de $s declara --no-talk" 'hint_has_no_talk "skills/'"$s"'/SKILL.md"'
+done
+# a checagem não é vazia: sem a flag na linha, ela reprova
+NT="$TMP/no-talk"
+mkdir -p "$NT"
+sed 's/ \[--no-talk\]//' skills/ll-decide/SKILL.md > "$NT/SKILL.md"
+check "a checagem reprova quando --no-talk some do hint" '! hint_has_no_talk "$NT/SKILL.md"'
 fi
 
 echo "smoke test OK — $N checks"

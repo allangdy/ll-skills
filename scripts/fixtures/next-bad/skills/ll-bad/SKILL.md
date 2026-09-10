@@ -20,3 +20,7 @@ Bare command, no `/clear, then` opening:
 Right grammar, command that names no skill in this tree:
 
 ▶ Next — /clear, then ll-nope
+
+Right grammar, but the same skill twice outside a parenthetical:
+
+▶ Next — /clear, then ll-bad or ll-bad --resume
