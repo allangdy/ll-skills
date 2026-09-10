@@ -92,14 +92,19 @@ function phaseRows(md) {
   }
   return rows;
 }
-// Without ROADMAP.md the rows live in PLAN §8; without PLAN.md there are no phases at all.
+// Without ROADMAP.md the rows live in the `## §8 Phases` table of PLAN.md (`| NN | name | … |`,
+// a header cell `phase` and, when there is one, a `state` cell); without PLAN.md there are no
+// phases at all. The §8 slice runs to the next `## ` heading — `$` under /m ends at every line.
 function rowsOf(root) {
   const rm = readText(J(root, 'ROADMAP.md'));
   if (rm !== null) return phaseRows(rm);
   const plan = readText(J(root, 'PLAN.md'));
   if (plan === null) return [];
-  const m = /^##\s*§?8[^\n]*\n([\s\S]*?)(?=\n##\s|$)/m.exec(plan);
-  return m ? phaseRows(m[1]) : [];
+  const h = /^##\s*§?8\b[^\n]*\n/m.exec(plan);
+  if (!h) return [];
+  const rest = plan.slice(h.index + h[0].length);
+  const next = rest.search(/^##\s/m);
+  return phaseRows(next < 0 ? rest : rest.slice(0, next));
 }
 
 // --- detect ----------------------------------------------------------------------------------
