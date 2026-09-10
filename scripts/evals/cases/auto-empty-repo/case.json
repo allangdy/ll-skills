@@ -1,0 +1,8 @@
+{
+  "max_turns": 4,
+  "history": false,
+  "min_pass": 1,
+  "agent": null,
+  "permission_mode": "bypassPermissions",
+  "note": "Own fixture holding only .gitkeep (an empty repository). Proves the empty-repo stop: two exact lines, no question, nothing written."
+}

@@ -1,0 +1,2 @@
+Nada encontrado neste repositório: sem pesquisa, OPENING.md nem PLAN.md.
+/ll-auto "<objetivo>" [--research] [--brainstorm]
