@@ -290,3 +290,13 @@ actions that need you:
 - publish when you want: `git tag v3.0.0 && npm publish` (never done by a session)
 milestones passed 4/4 · questions asked 0 / assumptions 6 / band-1 open 0 · amendments 0 · verification: phases/05/VERIFICATION.md APPROVED
 ▶ Next — /clear, then ll-close
+
+## Epilogue — delivery 3.0.0 — 2026-09-10
+gate: phases/05/VERIFICATION.md APPROVED (newest by mtime); reservations of phases 01, 02 and 04 accepted in decisions/DEC-0012-reservations-accepted.md — the clean-checkout one closed by 1efc0c9 and proven (`npm test` → `smoke test OK — 202 checks` on a `git archive HEAD` tree).
+passed: phases 01–05, milestones 19/19; 33 commits on 2026-09-10 (feat 19 · test 5 · docs 7 · fix 1 · chore 1; test/feat 0.26); questions asked 1 / assumptions 27 / band-1 open 0.
+left: implement-to-close rep of `ll-auto` on a bigger fixture and `--interactive` beyond brainstorm (ROADMAP deferred); B-016 goal-autonomous eval.
+waiting: none.
+backlog: reconciled — B-001 closed; B-002..B-020 open, every row with a command; `backlog-reconcile --run` parsed none of the conditions (prose around the command) — rule added to the project CLAUDE.md, rows to be tightened at the next close.
+written: docs/DELIVERY.md · docs/RETROSPECTIVE-2026-09-10.md · CLAUDE.md (project, new: current state + 2 rules) · ROADMAP rows 01–05 marked DONE.
+actions that need you: `git tag v3.0.0 && npm publish` when you want the team on 3.0.0 (never done by a session).
+▶ Next — /clear, then ll-close --milestone 3.0.0

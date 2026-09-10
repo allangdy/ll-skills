@@ -2,11 +2,11 @@
 
 | phase | name | depends_on | requirements | state |
 |---|---|---|---|---|
-| 01 | lock and unroute | — | REQ-lock, REQ-unroute | ACTIVE |
-| 02 | next contract and --no-talk | 01 | REQ-next, REQ-notalk | PLANNED |
-| 03 | ll-auto skill | 02 | REQ-auto | PLANNED |
-| 04 | ll-goal autonomous mode | 03 | REQ-goal | PLANNED |
-| 05 | end-to-end eval | 04 | REQ-e2e | PLANNED |
+| 01 | lock and unroute | — | REQ-lock, REQ-unroute | DONE |
+| 02 | next contract and --no-talk | 01 | REQ-next, REQ-notalk | DONE |
+| 03 | ll-auto skill | 02 | REQ-auto | DONE |
+| 04 | ll-goal autonomous mode | 03 | REQ-goal | DONE |
+| 05 | end-to-end eval | 04 | REQ-e2e | DONE |
 
 ## Phase 01 — lock and unroute
 Objective: no ll skill can be started by the model, and the global preamble stops routing requests to skills.

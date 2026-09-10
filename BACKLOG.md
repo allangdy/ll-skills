@@ -14,7 +14,7 @@
 | B-010 | 03 / 8201453 | test-gap | a fixture with docs/DELIVERY.md and the last-phase epilogue makes `ll-auto.js detect --json` report `close: done` | OPEN |
 | B-011 | 03 / 3549e7b | test-gap | `node skills/ll-auto/scripts/ll-auto.js roteiro --cwd scripts/fixtures/project --flags "--interactive --redo phase-05 --pause-at 8" --json` asserted in the smoke test: `ll-implement 05` without `--no-talk`, `pause_after:true` on phase-08 | OPEN |
 | B-012 | 03 / 3549e7b | test-gap | a fixture whose epilogue names `ll-verify NN` makes `roteiro` insert `verify-NN` without `--verify all` | OPEN |
-| B-013 | 03 / c309e5d | test-gap | `for s in 5 6 7 8; do bash scripts/smoke-test.sh --only $s || exit 1; done` exit 0 (sections that share state run alone) | OPEN |
+| B-013 | 03 / c309e5d | test-gap | `for s in 5 6 7 8; do bash scripts/smoke-test.sh --only $s; done` — every section exits 0 (sections that share state run alone) | OPEN |
 | B-014 | 03 / d6cf404 | test-gap | `bash scripts/smoke-test.sh --only 4c` asserts the exact stage ids and statuses of `detect --json` on `scripts/fixtures/empty` (a renamed status or a dropped stage fails) · exit 0 | OPEN |
 | B-015 | 03 / d6cf404 | test-gap | a smoke check covers the `{"ok":false}` branch of `ll-auto.js` (`detect --cwd /nonexistent --json` → `"ok":false`) · exit 0 | OPEN |
 | B-016 | 04 / plan | eval-gap | `bash scripts/evals/run.sh --dry-run --case goal-autonomous` exit 0 (renders `ll-goal --autonomous` on a fixture and measures ≤ 4000 chars) | OPEN |
