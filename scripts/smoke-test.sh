@@ -209,6 +209,22 @@ check "spot-check do topo acha a raiz deslocada" \
   'grep -q "\"verdict\":\"pass\"" "$TMP/nest-top-spot.json"'
 
 # ---------------------------------------------------------------------------
+# 4c. helper ll-auto: detect
+# ---------------------------------------------------------------------------
+AUTO="node $ROOT/skills/ll-auto/scripts/ll-auto.js"
+check "ll-auto detect: fixture project → decide done, 07 half" \
+  '$AUTO detect --cwd "$ROOT/scripts/fixtures/project" --json > "$TMP/auto-project.json" \
+   && grep -q "\"id\":\"decide\",\"status\":\"done\"" "$TMP/auto-project.json" \
+   && grep -q "\"id\":\"phase-07\",\"status\":\"half\"" "$TMP/auto-project.json"'
+check "ll-auto detect: fixture empty → tudo todo" \
+  '$AUTO detect --cwd "$ROOT/scripts/fixtures/empty" --json > "$TMP/auto-empty.json" \
+   && grep -q "\"stages\":\[{" "$TMP/auto-empty.json" \
+   && ! grep -qE "\"status\":\"(done|half)\"" "$TMP/auto-empty.json"'
+check "ll-auto detect --json é JSON válido" \
+  '$AUTO detect --cwd "$ROOT/scripts/fixtures/project" --json \
+   | node -e "JSON.parse(require(\"fs\").readFileSync(0,\"utf8\"))"'
+
+# ---------------------------------------------------------------------------
 # 5. instalador
 # ---------------------------------------------------------------------------
 export CLAUDE_CONFIG_DIR="$TMP/cfg" XDG_CACHE_HOME="$TMP/cache"
@@ -234,7 +250,7 @@ echo '{"version":"0.0.1","files":{"skills/ll-antiga/SKILL.md":"a","skills/alheia
 
 node bin/install.js < /dev/null > "$TMP/install1.log"
 
-check "11 skills ll-* instaladas"     '[ "$(ls "$CLAUDE_CONFIG_DIR/skills" | grep -c "^ll-")" -eq 11 ]'
+check "12 skills ll-* instaladas"     '[ "$(ls "$CLAUDE_CONFIG_DIR/skills" | grep -c "^ll-")" -eq 12 ]'
 for s in ll-brainstorm ll-research ll-decide ll-goal ll-implement ll-verify ll-close ll-resume ll-refine ll-oncall ll-update; do
   check "skill $s instalada"          '[ -f "$CLAUDE_CONFIG_DIR/skills/'"$s"'/SKILL.md" ]'
 done
