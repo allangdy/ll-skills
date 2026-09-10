@@ -6,7 +6,13 @@
 WORK="$1"; OUT_JSON="$2"; OUT_TXT="$3"
 
 contains "$OUT_TXT" '/goal'                   'the answer carries the /goal text to paste'
-contains "$OUT_TXT" 'll-auto --auto-decision' 'EXECUTION runs the delivery with ll-auto --auto-decision'
+# EXECUTION carries `ll-auto` with `--auto-decision`; the objective and `--verify all` may sit
+# between them and the text wraps, so the answer is read flattened.
+if tr '\n' ' ' < "$OUT_TXT" 2>/dev/null | grep -Eq 'll-auto.{0,80}--auto-decision'; then
+  ok 'EXECUTION runs the delivery with ll-auto --auto-decision'
+else
+  fail 'EXECUTION runs the delivery with ll-auto --auto-decision'
+fi
 
 # The pasted block is what the owner copies: from the /goal line to the `▶ Next` line, or to the
 # end when there is none. The goal text is a pointer, never a copy of PLAN.md: it stays small.

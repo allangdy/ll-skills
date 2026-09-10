@@ -1,8 +1,8 @@
 {
-  "max_turns": 12,
+  "max_turns": 20,
   "history": false,
   "min_pass": 1,
   "agent": null,
   "permission_mode": "bypassPermissions",
-  "note": "Shared fixture: scripts/fixtures/project (phase-07 ACTIVE, phase-08 PLANNED). Proves the --autonomous branch of ll-goal: one pasted /goal text for the whole delivery (EXECUTION = ll-auto --auto-decision, no BUDGET), docs/GOAL.md with `mode: autonomous` and `phase: all` committed, nothing asked. max_turns 12: the run reads PLAN.md, ROADMAP.md and PROGRESS.md, calls the ll-auto detect helper, then writes and commits docs/GOAL.md — the skill's `!` preprocessor Bash and the model's own tool calls each add to num_turns."
+  "note": "Own fixture, not the shared scripts/fixtures/project: a healthy repo with PLAN.md, ROADMAP.md (07 and 08 PLANNED), a consistent PROGRESS.md board, no phases/NN/PLAN.md yet and `npm test` exit 0. The shared fixture is broken on purpose (plan-lint verdict fail, milestones marked passes: true with no commit, no test runner) and ll-goal step 1 is right to stop there — `a plan that fails there does not become a goal` — so it can never prove the autonomous branch. Proves: one pasted /goal text for the whole delivery with EXECUTION on ll-auto --auto-decision, docs/GOAL.md with `mode: autonomous` and `phase: all` committed, nothing asked and no skill started. max_turns 20 (B-018 rule: above the highest count real reps show — 17 here): the run reads PLAN/ROADMAP/PROGRESS, calls the ll-auto detect helper, writes and commits docs/GOAL.md, and the reported num_turns counts the skill's `!` preprocessor Bash calls together with the model's own tool calls."
 }
