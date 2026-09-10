@@ -5,3 +5,4 @@ node_modules/
 # Local notes — never published
 pesquisa-local/
 .claude/settings.local.json
+.claude/agent-memory/
