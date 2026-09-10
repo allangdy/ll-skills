@@ -163,6 +163,133 @@ function detect(root) {
   return { ok: true, root, stages };
 }
 
+// --- next-cmd --------------------------------------------------------------------------------
+// The handoff grammar of lint-contract rule 6: `▶ Next — /clear, then <cmd> (alternatives)`.
+// Backticks are decoration; one trailing parenthetical is dropped. The last line in the file wins.
+function nextCmdOf(txt) {
+  let out = '';
+  for (const line of String(txt || '').split('\n')) {
+    const m = /▶ Next\s*—(.*)$/.exec(line);
+    if (!m) continue;
+    const hand = m[1].replace(/`/g, '').trim();
+    const o = /^\/clear\s*,\s*then\s+(.*)$/.exec(hand);
+    if (o) out = o[1].replace(/\([^()]*\)\s*$/, '').trim();
+  }
+  return out;
+}
+// The slice of PROGRESS.md owned by phase NN's epilogue; the whole file when it has none.
+function epilogueText(root, id) {
+  const txt = readText(J(root, 'PROGRESS.md')) || '';
+  const lines = txt.split('\n');
+  let start = -1;
+  for (let i = 0; i < lines.length; i++) {
+    const h = /^## Epilogue — phase (\S+)/.exec(lines[i]);
+    if (h && nn(h[1]) === id) start = i;
+  }
+  if (start < 0) return txt;
+  let end = lines.length;
+  for (let i = start + 1; i < lines.length; i++) if (/^## /.test(lines[i])) { end = i; break; }
+  return lines.slice(start, end).join('\n');
+}
+
+// --- roteiro ---------------------------------------------------------------------------------
+const FLAG_ONE = { '--research': 'research', '--brainstorm': 'brainstorm', '--interactive': 'interactive',
+  '--auto-decision': 'auto_decision', '--dry-run': 'dry_run', '--resume': 'resume' };
+const FLAG_VAL = { '--pause-at': 'pause_at', '--redo': 'redo', '--from': 'from', '--to': 'to',
+  '--only': 'only', '--verify': 'verify' };
+// A stage reference in --pause-at / --redo: an id, a bare phase number, or `phase 7`.
+function stageId(x) {
+  const s = String(x || '').trim();
+  if (/^\d{1,3}$/.test(s)) return 'phase-' + nn(s);
+  const m = /^(phase|verify)[\s-]*(\d{1,3})$/.exec(s);
+  return m ? m[1] + '-' + nn(m[2]) : s;
+}
+function parseFlags(str) {
+  const f = { pause_at: [], redo: [], from: null, to: null, only: null, verify: null };
+  for (const k of Object.values(FLAG_ONE)) f[k] = false;
+  const t = String(str || '').trim().split(/\s+/).filter(Boolean);
+  for (let i = 0; i < t.length; i++) {
+    if (FLAG_ONE[t[i]]) { f[FLAG_ONE[t[i]]] = true; continue; }
+    const k = FLAG_VAL[t[i]];
+    if (!k) continue;
+    const v = i + 1 < t.length && !/^--/.test(t[i + 1]) ? t[++i] : null;
+    if (k === 'pause_at' || k === 'redo') { if (v !== null) f[k].push(v); } else f[k] = v;
+  }
+  if (f.only !== null) { f.from = f.only; f.to = f.only; } // --only N implies from = to = N
+  return f;
+}
+const num = (x) => Number(String(x).replace(/[^\d.]/g, '')) || 0;
+const talk = (interactive) => (interactive ? '' : ' --no-talk'); // --interactive drops --no-talk
+
+function roteiro(root, flagStr, objective) {
+  const d = detect(root);
+  const f = parseFlags(flagStr);
+  const st = {};
+  for (const s of d.stages) st[s.id] = s;
+  const redo = new Set(f.redo.map(stageId));
+  const pause = new Set(f.pause_at.map(stageId));
+  const obj = String(objective || '').trim();
+  // Empty repository per D-03-06: no research, no OPENING.md, no PLAN.md.
+  const bare = st.research.status === 'todo' && st.brainstorm.status === 'todo' && !exists(J(root, 'PLAN.md'));
+  if (bare && !obj) return { ok: true, root, needs_objective: true, roteiro: [] };
+  const out = [];
+  const want = (id) => redo.has(id) || !st[id] || st[id].status !== 'done';
+  const push = (id, command) => out.push({ stage: id, command,
+    status: st[id] ? st[id].status : 'todo', pause_after: pause.has(id) });
+  if (f.research && want('research')) push('research', 'll-research "' + (obj || '<objective>') + '"');
+  if (f.brainstorm && want('brainstorm')) push('brainstorm', 'll-brainstorm project' + talk(f.interactive));
+  if (want('decide')) push('decide', 'll-decide project --no-talk');
+  const rows = rowsOf(root);
+  const pend = rows.filter((r) => want('phase-' + r.nn));
+  const inRange = (r) => (f.from === null || num(r.nn) >= num(f.from))
+    && (f.to === null || num(r.nn) <= num(f.to));
+  const kept = pend.filter(inRange);
+  const half = (r) => st['phase-' + r.nn].status === 'half';
+  for (const r of kept.filter(half).concat(kept.filter((r) => !half(r)))) { // a half phase resumes first
+    push('phase-' + r.nn, 'll-implement ' + r.nn + talk(f.interactive));
+    const asked = new RegExp('^ll-verify\\s+0*' + num(r.nn) + '$').test(nextCmdOf(epilogueText(root, r.nn)));
+    if ((f.verify === 'all' || asked) && want('verify-' + r.nn)) push('verify-' + r.nn, 'll-verify ' + r.nn);
+  }
+  // Close only when the roteiro covers every phase still open: --only, --from or --to cut it out.
+  if (f.only === null && kept.length === pend.length && want('close')) push('close', 'll-close --no-talk');
+  return { ok: true, root, needs_objective: false, roteiro: out };
+}
+
+// --- report ----------------------------------------------------------------------------------
+const MARK = '[decided by absence — revisable]';
+function report(root) {
+  const dir = J(root, 'decisions'), out = [];
+  for (const name of ls(dir)) {
+    if (!/\.md$/.test(name)) continue;
+    const lines = (readText(J(dir, name)) || '').split('\n');
+    const i = lines.findIndex((l) => l.indexOf(MARK) >= 0);
+    if (i < 0) continue;
+    const h = lines.find((l) => /^#\s+/.test(l)) || '';
+    out.push({ file: 'decisions/' + name, title: h.replace(/^#\s+/, '').trim(), line: i + 1 });
+  }
+  return { ok: true, root, decisions: out };
+}
+
+// --- auto-md ---------------------------------------------------------------------------------
+// The docs/AUTO.md body of D-03-07: objective, flags, the roteiro table, then two empty sections.
+function autoMd(root, objective, flagStr) {
+  const ev = {};
+  for (const s of detect(root).stages) ev[s.id] = s.evidence;
+  const r = roteiro(root, flagStr, objective);
+  const L = ['# AUTO — autonomous run', '',
+    '## Objective', '', String(objective || '').trim() || '<objective>', '',
+    '## Flags', '', String(flagStr || '').trim() || '(none)', '',
+    '## Roteiro', '', '| # | stage | command | status | evidence |', '|---|---|---|---|---|'];
+  r.roteiro.forEach((e, i) => L.push('| ' + (i + 1) + ' | ' + e.stage + ' | ' + e.command + ' | '
+    + e.status + ' | ' + (ev[e.stage] || '—') + ' |'));
+  if (!r.roteiro.length) {
+    L.push('| — | — | — | — | ' + (r.needs_objective ? 'no objective given' : 'nothing left to run') + ' |');
+  }
+  L.push('', '## Decisions taken alone', '', '(filled at the end of the run)', '',
+    '## Log', '', '(one dated line per stage transition)');
+  return { ok: true, root, markdown: L.join('\n') };
+}
+
 // --- cli -------------------------------------------------------------------------------------
 function parseArgv(argv) {
   const flags = {}, pos = [];
@@ -181,8 +308,22 @@ function rootOf(a) {
   if (!isDir(r)) throw new Error('not a directory: ' + r);
   return r;
 }
-const C = { detect: (a) => detect(rootOf(a)) };
-const FMT = { detect: (r) => r.stages.map((s) => s.id.padEnd(12) + ' ' + s.status.padEnd(5) + ' ' + s.evidence).join('\n') };
+const C = {
+  detect: (a) => detect(rootOf(a)),
+  roteiro: (a) => roteiro(rootOf(a), a.flags.flags, a.flags.objective),
+  'next-cmd': (a) => ({ ok: true, command: nextCmdOf(readText(path.resolve(a.pos[0] || ''))) }),
+  report: (a) => report(rootOf(a)),
+  'auto-md': (a) => autoMd(rootOf(a), a.flags.objective, a.flags.flags),
+};
+const FMT = {
+  detect: (r) => r.stages.map((s) => s.id.padEnd(12) + ' ' + s.status.padEnd(5) + ' ' + s.evidence).join('\n'),
+  roteiro: (r) => (r.needs_objective ? 'needs_objective'
+    : r.roteiro.map((e, i) => (i + 1) + '. ' + e.stage.padEnd(12) + ' ' + e.command
+      + (e.pause_after ? '  [pause]' : '')).join('\n')),
+  'next-cmd': (r) => r.command,
+  report: (r) => r.decisions.map((d) => d.file + ':' + d.line + '  ' + d.title).join('\n'),
+  'auto-md': (r) => r.markdown,
+};
 
 function main() {
   const argv = process.argv.slice(2), cmd = argv[0];

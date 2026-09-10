@@ -258,7 +258,7 @@ check "ll-auto auto-md: as cinco seções, o objetivo e as flags" \
    && grep -q "^## Objective" "$TMP/auto-md.txt" && grep -q "^## Flags" "$TMP/auto-md.txt" \
    && grep -q "^## Roteiro" "$TMP/auto-md.txt" && grep -q "^## Decisions taken alone" "$TMP/auto-md.txt" \
    && grep -q "^## Log" "$TMP/auto-md.txt" \
-   && grep -q "^um objetivo$" "$TMP/auto-md.txt" && grep -q "^\-\-only 8$" "$TMP/auto-md.txt" \
+   && grep -q "^um objetivo$" "$TMP/auto-md.txt" && grep -q -e "^--only 8$" "$TMP/auto-md.txt" \
    && grep -q "^| # | stage | command | status | evidence |$" "$TMP/auto-md.txt" \
    && grep -q "^| 1 | phase-08 | ll-implement 08 --no-talk | todo |" "$TMP/auto-md.txt"'
 
