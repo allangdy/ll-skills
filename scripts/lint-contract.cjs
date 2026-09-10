@@ -352,7 +352,9 @@ function handoffFails(tail, wrapped) {
     if (!cmd.slice('/goal'.length).trim()) fails.push('names /goal with no text after it');
   } else if (!/^<[^<>]+>$/.test(cmd)) {
     if (!/^ll-[a-z]+(?:-[a-z]+)*(?:\s+[^`()]*)?$/.test(cmd)) fails.push(`names no command —${cut(cmd)}`);
-    else if (matches(/\bll-[a-z]+(?:-[a-z]+)*\b/g, cmd).length > 1) {
+    // Every mention counts, not the distinct ones: `ll-x or ll-x --resume` still
+    // hands the reader two commands to choose between, outside a parenthetical.
+    else if ((cmd.match(/\bll-[a-z]+(?:-[a-z]+)*\b/g) || []).length > 1) {
       fails.push(`lists alternatives outside a parenthetical —${cut(cmd)}`);
     }
   }

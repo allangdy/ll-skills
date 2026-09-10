@@ -16,7 +16,12 @@ while [ $# -gt 0 ]; do
     *) echo "uso: smoke-test.sh [--only <seção>]" >&2; exit 2 ;;
   esac
 done
-section() { [ -z "$ONLY" ] || [ "$ONLY" = "$1" ]; }
+# Pré-requisitos: a seção 6 lê o CLAUDE_CONFIG_DIR e o log que a 5 monta, e a 8 desinstala o
+# que a 5 instalou e o preâmbulo que a 6 escreve. --only puxa essas seções antes da pedida.
+prereq() { case "$1" in 6) echo "5" ;; 8) echo "5 6" ;; *) echo "" ;; esac; }
+RUN=""
+[ -z "$ONLY" ] || RUN=" $(prereq "$ONLY") $ONLY "
+section() { [ -z "$ONLY" ] || case "$RUN" in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
