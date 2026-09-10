@@ -12,7 +12,7 @@ const { execFileSync } = require('child_process');
 // (skipping node_modules/.git/dist/build/vendor and docs/history).
 function stateRoot(cwd) {
   if (fs.existsSync(path.join(cwd, 'PROGRESS.md'))) return cwd;
-  const skip = new Set(['node_modules', '.git', 'dist', 'build', 'vendor']);
+  const skip = new Set(['node_modules', '.git', 'dist', 'build', 'vendor', 'fixtures', 'fixture', 'test', 'tests']);
   const found = [];
   const walk = (dir, depth) => {
     if (depth > 3 || found.length > 1) return;
