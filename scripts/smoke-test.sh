@@ -385,6 +385,12 @@ check "contrato 5: arquivos de estado nas tabelas de entregáveis" 'contract 5'
 check "contrato 6: alvos do ▶ Next existem"                    'contract 6'
 check "contrato 7: instalador × pacote"                        'contract 7'
 
+# regra 6 contra as fixtures da gramática do ▶ Next (bad falha, good passa, raiz sem skills falha)
+contract_root() { node "$ROOT/scripts/lint-contract.cjs" --rule 6 --root "$1" >/dev/null 2>&1; }
+check "contrato 6: next-bad falha"        '! contract_root scripts/fixtures/next-bad'
+check "contrato 6: next-good passa"       'contract_root scripts/fixtures/next-good'
+check "contrato 6: raiz sem skills falha" '! contract_root scripts/fixtures/empty'
+
 # --- optional private word list (never shipped): LL_FORBIDDEN_FILE=<path> enables the check
 if [ -n "${LL_FORBIDDEN_FILE:-}" ] && [ -f "$LL_FORBIDDEN_FILE" ]; then
   check "no private terms in tracked files" '! git ls-files | grep -v "^\.gitignore$" | xargs grep -n -i -w -E -f "$LL_FORBIDDEN_FILE" 2>/dev/null | grep -q .'
