@@ -2,9 +2,9 @@
 # Smoke test do ll-skills: gate estático, hooks, helper, instalador, preâmbulo,
 # poda de skills antigas e uninstall. Tudo num CLAUDE_CONFIG_DIR isolado.
 # Uso: smoke-test.sh [--only <seção>]   (sem argumento roda tudo)
-# As seções são os blocos numerados (1, 2, 3, 4, 4b, 4c, 4d, 5..10) e lint-orquestrador;
-# os blocos numerados montam estado uns para os outros, então --only serve aos que rodam
-# sozinhos (9, 10, lint-orquestrador).
+# As seções são os blocos numerados (1, 2, 3, 4, 4b, 4c, 4d, 5..10), lint-orquestrador e
+# goal-autonomo; os blocos numerados montam estado uns para os outros, então --only serve aos
+# que rodam sozinhos (9, 10, lint-orquestrador, goal-autonomo).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
@@ -541,6 +541,26 @@ check "orquestrador: regra 5 reprova a linha /ll- em outra skill" \
   '! lint_scr 5 && grep -q "^FAIL 5 .*skills/ll-fake/SKILL.md: line .* invokes a skill as a command" "$TMP/scr-rule5.out"'
 check "orquestrador: regras 1 e 5 passam na árvore real (com ll-auto)" \
   'lint_real 1 && lint_real 5'
+fi
+
+# ---------------------------------------------------------------------------
+# goal-autonomo. o modo --autonomous do ll-goal: hint, template e exemplo
+# ---------------------------------------------------------------------------
+if section goal-autonomo; then
+cd "$ROOT"
+GOAL_SKILL="skills/ll-goal/SKILL.md"
+GOAL_TPL="skills/ll-goal/references/goal-template.md"
+# primeiro bloco cercado sob "## Autonomous example", sem as cercas
+goal_example() { awk '/^## Autonomous example$/{f=1;next} f&&/^```/{if(b){exit}b=1;next} f&&b' "$GOAL_TPL"; }
+
+check "ll-goal argument-hint aceita --autonomous" \
+  'sed -n "/^argument-hint:/p" "$GOAL_SKILL" | grep -q -- "--autonomous"'
+check "goal-template cita ll-auto --auto-decision" \
+  '[ "$(grep -c "ll-auto --auto-decision" "$GOAL_TPL")" -ge 1 ]'
+check "exemplo autônomo entre 500 e 4000 bytes" \
+  'n=$(goal_example | wc -c); [ "$n" -ge 500 ] && [ "$n" -le 4000 ]'
+check "goal-template ≤ 150 linhas" \
+  '[ "$(wc -l < "$GOAL_TPL")" -le 150 ]'
 fi
 
 echo "smoke test OK — $N checks"
