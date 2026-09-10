@@ -1,12 +1,10 @@
 # PROGRESS — ll-auto: manual skills, one orchestrator
 
 <!-- ll-state -->
-phase: 03
+phase: 04
 milestones:
-  M1: { passes: true, commit: 8201453, accepted_at: 2026-09-10T17:11:17Z }
-  M2: { passes: true, commit: 3549e7b, accepted_at: 2026-09-10T17:17:56Z }
-  M3: { passes: true, commit: c309e5d, accepted_at: 2026-09-10T17:26:03Z }
-  M4: { passes: true, commit: d6cf404, accepted_at: 2026-09-10T17:31:49Z }
+  M1: { passes: true, commit: 3b6198a, accepted_at: 2026-09-10T18:17:30Z }
+  M2: { passes: true, commit: dcea559, accepted_at: 2026-09-10T18:19:43Z }
 <!-- /ll-state -->
 
 ## History
@@ -82,6 +80,14 @@ not_verified: nothing for this milestone
 - [compaction 2026-09-10T17:26:03Z · auto · HEAD c309e5d] re-read phases/03/PLAN.md and the milestone board before continuing.
 
 - [2026-09-10T17:31:49Z] phase 03: waves done 4/4 — clean-context verification dispatched (slice 1773a63..d6cf404)
+
+- [2026-09-10T18:10:56Z] wave 1/2 — the autonomous variant, the mode in SKILL.md, the smoke section (M1)
+
+- [2026-09-10T18:17:31Z] wave 2/2 — README and CHANGELOG for the autonomous mode (M2)
+
+- [2026-09-10T18:17:45Z] board switched to phase 04 (M1 true, M2 false) — the earlier passes M1 had landed on the phase 03 board; phase 03 M1 is 8201453 as recorded in its ### M1 block
+
+- [2026-09-10T18:19:43Z] phase 04: waves done 2/2 — clean-context verification dispatched (slice ae68dce..dcea559)
 
 ## Epilogue — phase 01 — 2026-09-10
 passed: M1, M2, M3, M4, M5 (5/5) — every skill locked, preamble without a router, README/CHANGELOG updated, router eval cases assert the manual contract, lint and smoke test green in this worktree.
@@ -195,3 +201,33 @@ actions that need you:
 - reinstall so `/ll-auto` exists in your session: `node bin/install.js`
 milestones passed 4/4 · questions asked 0 / assumptions 8 / band-1 open 0 · amendments 0 · verification: phases/03/VERIFICATION.md APPROVED
 ▶ Next — /clear, then ll-implement 4
+
+## Phase 04
+### M1 — 2026-09-10 15:40
+built: `ll-goal --autonomous ["<objective>"]` exists as a documented mode — SKILL.md gains `## Autonomous mode` (5 differences: pre-flight on PLAN.md+ROADMAP.md at the git top, stages from `ll-auto.js detect --json`, step 2 skipped, the variant of the template, `mode: autonomous` + commit `docs: goal for the whole delivery`), goal-template.md gains `## Autonomous variant` (five-field frontmatter without `ceiling_usd`, the eight parts, EXECUTION at `ll-auto --auto-decision`) plus `## Autonomous example` (1,489-byte text rendered for scripts/fixtures/project) and checklist lines 11-13, and smoke-test.sh gains the standalone section `goal-autonomo` with 4 checks
+commits: 09c9441 test(M1): smoke section goal-autonomo proves the --autonomous mode is missing · 3b6198a feat(M1): ll-goal --autonomous — the variant in the template and the mode in SKILL.md
+commands: [red, before feat] bash scripts/smoke-test.sh --only goal-autonomo → "FALHOU: ll-goal argument-hint aceita --autonomous" exit=1 · [M1 acceptance, after last commit] → "ok — 7 rule(s), 0 violation(s)" exit=0 (smoke last line: "smoke test OK — 4 checks") · npm test → "smoke test OK — 198 checks" exit=0
+deviations: the variant's frontmatter is one prose line (five fields, no `ceiling_usd`) instead of a second fenced yaml block — the 150-line ceiling (file now 147 lines); Deliverables row for `docs/GOAL.md` reads `ceiling_usd` or `mode` so the table stays true in both modes (skills/ll-goal/SKILL.md:21)
+questions: none
+backlog: none
+not_verified: no session ever emitted the text (deferred eval case B-016) · clean-checkout lint/test (Errata G-2, I-09) — run in this worktree only
+### M2 — 2026-09-10 16:05
+built: README.md's `ll-goal` row now names `ll-goal --autonomous ["<objetivo>"]` and a new "Para rodar sem parar" subsection under "Fluxo autônomo" explains the loop (`ll-goal --autonomous` writes the text, `/goal <texto>` keeps restarting `ll-auto --auto-decision` until delivery, decisions listed at the end); CHANGELOG.md's `### Adicionado` gains one bullet for `ll-goal --autonomous`
+commits: dcea559 feat(M2): ll-goal --autonomous documented — README, CHANGELOG
+commands: npm run lint && npm test && grep -q -- 'll-goal --autonomous' README.md && grep -q -- '--autonomous' CHANGELOG.md → "smoke test OK — 198 checks" exit=0
+deviations: none
+questions: none
+backlog: none
+not_verified: none
+
+## Epilogue — phase 04 — 2026-09-10
+passed: M1, M2 (2/2) — `ll-goal --autonomous ["<objective>"]`: the `## Autonomous mode` section in SKILL.md, the `## Autonomous variant` and `## Autonomous example` in goal-template.md (EXECUTION at `ll-auto --auto-decision`, no BUDGET, `mode: autonomous`), smoke section `goal-autonomo` (4 checks), README "Para rodar sem parar", CHANGELOG bullet.
+left: none.
+waiting: none.
+new backlog: B-016 eval case `goal-autonomous` · B-017 smoke check for the variant frontmatter rule.
+verification: phases/04/VERIFICATION.md APPROVED_WITH_RESERVATIONS — 3/3 criteria VERIFIED, 1 NOT_VERIFIABLE (clean-checkout `npm test`, blocked by the owner's uncommitted hooks, same as phases 01–03); the 4,000-char cap is measured on the static example (1,489 bytes), never on an emission.
+actions that need you:
+- commit your two hook edits: `git add hooks/ll-state.js hooks/ll-precompact.js && git commit -m "fix(hooks): skip PROGRESS.md under fixtures/ and test dirs"` (or say "pode commitar")
+- reinstall so `ll-goal --autonomous` exists in your session: `node bin/install.js`
+milestones passed 2/2 · questions asked 0 / assumptions 5 / band-1 open 0 · amendments 0 · verification: phases/04/VERIFICATION.md APPROVED_WITH_RESERVATIONS
+▶ Next — /clear, then ll-implement 5

@@ -17,3 +17,5 @@
 | B-013 | 03 / c309e5d | test-gap | `for s in 5 6 7 8; do bash scripts/smoke-test.sh --only $s || exit 1; done` exit 0 (sections that share state run alone) | OPEN |
 | B-014 | 03 / d6cf404 | test-gap | `bash scripts/smoke-test.sh --only 4c` asserts the exact stage ids and statuses of `detect --json` on `scripts/fixtures/empty` (a renamed status or a dropped stage fails) · exit 0 | OPEN |
 | B-015 | 03 / d6cf404 | test-gap | a smoke check covers the `{"ok":false}` branch of `ll-auto.js` (`detect --cwd /nonexistent --json` → `"ok":false`) · exit 0 | OPEN |
+| B-016 | 04 / plan | eval-gap | `bash scripts/evals/run.sh --dry-run --case goal-autonomous` exit 0 (renders `ll-goal --autonomous` on a fixture and measures ≤ 4000 chars) | OPEN |
+| B-017 | 04 / 3b6198a | test-gap | a smoke check asserts the autonomous frontmatter rule of `goal-template.md` (`mode: autonomous`, no `ceiling_usd` in the variant section) · exit 0 | OPEN |
