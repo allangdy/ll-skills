@@ -1,7 +1,8 @@
 ---
 name: ll-resume
-description: Reconstructs where a project stands in a fixed reading order and answers with a briefing of at most 20 lines — where we are, what changed since the owner last took part, what it cost, what is blocked, what waits on him, and the next command. Use when it is the first turn in a repo that has PROGRESS.md, or when the owner asks "Como está o status e qual o próximo passo?", "Qual o estado atual?", "O que tenho pra decidir?", "onde paramos?", "what is the status", "where did we stop", "what do I have to decide" — the RESUME regime. It does not write anything; for closing a phase and recording the delivery use ll-close.
+description: Reconstructs where a project stands in a fixed reading order and answers with a briefing of at most 20 lines - state, cost, blockers, what waits on the owner and the next command. It writes no file.
 argument-hint: "[--decisions]"
+disable-model-invocation: true
 ---
 
 # Resume

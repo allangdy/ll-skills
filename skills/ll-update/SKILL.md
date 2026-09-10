@@ -1,6 +1,6 @@
 ---
 name: ll-update
-description: Updates the installed ll-skills package to the latest published version — reads the installed and published versions, shows the CHANGELOG entries between them before touching anything, asks once, runs the installer and reports which skills changed. Use when the owner says "atualiza o ll-skills", "atualizar as skills", "tem versão nova do ll-skills?", or when the session warning says "ll-skills desatualizado (instalado X, disponível Y) — rode /ll-update". It installs nothing else — every mutation goes through the package installer, and no project file is touched.
+description: Updates the installed ll-skills package to the latest published version, showing the CHANGELOG entries between the two, asking once, running the installer and reporting which skills changed.
 argument-hint: "[--no-preamble]"
 disable-model-invocation: true
 ---

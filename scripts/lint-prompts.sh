@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Deterministic lint over the prompt texts: skill and agent frontmatter, line
-# ceilings, section shape, forbidden strings, identical copies, language and an
-# optional private word list. One line per rule; exit 1 on any FAIL.
+# Deterministic lint over the prompt texts: skill frontmatter (every skill locked
+# with disable-model-invocation: true and a plain one-line description, 60-300
+# chars, no trigger phrase), agent frontmatter, line ceilings and the preamble
+# without a router, section shape, forbidden strings, identical copies, language
+# and an optional private word list. One line per rule; exit 1 on any FAIL.
 # Usage: lint-prompts.sh [--rule N]   (no flag runs every rule)
 set -euo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -23,7 +25,8 @@ EXCEPT_LANGUAGE_GLOB = ["scripts/evals/cases/*/prompt.txt"]  # owner-shaped inpu
 
 FORBIDDEN = ["MUST", "CRITICAL", "verify carefully", "as discussed", "IMPORTANT:"]
 ALLOWED_TOOLS = "Bash(${CLAUDE_SKILL_DIR}/scripts/ll-tools.js *)"
-NO_INVOCATION = ["ll-update", "ll-close", "ll-goal"]
+# Strings the global preamble must not carry: they route a request to a skill.
+PREAMBLE_FORBIDDEN = ["Route every request", "One word from the owner"]
 PT = re.compile(r"[ãõçáéíóúâêô"
                 r"ÃÕÇÁÉÍÓÚÂÊÔ]")
 
@@ -127,21 +130,21 @@ def rule1():
         if fm.get("name") != name:
             bad.append((f, "name is %r, directory is %r" % (fm.get("name"), name)))
         desc = str(fm.get("description", ""))
-        if not 200 <= len(desc) <= 1024:
-            bad.append((f, "description is %d chars, expected 200-1024" % len(desc)))
+        if not 60 <= len(desc) <= 300:
+            bad.append((f, "description is %d chars, expected 60-300" % len(desc)))
         first = desc.split(" ")[0] if desc else ""
         if not re.fullmatch(r"[A-Z][a-z]+s", first):
             bad.append((f, "description starts with %r, expected a third-person verb" % first))
-        if "Use when" not in desc:
-            bad.append((f, "description has no \"Use when\""))
+        if "Use when" in desc:
+            bad.append((f, "description carries a trigger phrase (\"Use when\")"))
+        if "\n" in desc.strip():
+            bad.append((f, "description is not one line"))
         if not str(fm.get("argument-hint", "")).strip():
             bad.append((f, "argument-hint missing"))
         if "allowed-tools" in fm and str(fm["allowed-tools"]) != ALLOWED_TOOLS:
             bad.append((f, "allowed-tools is %r" % str(fm["allowed-tools"])))
         declared = "disable-model-invocation" in fm and truthy(fm["disable-model-invocation"])
-        if declared and name not in NO_INVOCATION:
-            bad.append((f, "disable-model-invocation set outside %s" % ", ".join(NO_INVOCATION)))
-        if not declared and name in NO_INVOCATION:
+        if not declared:
             bad.append((f, "disable-model-invocation: true missing"))
         for key in ("model", "effort", "context"):
             if key in fm:
@@ -181,9 +184,15 @@ def rule3():
         if n > cap:
             bad.append((f, "%d lines, ceiling %d" % (n, cap)))
     checked += 1
-    n = len(read("assets/preamble.md").split("\n")) - 1
-    if n != 70:
-        bad.append(("assets/preamble.md", "%d lines, expected exactly 70" % n))
+    preamble = read("assets/preamble.md")
+    n = len(preamble.split("\n")) - 1
+    if n > 70:
+        bad.append(("assets/preamble.md", "%d lines, ceiling 70" % n))
+    checked += 1
+    routing = [w for w in PREAMBLE_FORBIDDEN if w in preamble]
+    if routing:
+        bad.append(("assets/preamble.md",
+                    "routes to a skill: contains %s" % ", ".join(repr(w) for w in routing)))
     checked += 1
     helper = read("scripts/ll-tools.js")
     hn = len(helper.split("\n")) - 1

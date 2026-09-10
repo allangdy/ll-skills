@@ -1,6 +1,6 @@
 ---
 name: ll-goal
-description: Writes the `/goal` text that carries a phase to delivery with nobody watching — one objective with a number, literal proofs, the fixed invalidating rules, execution, budget, decisions and stop rule — and saves it as docs/GOAL.md, versioned. Use when the owner says "goal", "me dá o texto do goal", "roda de noite até entregar", at the end of an ll-decide project run, or before a phase that will run unattended. The owner pastes the output into `/goal` in a new session; to write the plan the goal points at, use ll-decide.
+description: Writes the unattended-run text for /goal, with one numbered objective, literal proofs, invalidating rules, budget, decisions and a stop rule, saved as a versioned docs/GOAL.md.
 argument-hint: "[phase-number]"
 disable-model-invocation: true
 ---

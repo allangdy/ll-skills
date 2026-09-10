@@ -1,7 +1,8 @@
 ---
 name: ll-implement
-description: "Runs one phase end to end in a single invocation — a skippable one-screen conversation, code scouting, a phase plan the session writes, one adversarial review, TDD waves with one executor per milestone and atomic commits, clean-context verification against the ROADMAP criteria, and an epilogue with the next command. Use when the request is \"implementa a fase N\", \"continua\", \"roda a fase\", when phases/NN/PLAN.md has a milestone with `passes: false`, or when the /goal text cites this skill. Without a project PLAN.md contract it stops and points to `ll-decide`; the phase conversation is skipped when `ll-brainstorm` already wrote phases/NN/DECISIONS.md. To audit a closed delivery, use `ll-verify`; to archive it, `ll-close`."
+description: Runs one phase end to end, from code scouting and a phase plan through TDD waves with one executor per milestone and atomic commits, to clean-context verification against the ROADMAP criteria and an epilogue.
 argument-hint: "[phase-number] [--no-talk] [--wave N]"
+disable-model-invocation: true
 allowed-tools: Bash(${CLAUDE_SKILL_DIR}/scripts/ll-tools.js *)
 ---
 

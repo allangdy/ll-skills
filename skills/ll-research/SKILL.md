@@ -1,7 +1,8 @@
 ---
 name: ll-research
-description: Researches a topic with clean-context fronts and web search, delivering `docs/research-<topic>/` in two layers — a SUMMARY.md that separates what to apply from what only the owner can decide and what gates it, plus the per-front evidence trail and a dated, liveness-checked source list. Use when the request is "pesquise", "faça uma pesquisa profunda", "compare A e B", "veja se alguém já resolveu", "docs oficiais de…", "research X", "compare A vs B", "check if anyone already solved this", or when a declared constraint has not been validated by whoever decides. For a market, competitor, pricing or sizing question add `--market`; to turn the findings into a plan, the next command is `ll-decide project`.
+description: Researches a topic with clean-context fronts and web search, delivering a SUMMARY.md that separates what to apply from what only the owner can decide, plus the evidence trail and a dated source list.
 argument-hint: <topic> [--market] [--constraints "…"]
+disable-model-invocation: true
 ---
 
 # Research

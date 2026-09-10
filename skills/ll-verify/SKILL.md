@@ -1,7 +1,8 @@
 ---
 name: ll-verify
-description: Audits a finished phase or delivery in clean context — three layers (mechanical, contract, integrity) that never saw the implementation reasoning, a per-criterion ledger with file:line and FRESH/STALE hashes, and a VERIFICATION.md carrying a verdict, two seals and the blocks. Use when the request is "verifica a entrega", "audita isso", "confere se terminou de verdade", "revisa a implementação", when the /goal text cites this skill, at the end of a phase that touches a public contract, money or customer data, and before and after a push that deploys. Findings are findings — the session decides what to fix; to close the delivery, write DELIVERY.md and archive, use ll-close.
+description: Audits a finished phase or delivery in clean context, in three layers that never saw the implementation reasoning, and writes VERIFICATION.md with a per-criterion ledger, a verdict and two seals.
 argument-hint: "[phase-number] [--external] [--criterion SC-nn]"
+disable-model-invocation: true
 allowed-tools: Bash(${CLAUDE_SKILL_DIR}/scripts/ll-tools.js *)
 ---
 

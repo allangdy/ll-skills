@@ -1,7 +1,8 @@
 ---
 name: ll-decide
-description: Turns a request into a contract that survives without the owner — project mode runs a five-question premise gate, a "back from the future" premortem with clean-context narrators, a disarm pass, a decision room (docs/decide/OPTIONS.html) and an interview in batteries, then writes PLAN.md §0–§11, ROADMAP.md, decisions/ and an empty PROGRESS.md; feedback mode ingests external material (docx/pdf/xlsx/images) forensically, anchors every item in the code, checks its claims, triages by impact, arbitrates competing copy blind and writes docs/review-<date>.md plus the team's .xlsx. Use when the request is "escreva o plano", "vamos desenhar", "segunda tentativa", a new folder, a LARGE-regime request, or in English "write the plan", "let's design it" (project); or pasted .docx/.pdf/.xlsx/image paths with "analise a revisão", "processa o feedback", "vê o que o time sugeriu", "process the review" (feedback). For an open-ended idea start with `ll-brainstorm`; for research first, `ll-research`.
+description: Turns a request into a contract that survives without the owner, writing PLAN.md, ROADMAP.md, decisions/ and an empty PROGRESS.md in project mode, or a dated review file from external feedback in feedback mode.
 argument-hint: "[project | feedback] [--measure]"
+disable-model-invocation: true
 ---
 
 # Decide

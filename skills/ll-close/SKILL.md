@@ -1,6 +1,6 @@
 ---
 name: ll-close
-description: Closes a delivery or a milestone — reconciles the backlog against executable conditions, writes docs/DELIVERY.md for the manager, stamps the epilogue with phase-stats, produces a retrospective, promotes the lessons that became permanent rules to project memory and CLAUDE.md, and asks for one block of ratification. Use when the request is "fecha", "fecha a fase", "pode arquivar", "encerra isso", "fecha o milestone", or at the end of a /goal; `--milestone` archives the phases, collapses the ROADMAP and updates the project's current state. It refuses to close without an approved VERIFICATION.md; for the verification itself use ll-verify.
+description: Closes a phase or a delivery, reconciling the backlog against executable conditions, writing docs/DELIVERY.md, stamping the epilogue, recording the retrospective and asking for one block of ratification.
 argument-hint: "[--milestone <name>]"
 disable-model-invocation: true
 allowed-tools: Bash(${CLAUDE_SKILL_DIR}/scripts/ll-tools.js *)

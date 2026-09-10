@@ -1,7 +1,8 @@
 ---
 name: ll-brainstorm
-description: "Opens a phase, a project or a loose idea by deciding in front of the owner instead of asking — scouts the repo, then shows one map (A: what Claude decides, each item with its repo analog at file:line; B: at most 4 calls only the owner can make, batched once; C: deferred) and ends with phases/NN/DECISIONS.md or docs/decide/OPENING.md plus the next command. Use when the owner says \"vamos discutir\", \"tenho uma ideia\", \"não sei ainda\", \"me ajuda a pensar\", \"brainstorm\", \"antes de começar a fase X\", \"abrir projeto novo\", \"li esse documento / áudio / transcrição, o que fazemos com isso\", \"a tentativa anterior não deu certo\" — or in English \"let's discuss\", \"I have an idea\", \"help me think\", \"before we start phase X\", \"new project\", \"the previous attempt failed\". Not for an already-specified request or a plan ready for adversarial pressure (both go to `ll-decide`), nor for a market question (`ll-research --market`)."
+description: Opens a phase, a project or a loose idea by deciding in front of the owner instead of asking, and writes the opening map to phases/NN/DECISIONS.md or docs/decide/OPENING.md with the next command.
 argument-hint: "[phase-number | project | chat] [--no-talk]"
+disable-model-invocation: true
 ---
 
 # Brainstorm

@@ -1,7 +1,8 @@
 ---
 name: ll-oncall
-description: Runs a session that holds a role instead of a task — writes the `## Federation` contract into the project CLAUDE.md, resolves peers by prefix before every send, answers in the 4-field DONE/EVIDENCE/REFERENCE/PENDING block, and keeps a numbered request log; `watch` turns a vigil into a 5-element brief with a baseline and a degradation rule, `ops` runs a capability pre-flight and a pre-deploy that exercises the exact operation. Use when the request is "Você é o agente responsável por…", when the session was opened as `claude -n <role>`, when it is "a cada 1h verifique…", "vigie…", "monitore…", or when the action is a deploy, apply, cutover, IP change, credential, "avisa a infra", "peça para o agente de infra" — the OPS regime. For planning work, a spec or a roadmap use ll-decide; for a refinement round on a running product use ll-refine.
+description: Runs a session that holds a role instead of a task, writing the Federation contract into the project CLAUDE.md and keeping a numbered request log; watch builds a vigil brief, ops runs a deploy pre-flight.
 argument-hint: "[role <name> | watch [<slug>] | ops]"
+disable-model-invocation: true
 ---
 
 # On call

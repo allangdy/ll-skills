@@ -1,7 +1,8 @@
 ---
 name: ll-refine
-description: Runs one refinement round on a product that already runs — a production review by ll-reviewer, an impact-ordered decision battery, sliced work with a per-coder file allowlist, a deterministic gate that only blocks new errors, and the round recorded in PROGRESS.md; in `visual` mode it drives the reference → calibrated gate → clean-context validator → area-owner loop until the verdict is FIEL. Use when the product is already running and the request is "melhorar as telas", "refino", "rodada", "fiel ao protótipo", "valide visualmente", "outra rodada", "improve the screens", "make it match the prototype" — the REFINE regime. External written feedback (docx, pdf, spreadsheet) is ingested by ll-decide in feedback mode, not here; to audit a finished delivery use ll-verify.
+description: Runs one refinement round on a product already in production, from a review and an impact-ordered decision battery to sliced work with a per-coder file allowlist and a gate that blocks only new errors.
 argument-hint: "[product | visual] [--round N]"
+disable-model-invocation: true
 ---
 
 # Refine
