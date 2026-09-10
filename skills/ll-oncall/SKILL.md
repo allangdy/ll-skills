@@ -114,7 +114,7 @@ delivery answered in 4 fields to the peer and to the owner; `docs/REQUESTS.md` c
 entries with their responses; a `watch` with brief, baseline and probe committed; an `ops` with its
 pre-flight output pasted.
 
-`▶ Next — /clear then ll-resume` in a new session of the same role, or the command the round names.
+`▶ Next — /clear, then ll-resume (in a new session of the same role, or the command the round names)`
 
 ## References
 

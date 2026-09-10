@@ -124,7 +124,7 @@ Write the file, print the score in three lines and the next command. Nothing is 
 Closed. <k> locked by me (<r> revisable), <j> answered by you (<c> against the recommendation),
 <m> deferred. Questions asked <j> / assumptions <a> / band-1 open 0.   (printed even when <j> = 0)
 → phases/NN/DECISIONS.md
-▶ Next — `/clear` then `ll-implement NN`   (or "adjust X" if something is wrong)
+▶ Next — /clear, then ll-implement NN (or "adjust X" if something is wrong)
 ```
 
 File skeleton (8 sections, all present even when empty):
@@ -170,7 +170,7 @@ close A as it stands and handle the rest in execution, or take the premise that 
 to `ll-decide project` (its premortem) as the next command." Budget: ≤4 turns on the phase route, ≤8 on project.
 
 Done when the file exists with its 8 sections and the Score line reads `0 band-1 items open`.
-▶ Next — `/clear` then `ll-implement NN` (phase route) · `ll-decide project` (project route) ·
+▶ Next — /clear, then ll-implement NN (phase route; project route: ll-decide project)
 nothing to run (chat route).
 
 ## References

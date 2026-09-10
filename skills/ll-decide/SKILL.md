@@ -99,13 +99,13 @@ Two or more competing versions of conversion copy → judges (Fable, clean conte
 Write `docs/review-<date>.md` in the 7 sections: self-contained header · decision log including rejected items · §1–§N copy verbatim per page with target file · §Sweep greps of what became obsolete · §External dependencies with the placeholder rule · §Deferred with reason · §Verification contract. Decisions in it are final.
 
 ### 7. External contract
-From §External dependencies, generate `docs/<slug>.xlsx` with checklist columns and a "how to use" tab, committed in the repo. Append the round to `ROADMAP.md` as a phase (`| NN | review <date> | … | PLANNED |` with a `## Phase NN` section whose success criteria are the §Verification contract and whose objective points at the spec). Report in Portuguese and stop: `▶ Next — /clear then ll-implement NN` (one executor per slice with a file allowlist).
+From §External dependencies, generate `docs/<slug>.xlsx` with checklist columns and a "how to use" tab, committed in the repo. Append the round to `ROADMAP.md` as a phase (`| NN | review <date> | … | PLANNED |` with a `## Phase NN` section whose success criteria are the §Verification contract and whose objective points at the spec). Report in Portuguese and stop: `▶ Next — /clear, then ll-implement NN` (one executor per slice with a file allowlist).
 
 ## Completion criterion
 
 Project: `PLAN.md` exists at the repo root with §0–§11 (`git ls-files PLAN.md PROGRESS.md` returns both at the root), §10 answers the self-sufficiency test, every CA-nn has a command, `decisions/README.md` counts match the DEC files and every id is `DEC-NNNN-<slug>.md`, `PROGRESS.md` carries the empty `ll-state` block, the premise gate closed with a source per premise, the final round was sent and closed, the counter `questions asked N / assumptions M / band-1 open K` is printed, no `phases/NN/PLAN.md` was written, and the hand check of step 7 found nothing. Feedback: the inventory count equals the number of decisions logged plus deferred items, and the `.xlsx` is committed.
 
-▶ Next — `/clear` then `ll-implement 1`   (feedback mode: `/clear` then `ll-implement NN`, the phase appended in step 7).
+▶ Next — /clear, then ll-implement 1 (feedback mode: ll-implement NN, the phase appended in step 7)
 
 ## Questions
 

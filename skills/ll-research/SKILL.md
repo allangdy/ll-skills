@@ -79,7 +79,7 @@ Report in Portuguese: where the files are, the short answer with numbers, the op
 
 Done when `SUMMARY.md` carries `## Apply`, `## Discuss`, `## Gates` and `## What the evidence does NOT cover`; every claim under `## Apply` names a source labelled `[VERIFIED]` in `sources.md`; every front has its note under `evidence/`; and every declared constraint appears either as validated or as a dated premise. Anything left out is said out loud, with the reason.
 
-▶ Next — `/clear` then `ll-decide project` reading `docs/research-<topic>/SUMMARY.md`.
+▶ Next — /clear, then ll-decide project (reading docs/research-<topic>/SUMMARY.md)
 
 ## References
 

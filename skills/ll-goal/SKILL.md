@@ -55,7 +55,7 @@ contract behind it: every path it names is tracked, or the goal is not emitted.
 the checklist passed. Close with:
 
 ```
-▶ Next — `/clear`, then paste `/goal <text>`
+▶ Next — /clear, then /goal <text>
 ```
 
 ## References

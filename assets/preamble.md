@@ -18,7 +18,7 @@ no spec, no plan, no PROGRESS entry, no VERIFICATION, no premortem, no interview
 automatic commit, no two questions in a row. When a small request turns out to be large (a bigger
 root cause, a chained delivery, a new folder or repo), say so in one line and name the command once.
 A skill never invokes another skill and never decides the owner's next request; `ll-implement` covers one
-phase per invocation. Every skill ends in a repository file and prints "▶ Next — `/clear` then `<command>`" for
+phase per invocation. Every skill ends in a repository file and prints "▶ Next — /clear, then <command>" for
 the owner to paste; that line ends the turn, no tool call follows it. State lives at the repo root (`PLAN.md`,
 `PROGRESS.md`, `phases/`, `decisions/`), never in a subfolder, written as it happens. Reply to the owner in
 Portuguese, in their words (marco, onda, gate, contexto limpo, fiel); every file is English. Short answer, long proof.

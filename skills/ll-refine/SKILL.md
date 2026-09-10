@@ -108,7 +108,7 @@ last output line pasted into the round record; every finding is fixed, deferred 
 `BACKLOG` with an executable closing condition; `visual` mode has `validation/E<n>/REPORT.md` with every
 element `FIEL`; `PROGRESS.md` has `### Round N — <date>`; `git status --porcelain` is empty.
 
-`▶ Next — /clear then ll-verify` when the round is the last one, or `/clear then ll-refine --round N+1`.
+`▶ Next — /clear, then ll-verify (or ll-refine --round N+1, when the round is not the last one)`
 
 ## References
 

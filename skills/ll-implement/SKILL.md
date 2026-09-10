@@ -92,7 +92,7 @@ One `ll-verifier` (`model: opus`) with the phase brief: mode phase, ROADMAP and 
 Every milestone of the phase has `passes: true` under the three conditions of step 5.6 — `tdd-gate` pass or `tdd: no`, `spot-check` pass, acceptance last line in PROGRESS — with the acceptance run in this session; `phases/NN/PLAN-REVIEW.md` and `phases/NN/VERIFICATION.md` exist, the second without BLOCKS; only `phases/NN/` was planned; `git status --porcelain` is empty; the epilogue is written. Every missing proof is named with the command that would close it.
 The epilogue's last count line, printed in the conversation and written to PROGRESS:
 `milestones passed X/Y · questions asked N / assumptions M / band-1 open K · amendments A · verification: phases/NN/VERIFICATION.md <verdict>`
-▶ Next — `/clear`, then `ll-implement N+1`, or `ll-verify NN --external` / `ll-close` as the epilogue says.
+▶ Next — /clear, then ll-implement N+1 (or ll-verify NN --external, or ll-close, as the epilogue says)
 The ▶ Next line is the last thing this invocation does: no review, plan, verifier or executor of another phase is started after it; the next phase exists when the owner pastes the command.
 
 ## Questions

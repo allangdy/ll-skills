@@ -29,7 +29,7 @@ Reply to the owner in Portuguese; every file you write is in English.
 
 Read the verification for the target: the newest by mtime between `phases/NN/VERIFICATION.md` (phase) and `VERIFICATION.md` at the repo root (delivery); say which one opened the gate. Close only on `APPROVED`, or on `APPROVED_WITH_RESERVATIONS` whose reservations are accepted in a `decisions/DEC-*.md` naming them. Anything else — `REJECTED`, `product: FAIL`, `process: FAIL` with no DEC, no verification file at all — stops here:
 
-> Não fecho: `<motivo em uma linha>`. ▶ Next — `/clear`, then `ll-verify NN` (or record the reservations in a DEC and run `ll-close` again).
+> Não fecho: `<motivo em uma linha>`. ▶ Next — /clear, then ll-verify NN (or record the reservations in a DEC and run ll-close again)
 
 A verification whose ledger has `STALE` lines is verification of code that moved: it does not open the gate.
 

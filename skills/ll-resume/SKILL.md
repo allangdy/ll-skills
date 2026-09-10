@@ -48,7 +48,7 @@ Custo — <days with work · span · commits · agent runs, only where measurabl
 Bloqueado — <M<n>> por <cause, with evidence>   |   nada
 Espera por você — <n> decisões WAITING: <ID> <one line each>   |   nada
 Não verificado — <stale memory of N days, orphan worktree, phantom goal, absent verification>
-▶ Next — <the command the epilogue names>
+▶ Next — /clear, then <the command the epilogue names>
 ```
 
 Every claim carries its evidence — sha, `file:line`, or date; a green milestone with no commit
@@ -73,4 +73,4 @@ Projects not yet migrated keep the Portuguese names — read them, rename nothin
 
 ## Completion criterion
 
-Briefing in ≤20 lines, ≤5 tool calls, 0–1 questions, zero files touched, last line `▶ Next — <cmd>`.
+Briefing in ≤20 lines, ≤5 tool calls, 0–1 questions, zero files touched, last line `▶ Next — /clear, then <cmd>`.

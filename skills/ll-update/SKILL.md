@@ -69,7 +69,7 @@ that instead of declaring success.
 ## Completion criterion
 
 The installed `VERSION` equals the published one (or the owner declined the update) and the report above was printed.
-▶ Next — `/clear` then `ll-resume` (the running session keeps the old skill texts until it restarts).
+▶ Next — /clear, then ll-resume (the running session keeps the old skill texts until it restarts)
 
 ## Migration from 1.x
 
