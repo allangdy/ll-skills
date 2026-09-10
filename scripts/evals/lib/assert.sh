@@ -60,13 +60,19 @@ first_text_contains() { # first_text_contains <out.json> <extended-regex> <msg>
 # Scans every assistant event's message.content for a tool_use block whose
 # `name` equals <tool-name>. Passes when none is found; fails naming the
 # first hit (the manual contract: no skill is started by a tool call).
+# A capture that is missing or is not readable JSON proves nothing: it fails
+# (B-003/B-020 — a rep whose out.json never landed used to score PASS).
 no_tool_use() {
-  local file="$1" name="$2" msg="$3" hit
+  local file="$1" name="$2" msg="$3" hit rc
+  if [ ! -f "$file" ]; then
+    fail "$msg: no capture at $file"
+    return
+  fi
   hit="$(node -e '
     const fs = require("fs");
     let data;
     try { data = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); }
-    catch { process.exit(0); }
+    catch { process.exit(3); }
     const events = Array.isArray(data) ? data : [data];
     const wanted = process.argv[2];
     for (const ev of events) {
@@ -81,7 +87,14 @@ no_tool_use() {
       }
     }
   ' "$file" "$name" 2>/dev/null)"
-  if [ -z "$hit" ]; then ok "$msg"; else fail "$msg: found a $hit tool_use call"; fi
+  rc=$?
+  if [ "$rc" -ne 0 ]; then
+    fail "$msg: the capture at $file is not readable JSON"
+  elif [ -z "$hit" ]; then
+    ok "$msg"
+  else
+    fail "$msg: found a $hit tool_use call"
+  fi
 }
 
 base_sha() { # base_sha <workdir> -> the HEAD recorded before the run, or empty
