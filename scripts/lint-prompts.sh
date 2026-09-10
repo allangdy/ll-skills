@@ -25,6 +25,10 @@ EXCEPT_LANGUAGE_GLOB = ["scripts/evals/cases/*/prompt.txt"]  # owner-shaped inpu
 
 FORBIDDEN = ["MUST", "CRITICAL", "verify carefully", "as discussed", "IMPORTANT:"]
 ALLOWED_TOOLS = "Bash(${CLAUDE_SKILL_DIR}/scripts/ll-tools.js *)"
+# A skill that ships its own helper declares it here; every other skill gets ALLOWED_TOOLS.
+ALLOWED_TOOLS_BY_SKILL = {"ll-auto": "Bash(${CLAUDE_SKILL_DIR}/scripts/ll-auto.js *)"}
+# The one skill that follows another skill's instructions, and only while the owner typed it.
+ORCHESTRATOR = ["ll-auto"]
 # Strings the global preamble must not carry: they route a request to a skill.
 PREAMBLE_FORBIDDEN = ["Route every request", "One word from the owner"]
 PT = re.compile(r"[ãõçáéíóúâêô"
@@ -141,8 +145,9 @@ def rule1():
             bad.append((f, "description is not one line"))
         if not str(fm.get("argument-hint", "")).strip():
             bad.append((f, "argument-hint missing"))
-        if "allowed-tools" in fm and str(fm["allowed-tools"]) != ALLOWED_TOOLS:
-            bad.append((f, "allowed-tools is %r" % str(fm["allowed-tools"])))
+        expected = ALLOWED_TOOLS_BY_SKILL.get(name, ALLOWED_TOOLS)
+        if "allowed-tools" in fm and str(fm["allowed-tools"]) != expected:
+            bad.append((f, "allowed-tools is %r, expected %r" % (str(fm["allowed-tools"]), expected)))
         declared = "disable-model-invocation" in fm and truthy(fm["disable-model-invocation"])
         if not declared:
             bad.append((f, "disable-model-invocation: true missing"))
@@ -272,6 +277,9 @@ def rule5():
             continue
         if "Skill(" in text:
             bad.append((f, "contains Skill("))
+        # The orchestrator names the other skills' commands; nobody else may.
+        if f.split("/")[1] in ORCHESTRATOR:
+            continue
         for i, line in enumerate(text.split("\n")[body_start(text):], body_start(text) + 1):
             if "▶ Next" in line:
                 continue
