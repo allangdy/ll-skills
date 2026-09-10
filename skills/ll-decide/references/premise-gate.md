@@ -23,6 +23,13 @@ question — "attach the file or paste the content" — never a premise guessed 
 the request says "fiel ao protótipo", the prototype is a premise and its source is the content
 read, cited by artifact id or path.
 
+`--no-talk` sends no block at all. Each premise without a source takes the recommended option of
+its question at once, written beside it as `ASM-n [decided by absence — revisable]`, and step 2
+starts immediately. PG-1 and PG-2 are band 1 — as is any premise resting on a reference the
+session could not read: they are recorded as premises and also as `decisions/DEC-NNNN-<slug>.md`
+in state `WAITING`, so what the owner still owes is written down rather than dropped, and the
+work that depends on a WAITING id is what stops later, never this step.
+
 The tool takes four questions per call: 1–4 in the first call, 5 in the next, nothing in between.
 Format: the canonical one in `decision-policy.md` — `[PG-n] Question n/5 — <title> (impact HIGH ·
 revert: <cost>)`, `FACT:` with what the repo or the request already shows, the decision in

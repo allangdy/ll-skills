@@ -30,6 +30,13 @@ every recommended item at once. Ten minutes of silence ratify the recommended li
 blocking item B and never a band-1 item. An interview that ends with zero questions asked while a
 band-1 item exists is the defect this rule exists for: the delegation was read as "never ask".
 
+`--no-talk` goes one step further: no block leaves the session. Band-2/3 items take their
+recommended option at once as `ASM-n [decided by absence — revisable]`; every item that stays a
+question under a blanket delegation becomes `decisions/DEC-NNNN-<slug>.md` in state `WAITING`,
+listed in PLAN §3 with what it blocks, and the first phase whose work depends on one carries
+`stop: owner` in its ROADMAP section. Zero questions with a band-1 item open is the defect above
+only when the item vanishes; here it is written, dated and pointed at from the plan.
+
 Order: the kickoff question first when it exists (big-bang vs incremental, minimum vs complete —
 it re-prices every later option, and later cost descriptions cite its answer); then by structural
 impact: domain / identity / schema → contracts (API, permissions, vocabulary) → navigation and
@@ -90,6 +97,9 @@ canonical format.
 A correction is applied and the list is shown once more. "ok" or "A" freezes; ten minutes of silence
 in the hot window ratifies the recommended list (A, the assumptions) and freezes PLAN.md too, but
 only when `band-1 open` is 0 — with one band-1 item open nothing freezes.
+Under `--no-talk` the same message is printed as a report and no reply is waited for: `N = 0`, the
+full ASM list, the WAITING ids under `band-1 open`, and PLAN.md is frozen right after it even with
+K > 0 — the WAITING DECs hold the dependent phases, not the freeze.
 Nothing is written before this round closes.
 
 ## Recording

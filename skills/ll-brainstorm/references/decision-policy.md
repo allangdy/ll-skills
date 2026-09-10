@@ -61,6 +61,9 @@ Silence of 10 minutes ratifies the recommended list (A), never a blocking item (
 ## Silence, delegation, directives
 - Silence for 10 minutes in the hot window (harness AFK timeout) ratifies option A of a band-2/3 item or
   list A of a map — never option B, never a band-1 item. Record `ratified by silence`; in a run, `[decided by absence — revisable]`.
+- Under `--no-talk` the ten minutes are not waited for: the recommended option is taken at once and
+  recorded `[decided by absence — revisable]`. A band-1 item is never taken this way — it is written
+  as a decision in state `WAITING` and the work that depends on it stops there.
 - "Claude decide", "você decide", "pergunta pro time" are legitimate answers: record an assumption
   `ASM-n` (permanent; announced if changed later) or the delegation, and never ask that item again.
 - An order against the recommendation is a directive: one challenge with the cost named, then
