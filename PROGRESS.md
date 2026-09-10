@@ -101,6 +101,8 @@ not_verified: nothing for this milestone
 
 - [2026-09-10T18:47:37Z] M4: the session's first acceptance run extracted the YAML string without unescaping \\[ — rerun with the YAML value exit=0
 
+- [2026-09-10T19:32:33Z] backlog round — B-002..B-020 dispatched to three executors (lint · ll-auto helper · evals+docs), HEAD d8c7735
+
 ## Epilogue — phase 01 — 2026-09-10
 passed: M1, M2, M3, M4, M5 (5/5) — every skill locked, preamble without a router, README/CHANGELOG updated, router eval cases assert the manual contract, lint and smoke test green in this worktree.
 left: none.
@@ -299,4 +301,43 @@ waiting: none.
 backlog: reconciled — B-001 closed; B-002..B-020 open, every row with a command; `backlog-reconcile --run` parsed none of the conditions (prose around the command) — rule added to the project CLAUDE.md, rows to be tightened at the next close.
 written: docs/DELIVERY.md · docs/RETROSPECTIVE-2026-09-10.md · CLAUDE.md (project, new: current state + 2 rules) · ROADMAP rows 01–05 marked DONE.
 actions that need you: `git tag v3.0.0 && npm publish` when you want the team on 3.0.0 (never done by a session).
+▶ Next — /clear, then ll-close --milestone 3.0.0
+### BL-A — 2026-09-10 18:20
+built: seven backlog gaps closed — rule 6 of lint-contract now rejects a handoff that names the same skill twice outside a parenthetical (uniq-based count fixed), smoke `--only` pulls the state prerequisites of sections 6 and 8, and five new/tightened smoke checks cover lint rule 1 against scratch SKILL.md fixtures, the pinned next-bad FAIL count, the `--no-talk` argument-hints and a no-longer-vacuous `no_tool_use`.
+commits: 509d18a test(BL-A): lint and smoke gaps B-002, B-004, B-006, B-007, B-008, B-019 · 9108fbb feat(BL-A): rule 6 rejects a repeated skill and --only pulls its prerequisite
+commands: B-002/B-004 `--only lint-scratch` → "smoke test OK — 3 checks" exit=0 · B-006 repeated skill → "FAIL — 1 rule(s), 1 violation(s)" (rejected) · B-007 `--only 10` → "smoke test OK — 11 checks" (next-bad pinned at 4 FAIL) · B-008 `--only no-talk` → "smoke test OK — 3 checks" · B-013 sections 5,6,7,8 alone → exit 0 each · B-019 `--only evals-auto` → "smoke test OK — 7 checks" · clean checkout `npm test` → "smoke test OK — 212 checks"
+deviations: B-002, B-004, B-008, B-019 were pure test gaps, shipped in the test commit; no `--root` added to lint-prompts.sh (scratch-tree copy pattern used instead)
+questions: none
+backlog: `for s in 1 2 3 4 4b 4c 4d; do bash scripts/smoke-test.sh --only $s; done` not run alone · no check pins that two different skills in one ▶ Next line still fail
+not_verified: final acceptance ran with BL-C's d847466 already in HEAD
+### BL-C — 2026-09-10 16:50
+built: `no_tool_use` fails on a missing or unparsable capture; new eval case `goal-autonomous` with its own healthy fixture (the shared one is broken on purpose and ll-goal refuses it), offline pass.txt, cap 20; `auto-empty-repo` cap pinned to 10 with the turn count explained; plan-skeleton.md documents the WAITING DEC; evals README thirteen cases.
+commits: bb164ff test(BL-C) · 4ba1096 feat(BL-C): no_tool_use fails on a missing capture · d847466 feat(BL-C): caps, WAITING DEC, thirteen cases · 3871fc3 fix(BL-C): healthy fixture for goal-autonomous
+commands: B-003/B-020 missing capture → "FAIL: … no capture at /nonexistent" exit=1 · B-005 grep → exit=0 · B-016 dry-run → "1 case blocks printed" exit=0 · B-018 real rep → "auto-empty-repo rep 1 PASS turns 3" (≤ 10) · real rep `goal-autonomous` + `auto-empty-repo` → PASS/PASS, results /home/greenn/.claude/ll-skills-evals/2026-09-10-1646 · `--only evals-auto` → "smoke test OK — 7 checks"
+deviations: goal-autonomous moved from the shared fixture to its own (first paid rep FAILed on the broken shared fixture); EXECUTION check reads the answer flattened; max_turns 12 → 20
+questions: none
+backlog: evals-auto smoke section has no goal-autonomous pair (routed to BL-D)
+not_verified: `npm test` as a whole (session runs it below) · the other eleven cases not re-run after the no_tool_use change
+### BL-B — 2026-09-10 18:05
+built: the six ll-auto helper gaps are smoke checks (sections 4c/4d, +9) over three new fixtures (auto-noroadmap, auto-closed, auto-verify-next); one real defect fixed — without ROADMAP.md the `## §8` slice of PLAN ended empty and no `phase-NN` was detected; next-bad gained the two-different-skills line (FAIL 4 → 6); `--only 4` and `--only 4d` run alone.
+commits: a265e93 test(BL-B) · af02554 feat(BL-B): PLAN §8 without ROADMAP.md renders phases again
+commands: B-009 → 2 `phase-NN` rows exit=0 · B-010 → `close: done` exit=0 · B-011/B-012 `--only 4d` → "smoke test OK — 10 checks" · B-014 `--only 4c` → "smoke test OK — 6 checks" · B-015 → `{"ok":false,"reason":"not a directory: /nonexistent"}` exit=0 · sections 1..4d alone → all exit 0 · next-bad → 6 FAIL · `npm test` → "smoke test OK — 218 checks" · clean checkout → same
+deviations: `AUTO=` moved to the top of smoke-test.sh with a `4) "2 3"` prereq; the next-bad check writes to a file instead of `| grep -q` (SIGPIPE under pipefail); §8 table shape documented in the helper comment
+questions: DEC-0015 — §8 inline phases: the table is canonical (decided; doc follow-ups routed to BL-D)
+backlog: none
+not_verified: a prose §8 still yields zero phases (by design after DEC-0015: prose is no longer a valid shape) · `--pause-at` end-to-end through the skill · new fixtures only exercised offline
+### BL-D — 2026-09-10 15:47
+built: smoke section evals-auto asserts the goal-autonomous pair (9 checks); plan-skeleton.md §8 and stages.md describe the inline phases as the ROADMAP table (DEC-0015).
+commits: ebfeef2 feat(BL-D): evals-auto covers goal-autonomous; PLAN §8 inline phases are a table
+commands: BL-D acceptance → exit=0 (`npm test` → "smoke test OK — 220 checks")
+deviations: one unconditional echo at the end of the section so a green run names the pair
+questions: none
+backlog: none
+not_verified: none
+
+## Epilogue — backlog round — 2026-09-10
+passed: B-002..B-020 closed (18 rows), four executors (BL-A lint/smoke, BL-B ll-auto helper, BL-C evals/docs, BL-D follow-ups); two real defects fixed on the way — rule 6 accepted the same skill twice in one ▶ Next line (9108fbb) and `detect` found no phases in a PLAN §8 without ROADMAP.md (af02554); `no_tool_use` no longer passes on a missing capture (4ba1096).
+new: eval case `goal-autonomous` (own healthy fixture, real rep PASS, /home/greenn/.claude/ll-skills-evals/2026-09-10-1646/RESULTS.md); fixtures auto-noroadmap, auto-closed, auto-verify-next, lint-bad; DEC-0015 (§8 inline phases are a table).
+left: none. waiting: none. backlog open: 0.
+smoke: 202 → 220 checks; lint 0 violations; clean checkout green.
 ▶ Next — /clear, then ll-close --milestone 3.0.0
