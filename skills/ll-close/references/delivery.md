@@ -42,7 +42,9 @@ reason, never omitted.>
 <What was decided on the owner's behalf while he was not there, one per line: the assumption, the
 DEC that records it, what breaks if it is wrong, and how expensive it is to reverse. This section
 feeds the ratification block; if it is empty, say "none — every decision in this delivery is in
-decisions/".>
+decisions/". Under `--no-talk`, this section also carries the open pendings, accepted risks and
+recommendation that would otherwise be asked in the ratification block, each line ending
+`[decided by absence — revisable]` and the date.>
 
 ## 6. Out of this round, and why
 <What was asked for or found and deliberately not done. One line each: what, why (cost, risk,

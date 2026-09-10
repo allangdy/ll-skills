@@ -1,7 +1,7 @@
 ---
 name: ll-close
 description: Closes a phase or a delivery, reconciling the backlog against executable conditions, writing docs/DELIVERY.md, stamping the epilogue, recording the retrospective and asking for one block of ratification.
-argument-hint: "[--milestone <name>]"
+argument-hint: "[--milestone <name>] [--no-talk]"
 disable-model-invocation: true
 allowed-tools: Bash(${CLAUDE_SKILL_DIR}/scripts/ll-tools.js *)
 ---
@@ -41,7 +41,7 @@ A verification whose ledger has `STALE` lines is verification of code that moved
 4. **Write `docs/RETROSPECTIVE-<date>.md`** from `references/retrospective.md` — about 60 lines, driven by the numbers from step 3, one lesson per line with the evidence that produced it.
 5. **Promote what is permanent.** A lesson that changes how the next phase runs goes to project memory; a lesson that is a standing rule of this repository goes as one line into the project's `CLAUDE.md`, in the owner's words when he gave them. Two lines at most per delivery: a CLAUDE.md that grows every close stops being read.
 6. **Peer notice.** If a peer session (infra, ops, another repo) shipped, waits on something, or was asked for something in `docs/REQUESTS.md`, that goes in the summary as one line with the request id and its state — not as a new message.
-7. **One block of ratification.** A single `AskUserQuestion`, at most 4 items, only after everything is written: the open pendings with their conditions, and the accepted risks the delivery carries. Options carry the cost of each path and the recommendation is marked. Silence keeps what is written; nothing here blocks the close.
+7. **One block of ratification.** A single `AskUserQuestion`, at most 4 items, only after everything is written: the open pendings with their conditions, and the accepted risks the delivery carries. Options carry the cost of each path and the recommendation is marked. Silence keeps what is written; nothing here blocks the close. With `--no-talk`, this block is not asked: the same items — open pendings with their conditions, accepted risks, recommendation — are written instead under the epilogue in PROGRESS.md and in DELIVERY.md §5, each line marked `[decided by absence — revisable]` with the date; the gate above is unchanged.
 8. **Report.** Verdict and seals, what changed in one line, numbers from `phase-stats`, open pendings by id, accepted risks, next command.
 
 ## Flow — `--milestone <name>`
@@ -53,7 +53,7 @@ The list always goes out; the audit ritual is optional and offered once, never i
 3. Collapse the closed phases in `ROADMAP.md` into one `<details>` block per phase, keeping the numbering intact — phase 7 stays phase 7 forever, and a later reference to it still resolves.
 4. Transport only what survives: an open pending with an executable condition goes to `BACKLOG.md`; a criterion never proven goes to the next milestone's ROADMAP as a criterion, not as a note. What survives neither test is dropped, and the report says which.
 5. Update `## Current state` in the project's `CLAUDE.md`: what exists now, what the next milestone is, where the history went. Replace the section; do not append to it.
-6. One block of ratification, as in the delivery flow, plus the open pendings the milestone inherits.
+6. One block of ratification, as in the delivery flow, plus the open pendings the milestone inherits. `--no-talk` follows the same rule: the block is not asked, and the same items are written under the epilogue instead.
 
 ## Completion criterion
 
