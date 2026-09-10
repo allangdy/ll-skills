@@ -1,6 +1,6 @@
 # LL Skills
 
-Um ciclo de trabalho para [Claude Code](https://claude.com/claude-code): 11 skills, 4 agentes, 3 hooks e um helper que compartilham o mesmo estado em arquivos versionados do repositório. Um preâmbulo instalado no seu `~/.claude/CLAUDE.md` carrega o bloco de regras da casa — delegação, decisões, prova — que vale para qualquer skill que você chamar. O produto real é a fase: `ll-implement` roda conversa, plano, revisão adversarial, ondas de execução com TDD, verificação de contexto limpo e epílogo em **uma** invocação, e escreve tudo em disco à medida que acontece, para que uma compactação não perca nada.
+Um ciclo de trabalho para [Claude Code](https://claude.com/claude-code): 12 skills, 4 agentes, 3 hooks e dois helpers que compartilham o mesmo estado em arquivos versionados do repositório. Um preâmbulo instalado no seu `~/.claude/CLAUDE.md` carrega o bloco de regras da casa — delegação, decisões, prova — que vale para qualquer skill que você chamar. O produto real é a fase: `ll-implement` roda conversa, plano, revisão adversarial, ondas de execução com TDD, verificação de contexto limpo e epílogo em **uma** invocação, e escreve tudo em disco à medida que acontece, para que uma compactação não perca nada.
 
 ## Instalação
 
@@ -25,8 +25,9 @@ O que a instalação **escreve** (em `$CLAUDE_CONFIG_DIR` ou `~/.claude`):
 
 | Caminho | Conteúdo |
 |---|---|
-| `skills/ll-*/` | as 11 skills, com `SKILL.md` e `references/` |
+| `skills/ll-*/` | as 12 skills, com `SKILL.md` e `references/` |
 | `skills/ll-{implement,verify,close}/scripts/ll-tools.js` | cópia do helper, uma por skill que o usa |
+| `skills/ll-auto/scripts/ll-auto.js` | o helper da própria skill, executável |
 | `agents/ll-{executor,scout,verifier,reviewer}.md` | os 4 agentes |
 | `hooks/ll-{skills-check-update,state,precompact}.js` | os 3 hooks, executáveis |
 | `settings.json` | duas entradas em `SessionStart` (`startup\|resume\|compact`) e uma em `PreCompact`; backup em `settings.json.ll-skills.bak` |
@@ -37,7 +38,7 @@ O que a instalação apenas **imprime**, e nunca escreve: a política sugerida d
 
 ## Como as skills são chamadas
 
-Uma skill roda só quando você digita `/ll-<nome>`. A sessão nunca inicia uma skill sozinha: quando o pedido parece o trabalho de uma delas, ela responde com o comando exato para você colar e para aí. Uma skill por turno — nenhuma chama outra. Cada uma termina num arquivo dentro do repositório e imprime `▶ Next — /clear, depois <comando>`; quem cola é você. `ll-auto` (fase 03, em desenvolvimento) será o único lugar que segue as instruções de outra skill, e só quando você o invoca.
+Uma skill roda só quando você digita `/ll-<nome>`. A sessão nunca inicia uma skill sozinha: quando o pedido parece o trabalho de uma delas, ela responde com o comando exato para você colar e para aí. Uma skill por turno — nenhuma chama outra. Cada uma termina num arquivo dentro do repositório e imprime `▶ Next — /clear, depois <comando>`; quem cola é você. `ll-auto` é a única exceção: o único lugar que segue as instruções de outra skill, e só quando você digita `/ll-auto`.
 
 ## Ciclo de um projeto
 
@@ -84,6 +85,26 @@ Entre fases, `/clear`: sessão nova custa menos e erra menos que compactação.
 | `ll-refine` | produto rodando: "melhorar as telas", "fiel ao protótipo" | uma rodada registrada no PROGRESS; modo `visual` até o veredito FIEL |
 | `ll-oncall` | `claude -n <papel>`, "vigie a cada 1h", deploy/apply/cutover | bloco `## Federation`, `docs/REQUESTS.md`, pré-flight do deploy |
 | `ll-update` | "atualiza o ll-skills", ou o aviso da sessão | o pacote atualizado, com o changelog mostrado antes |
+| `ll-auto` | `/ll-auto "<objetivo>" [flags]` | `docs/AUTO.md` e o ciclo inteiro |
+
+### Fluxo autônomo
+
+`ll-auto` lê o estado em disco (`detect`), corta a lista de etapas com as flags (`roteiro`) e segue cada etapa lendo o `SKILL.md` dela — a única skill que faz isso, e só porque você digitou o comando.
+
+| Flag | Efeito |
+|---|---|
+| `--research` | entra `research` no roteiro, se não estiver `done` |
+| `--brainstorm` | entra `brainstorm` no roteiro, se não estiver `done` |
+| `--interactive` | tira o `--no-talk` de `ll-brainstorm`/`ll-implement`: essas etapas falam com você |
+| `--auto-decision` | resolve toda decisão de dono para a opção recomendada e segue |
+| `--pause-at <stage\|N>` | para depois daquela etapa ou fase, com `▶ Next — /clear, then ll-auto --resume` |
+| `--from N` / `--to N` / `--only N` | corta as fases por número (`--only N` corta o `close`) |
+| `--verify all` | roda `ll-verify NN` depois de cada fase, mesmo sem o epílogo pedir |
+| `--redo <stage>` | força uma etapa `done` de volta para `todo` |
+| `--dry-run` | imprime a tabela do roteiro e para, antes de escrever `docs/AUTO.md` |
+| `--resume` | retoma as flags gravadas em `docs/AUTO.md`, a partir da primeira linha que não é `done` |
+
+Num repositório vazio (sem pesquisa, sem `OPENING.md`, sem `PLAN.md`) e sem objetivo, `ll-auto` não pergunta nada: imprime o comando que completa (`/ll-auto "<objetivo>" [--research] [--brainstorm]`) e para. Toda decisão de dono tomada sozinha ao longo do run (com `--auto-decision`) entra listada no fim, cada uma marcada `[decided by absence — revisable]`.
 
 ## Agentes
 
@@ -118,6 +139,16 @@ Nenhum agente despacha subagente (profundidade 1) e nenhum pergunta ao dono: uma
 | `backlog-reconcile` | roda a condição executável de cada item do BACKLOG e fecha o que já passou |
 | `epilogue` | monta os dados do fim de fase e diz o próximo comando |
 | `phase-stats` | dias com trabalho, dias ociosos, commits por tipo, razão teste/feature |
+
+`skills/ll-auto/scripts/ll-auto.js` é o helper próprio da skill `ll-auto` — Node puro, sem dependências, nunca uma cópia de `ll-tools.js`.
+
+| Comando | O que faz |
+|---|---|
+| `detect` | lê o estado em disco e devolve a tabela de etapas (`research` … `close`) com status `todo`/`half`/`done` |
+| `roteiro` | corta a tabela do `detect` pelas flags e devolve a lista ordenada de etapas a rodar |
+| `next-cmd` | lê o comando da última linha `▶ Next` de um arquivo |
+| `report` | lista os `decisions/*.md` marcados `[decided by absence — revisable]` |
+| `auto-md` | monta o corpo de `docs/AUTO.md` (objetivo, flags, roteiro, decisões, log) |
 
 ## Arquivos de estado no repositório
 

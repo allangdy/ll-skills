@@ -348,6 +348,11 @@ for s in ll-implement ll-verify ll-close; do
     '[ "$(sha256sum "$CLAUDE_CONFIG_DIR/skills/'"$s"'/scripts/ll-tools.js" | cut -d" " -f1)" = "$SHA_SRC" ]'
 done
 
+SHA_AUTO_SRC="$(sha256sum skills/ll-auto/scripts/ll-auto.js | cut -d" " -f1)"
+check "ll-auto.js instalado executável"    '[ -x "$CLAUDE_CONFIG_DIR/skills/ll-auto/scripts/ll-auto.js" ]'
+check "ll-auto.js instalado com sha idêntico" \
+  '[ "$(sha256sum "$CLAUDE_CONFIG_DIR/skills/ll-auto/scripts/ll-auto.js" | cut -d" " -f1)" = "$SHA_AUTO_SRC" ]'
+
 cp "$CLAUDE_CONFIG_DIR/settings.json" "$TMP/s1.json"
 node bin/install.js < /dev/null > /dev/null
 check "segunda instalação sem diff no settings" 'cmp -s "$CLAUDE_CONFIG_DIR/settings.json" "$TMP/s1.json"'

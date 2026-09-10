@@ -184,7 +184,10 @@ function planFiles(pkgRoot) {
     const dir = path.join(skillsDir, name);
     if (!fs.statSync(dir).isDirectory()) continue;
     for (const rel of walk(dir)) {
-      plan.push({ src: path.join(dir, rel), rel: path.posix.join('skills', name, rel.split(path.sep).join('/')) });
+      const relPosix = rel.split(path.sep).join('/');
+      const item = { src: path.join(dir, rel), rel: path.posix.join('skills', name, relPosix) };
+      if (/^scripts\/[^/]+\.js$/.test(relPosix)) item.mode = 0o755;
+      plan.push(item);
     }
   }
   const agentsDir = path.join(pkgRoot, 'agents');
