@@ -187,6 +187,10 @@ mkdir -p "$NEST/docs/other" && printf '# other progress\n\nno state block here\n
 printf '{"cwd":"%s","source":"compact"}' "$NEST" | node hooks/ll-state.js > "$TMP/nest-hook2.json"
 check "nested hook: entre vários PROGRESS.md escolhe o que tem bloco ll-state" 'grep -q "milestones [0-9]/3" "$TMP/nest-hook2.json"'
 rm -rf "$NEST/docs/other"
+mkdir -p "$NEST/docs/fixtures/project" && cp "$NEST/docs/state/PROGRESS.md" "$NEST/docs/fixtures/project/PROGRESS.md" && mv "$NEST/docs/state" "$TMP/state-aside"
+check "hook ignora PROGRESS.md dentro de fixtures/" '[ -z "$(printf "{\"cwd\":\"%s\",\"source\":\"startup\"}" "$NEST" | node hooks/ll-state.js)" ]'
+mv "$TMP/state-aside" "$NEST/docs/state"
+rm -rf "$NEST/docs/fixtures"
 
 $HELPER backlog-reconcile --run --cwd "$NEST/docs/state" --json > "$TMP/nest-backlog.json"
 check "nested backlog-reconcile fecha B-014 (comando roda no topo do git)" \
