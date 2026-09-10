@@ -225,6 +225,44 @@ check "ll-auto detect --json é JSON válido" \
    | node -e "JSON.parse(require(\"fs\").readFileSync(0,\"utf8\"))"'
 
 # ---------------------------------------------------------------------------
+# 4d. helper ll-auto: roteiro, next-cmd, report, auto-md
+# ---------------------------------------------------------------------------
+check "ll-auto roteiro: --verify all → 07, verify-07, 08, verify-08, close" \
+  '$AUTO roteiro --cwd "$ROOT/scripts/fixtures/project" --flags "--verify all" --json > "$TMP/auto-verify-all.json" \
+   && grep -q "\"stage\":\"phase-07\".*\"stage\":\"verify-07\".*\"stage\":\"phase-08\".*\"stage\":\"verify-08\".*\"stage\":\"close\"" "$TMP/auto-verify-all.json" \
+   && ! grep -qE "\"stage\":\"(research|brainstorm|decide|phase-05|phase-06)\"" "$TMP/auto-verify-all.json"'
+check "ll-auto roteiro: --only 8 corta o close e as outras fases" \
+  '$AUTO roteiro --cwd "$ROOT/scripts/fixtures/project" --flags "--only 8" --json > "$TMP/auto-only8.json" \
+   && grep -q "\"stage\":\"phase-08\",\"command\":\"ll-implement 08 --no-talk\"" "$TMP/auto-only8.json" \
+   && ! grep -qE "\"stage\":\"(phase-07|close)\"" "$TMP/auto-only8.json"'
+check "ll-auto roteiro: repo vazio sem objetivo pede o objetivo" \
+  '$AUTO roteiro --cwd "$ROOT/scripts/fixtures/empty" --flags "" --json > "$TMP/auto-vazio.json" \
+   && grep -q "\"needs_objective\":true" "$TMP/auto-vazio.json" \
+   && grep -q "\"roteiro\":\[\]" "$TMP/auto-vazio.json"'
+check "ll-auto roteiro: repo vazio com objetivo → research, brainstorm, decide, close" \
+  '$AUTO roteiro --cwd "$ROOT/scripts/fixtures/empty" --objective "um objetivo" \
+     --flags "--research --brainstorm" --json > "$TMP/auto-vazio2.json" \
+   && grep -q "\"stage\":\"research\".*\"stage\":\"brainstorm\".*\"stage\":\"decide\".*\"stage\":\"close\"" "$TMP/auto-vazio2.json" \
+   && grep -q "\"needs_objective\":false" "$TMP/auto-vazio2.json"'
+check "ll-auto next-cmd: o epílogo da fixture aponta ll-implement 8" \
+  '[ "$($AUTO next-cmd "$ROOT/scripts/fixtures/project/PROGRESS.md")" = "ll-implement 8" ]'
+check "ll-auto next-cmd: arquivo sem ▶ Next → saída vazia, exit 0" \
+  '[ -z "$($AUTO next-cmd "$ROOT/scripts/fixtures/project/ROADMAP.md")" ]'
+check "ll-auto report: só o DEC com a marca de decidido sozinho" \
+  '$AUTO report --cwd "$ROOT/scripts/fixtures/auto-decisions" --json > "$TMP/auto-report.json" \
+   && grep -q "DEC-0001-taken-alone.md" "$TMP/auto-report.json" \
+   && ! grep -q "DEC-0002-owner.md" "$TMP/auto-report.json"'
+check "ll-auto auto-md: as cinco seções, o objetivo e as flags" \
+  '$AUTO auto-md --cwd "$ROOT/scripts/fixtures/project" --objective "um objetivo" --flags "--only 8" \
+     > "$TMP/auto-md.txt" \
+   && grep -q "^## Objective" "$TMP/auto-md.txt" && grep -q "^## Flags" "$TMP/auto-md.txt" \
+   && grep -q "^## Roteiro" "$TMP/auto-md.txt" && grep -q "^## Decisions taken alone" "$TMP/auto-md.txt" \
+   && grep -q "^## Log" "$TMP/auto-md.txt" \
+   && grep -q "^um objetivo$" "$TMP/auto-md.txt" && grep -q "^\-\-only 8$" "$TMP/auto-md.txt" \
+   && grep -q "^| # | stage | command | status | evidence |$" "$TMP/auto-md.txt" \
+   && grep -q "^| 1 | phase-08 | ll-implement 08 --no-talk | todo |" "$TMP/auto-md.txt"'
+
+# ---------------------------------------------------------------------------
 # 5. instalador
 # ---------------------------------------------------------------------------
 export CLAUDE_CONFIG_DIR="$TMP/cfg" XDG_CACHE_HOME="$TMP/cache"
