@@ -6,7 +6,7 @@ copy of a fixture repository, and scores the answer and the work tree with a she
 
     bash scripts/evals/run.sh --dry-run --all              # print the commands, call nothing
     bash scripts/evals/run.sh --case router-small --reps 1 # one case, one rep
-    bash scripts/evals/run.sh --all                        # ten cases, three reps
+    bash scripts/evals/run.sh --all                        # twelve cases, three reps
 
 `--all` | `--case <id>` (repeatable) | `--reps N` (default 3) | `--model <id>` | `--dry-run`.
 Exit 0 when every selected case passed in at least `min_pass` reps (`case.json`, capped at the
@@ -17,6 +17,14 @@ reps actually run, so `--reps 1` means 1 of 1).
 Router cases are 1–6 turns and cost cents. The six agent and skill cases run 30–40 turns: dollars
 per rep, tens of dollars for `--all --reps 3` — a skill that fans out subagents costs about a dollar
 per turn-block, so keep routing caps low. Dry run first, then one cheap case.
+
+## Autonomous cases
+
+`auto-dry-run` and `auto-empty-repo` run `ll-auto` end to end: ≤ 6 turns and cost cents, like the
+router cases. The prompt is the slash command exactly as the owner types it (`/ll-auto --dry-run`,
+`/ll-auto`), which `claude -p` expands; there is no agent, no fan-out. Their assert scripts are
+proven offline, without calling `claude -p`, by `npm test` (section `evals-auto` in
+`scripts/smoke-test.sh`) against the fixed answers under `scripts/fixtures/evals-auto/<case>/pass.txt`.
 
 ## Results — outside the repo
 

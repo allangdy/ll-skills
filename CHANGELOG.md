@@ -2,7 +2,7 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A skill `ll-update` lê este arquivo para mostrar o que mudou entre a versão instalada e a publicada.
 
-## [3.0.0] - Unreleased
+## [3.0.0] - 2026-09-10
 
 ### Adicionado
 
@@ -10,6 +10,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - Helper `skills/ll-auto/scripts/ll-auto.js` (Node puro, sem dependências, próprio da skill): `detect`, `roteiro`, `next-cmd`, `report`, `auto-md`.
 - `--no-talk` em `ll-decide` e `ll-close`: nenhum bloco de pergunta é enviado; itens de faixa 2/3 tomam a recomendação como `ASM-n [decided by absence — revisable]`, itens de faixa 1 viram decisão `WAITING`.
 - **`ll-goal --autonomous`**: modo que aponta o texto do `/goal` para `ll-auto --auto-decision` até a entrega inteira fechar, em vez de uma fase; sem a parte BUDGET, frontmatter com `mode: autonomous` em vez de `ceiling_usd`.
+- Casos de eval `auto-dry-run` e `auto-empty-repo` (`scripts/evals/cases/`), a seção offline `evals-auto` do `scripts/smoke-test.sh` e uma repetição real de ambos via `scripts/evals/run.sh`.
 
 ### Quebras
 
