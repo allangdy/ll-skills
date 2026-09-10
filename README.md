@@ -1,6 +1,6 @@
 # LL Skills
 
-Um ciclo de trabalho para [Claude Code](https://claude.com/claude-code): 11 skills, 4 agentes, 3 hooks e um helper que compartilham o mesmo estado em arquivos versionados do repositório. Um preâmbulo roteador instalado no seu `~/.claude/CLAUDE.md` classifica cada pedido antes de agir — pedido pequeno continua pequeno, pedido grande cai na skill certa sem você digitar o nome dela. O produto real é a fase: `ll-implement` roda conversa, plano, revisão adversarial, ondas de execução com TDD, verificação de contexto limpo e epílogo em **uma** invocação, e escreve tudo em disco à medida que acontece, para que uma compactação não perca nada.
+Um ciclo de trabalho para [Claude Code](https://claude.com/claude-code): 11 skills, 4 agentes, 3 hooks e um helper que compartilham o mesmo estado em arquivos versionados do repositório. Um preâmbulo instalado no seu `~/.claude/CLAUDE.md` carrega o bloco de regras da casa — delegação, decisões, prova — que vale para qualquer skill que você chamar. O produto real é a fase: `ll-implement` roda conversa, plano, revisão adversarial, ondas de execução com TDD, verificação de contexto limpo e epílogo em **uma** invocação, e escreve tudo em disco à medida que acontece, para que uma compactação não perca nada.
 
 ## Instalação
 
@@ -10,7 +10,7 @@ Requer [Node.js](https://nodejs.org) 18+ (o mesmo que o Claude Code já usa).
 npx ll-skills@latest
 ```
 
-Reinicie o Claude Code ao final. As skills são standalone — sem o prefixo `ll-skills:` — e podem ser chamadas pelo nome (`/ll-implement 3`) ou escolhidas pelo roteador do preâmbulo.
+Reinicie o Claude Code ao final. As skills são standalone — sem o prefixo `ll-skills:` — e são chamadas pelo nome (`/ll-implement 3`).
 
 ```bash
 npx ll-skills@latest --local          # instala em ./.claude, só para o projeto atual
@@ -35,22 +35,9 @@ O que a instalação **escreve** (em `$CLAUDE_CONFIG_DIR` ou `~/.claude`):
 
 O que a instalação apenas **imprime**, e nunca escreve: a política sugerida de `settings.json` (`assets/settings.suggested.json` — deny list, `autoCompactWindow`, cache, modelos por papel) e o diagnóstico de sobras de instalações antigas. Reinstalar é idempotente; a primeira instalação 2.x poda as skills 1.x pelo manifesto.
 
-## Como funciona
+## Como as skills são chamadas
 
-O preâmbulo classifica todo pedido por três critérios — lacuna de intenção, irreversibilidade e pegada — e anuncia o regime em uma linha antes de agir.
-
-| Regime | Gatilho | O que acontece | Skill |
-|---|---|---|---|
-| SMALL | verbo + alvo endereçável, ≤25 palavras, ~3 chamadas | lê o alvo, faz, verifica com um número | nenhuma |
-| FIX | "não era isso", "quebrou", "não sobe" | após 2 tentativas iguais, para, junta evidência, diagnostica | nenhuma |
-| RESEARCH | "pesquise", "compare", "docs oficiais", restrição não validada | frentes paralelas + contra-evidência + checagem de citação | `ll-research` |
-| OPS | deploy, apply, cutover, credencial, IP, "avise a infra" | pré-flight de capacidades e verdade por outro caminho | `ll-oncall` |
-| LARGE | ideia nova, "plano", horas de máquina, cria um lugar | plano de ataque em 5 linhas, depois o contrato | `ll-decide` |
-| EXECUTE | "implementa", "continua", marco com `passes: false` | a fase inteira em uma invocação | `ll-implement` |
-| RESUME | 1º turno num repo com PROGRESS.md, "onde paramos" | briefing de ≤20 linhas, nada escrito | `ll-resume` |
-| REFINE | produto rodando + "melhorar", "fiel ao protótipo" | uma rodada fechada de refino | `ll-refine` |
-
-Uma palavra sua vence o classificador (`direto`, `pesquise`, `plano`, `implementa`, `fecha`, `status`). E a regra que amarra o conjunto: **uma skill nunca chama outra**. Cada uma termina num arquivo dentro do repositório e imprime `▶ Next — /clear, depois <comando>`; quem cola é você.
+Uma skill roda só quando você digita `/ll-<nome>`. A sessão nunca inicia uma skill sozinha: quando o pedido parece o trabalho de uma delas, ela responde com o comando exato para você colar e para aí. Uma skill por turno — nenhuma chama outra. Cada uma termina num arquivo dentro do repositório e imprime `▶ Next — /clear, depois <comando>`; quem cola é você. `ll-auto` (fase 03, em desenvolvimento) será o único lugar que segue as instruções de outra skill, e só quando você o invoca.
 
 ## Ciclo de um projeto
 
@@ -58,7 +45,7 @@ Uma vez por milestone, com a contagem de prompts seus por etapa:
 
 | Etapa | Prompts | Sai disso |
 |---|---|---|
-| ideia → roteador | 1 | plano de ataque em 5 linhas (LARGE) |
+| ideia → `/ll-brainstorm` ou `/ll-research` | 1 | plano de ataque em 5 linhas (LARGE) |
 | `ll-brainstorm` | 0–1 | mapa A/B/C + bateria de ≤4 → `DECISIONS.md` / `OPENING.md` |
 | `ll-research` | 0–1 | `docs/research-<tema>/` com SUMMARY, evidências e fontes |
 | `ll-decide` | 1 + cliques | `PLAN.md`, `ROADMAP.md`, `decisions/`, `PROGRESS.md` vazio |

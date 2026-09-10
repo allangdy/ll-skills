@@ -2,6 +2,19 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A skill `ll-update` lê este arquivo para mostrar o que mudou entre a versão instalada e a publicada.
 
+## [3.0.0] - Unreleased
+
+### Quebras
+
+- As skills não são mais invocadas pelo modelo — todas com `disable-model-invocation: true`.
+- Preâmbulo sem roteador de pedidos.
+- Descrições das skills reescritas em uma linha.
+
+### Alterado
+
+- Lint rule 1 e 3 do `lint-prompts.sh`.
+- Casos de eval `router-*` e `preamble-no-ritual` passam a exigir o comando nomeado e nenhuma chamada da ferramenta Skill; helper `no_tool_use` em `scripts/evals/lib/assert.sh`.
+
 ## [2.0.2] - 2026-09-08
 
 ### Alterado
