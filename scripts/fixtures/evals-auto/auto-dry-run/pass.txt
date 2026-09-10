@@ -1,0 +1,18 @@
+research     todo  no docs/research-*/SUMMARY.md
+brainstorm   todo  no docs/decide/OPENING.md
+decide       done  PLAN.md + PROGRESS.md ll-state block
+phase-05     done  ROADMAP row: DONE (docs/history/v1.0)
+phase-06     done  ROADMAP row: DONE (docs/history/v1.0)
+phase-07     half  epilogue over a board with M2, M3 not passing
+phase-08     todo  ROADMAP row: PLANNED
+verify-05    todo  no phases/05/VERIFICATION.md
+verify-06    todo  no phases/06/VERIFICATION.md
+verify-07    todo  no phases/07/VERIFICATION.md
+verify-08    todo  no phases/08/VERIFICATION.md
+close        todo  no docs/DELIVERY.md
+
+1. phase-07     ll-implement 07 --no-talk
+2. phase-08     ll-implement 08 --no-talk
+3. close        ll-close --no-talk
+
+Dry run: the roteiro above is the plan; nothing was written.

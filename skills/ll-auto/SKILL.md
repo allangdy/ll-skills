@@ -37,7 +37,7 @@ Helper: `${CLAUDE_SKILL_DIR}/scripts/ll-auto.js`, written `ll-auto.js` below. Re
 
 Three stops before any work:
 - `needs_objective: true` (no research, no `docs/decide/OPENING.md`, no `PLAN.md`, and no objective in the arguments) — print exactly two lines and stop, with no question: `Nada encontrado neste repositório: sem pesquisa, OPENING.md nem PLAN.md.` and the command to complete, `/ll-auto "<objetivo>" [--research] [--brainstorm]`.
-- `--dry-run` — print the roteiro table and stop, before writing `docs/AUTO.md`.
+- `--dry-run` — print the stage table from `detect` (one line per stage, as the helper prints it) and the roteiro table, then stop, before writing `docs/AUTO.md`.
 - an empty roteiro with an objective present — say the cycle has nothing left and hand over.
 
 `--resume`, or a plain invocation in a repository that already has `docs/AUTO.md`, reads the flags from that file's `## Flags` section and continues from the first row that is not `done`.

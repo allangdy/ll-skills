@@ -1,0 +1,8 @@
+{
+  "max_turns": 6,
+  "history": false,
+  "min_pass": 1,
+  "agent": null,
+  "permission_mode": "bypassPermissions",
+  "note": "Proves the --dry-run stop of ll-auto: the stage table and the roteiro are printed, docs/AUTO.md is not written and no skill is started. bypassPermissions so the helper's Bash runs unattended. Shared fixture: scripts/fixtures/project (phase-07 half, phase-08 planned)."
+}
