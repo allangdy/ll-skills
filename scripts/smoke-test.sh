@@ -1,9 +1,22 @@
 #!/usr/bin/env bash
 # Smoke test do ll-skills: gate estático, hooks, helper, instalador, preâmbulo,
 # poda de skills antigas e uninstall. Tudo num CLAUDE_CONFIG_DIR isolado.
+# Uso: smoke-test.sh [--only <seção>]   (sem argumento roda tudo)
+# As seções são os blocos numerados (1, 2, 3, 4, 4b, 4c, 4d, 5..10) e lint-orquestrador;
+# os blocos numerados montam estado uns para os outros, então --only serve aos que rodam
+# sozinhos (9, 10, lint-orquestrador).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
+
+ONLY=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --only) ONLY="${2:-}"; shift 2 ;;
+    *) echo "uso: smoke-test.sh [--only <seção>]" >&2; exit 2 ;;
+  esac
+done
+section() { [ -z "$ONLY" ] || [ "$ONLY" = "$1" ]; }
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
@@ -17,6 +30,7 @@ region() { awk '/^\/\/ <ll-shared:state>$/,/^\/\/ <\/ll-shared:state>$/' "$1"; }
 # ---------------------------------------------------------------------------
 # 1. gate estático
 # ---------------------------------------------------------------------------
+if section 1; then
 for f in bin/*.js hooks/*.js scripts/*.js; do node --check "$f"; done
 
 check "helper ≤700 linhas"            '[ "$(wc -l < scripts/ll-tools.js)" -le 700 ]'
@@ -30,10 +44,12 @@ region scripts/ll-tools.js > "$TMP/shared-tools.txt"
 region hooks/ll-state.js   > "$TMP/shared-hook.txt"
 check "região ll-shared:state existe"    '[ -s "$TMP/shared-tools.txt" ] && [ -s "$TMP/shared-hook.txt" ]'
 check "região ll-shared:state idêntica"  'cmp -s "$TMP/shared-tools.txt" "$TMP/shared-hook.txt"'
+fi
 
 # ---------------------------------------------------------------------------
 # 2. hooks silenciosos fora de um projeto
 # ---------------------------------------------------------------------------
+if section 2; then
 EMPTY="$TMP/empty"
 mkdir -p "$EMPTY"
 cp -R scripts/fixtures/empty/. "$EMPTY/"
@@ -56,10 +72,12 @@ for h in ll-state.js ll-precompact.js; do
   check "$h <300 ms no vazio"             '[ "$(cat "$TMP/hook.ms")" -lt 300 ]'
 done
 check "hooks não criaram arquivos no vazio" '[ "$(find "$EMPTY" | wc -l)" -eq "$BEFORE_FILES" ]'
+fi
 
 # ---------------------------------------------------------------------------
 # 3. hooks no fixture
 # ---------------------------------------------------------------------------
+if section 3; then
 FIX="$TMP/fix"
 bash scripts/fixtures/git-history.sh "$FIX" > /dev/null
 
@@ -88,10 +106,12 @@ check "precompact avisa a sessão"    'grep -q "compaction marked in PROGRESS.md
 check "precompact inseriu 1 linha"   '[ "$(grep -c "^- \[compaction" "$FIX/PROGRESS.md")" -eq "$((C0 + 1))" ]'
 check "linha nova fica acima do epílogo" \
   'grep -n "^## Epilogue" "$FIX/PROGRESS.md" | head -1 | cut -d: -f1 | xargs -I{} sh -c "sed -n \"\$(({} - 2))p\" \"$FIX/PROGRESS.md\"" | grep -q "^- \[compaction .* manual "'
+fi
 
 # ---------------------------------------------------------------------------
 # 4. os 12 comandos do helper
 # ---------------------------------------------------------------------------
+if section 4; then
 cd "$FIX"
 $HELPER waves phases/07/PLAN.md --json > "$TMP/waves.json"
 check "waves: 4 ondas"                'grep -q "\"wave\":4" "$TMP/waves.json"'
@@ -158,10 +178,12 @@ for cmd in waves tdd-gate spot-check state ledger backlog-reconcile epilogue pha
     "$HELPER $cmd M1 > \"$TMP/r.out\" 2>/dev/null; [ \$? -eq 0 ] && grep -q '\"ok\":false' \"$TMP/r.out\""
 done
 cd "$ROOT"
+fi
 
 # ---------------------------------------------------------------------------
 # 4b. nested state root (PROGRESS.md/phases/ under docs/state/, sources at git top)
 # ---------------------------------------------------------------------------
+if section 4b; then
 NEST="$TMP/nest"
 bash scripts/fixtures/git-history.sh "$NEST" > /dev/null
 mkdir -p "$NEST/docs/state"
@@ -207,10 +229,12 @@ check "state do topo reporta git_top correto" \
 $HELPER spot-check M1 --files src/a.ts,test/a.test.ts --cwd "$NEST" --json > "$TMP/nest-top-spot.json"
 check "spot-check do topo acha a raiz deslocada" \
   'grep -q "\"verdict\":\"pass\"" "$TMP/nest-top-spot.json"'
+fi
 
 # ---------------------------------------------------------------------------
 # 4c. helper ll-auto: detect
 # ---------------------------------------------------------------------------
+if section 4c; then
 AUTO="node $ROOT/skills/ll-auto/scripts/ll-auto.js"
 check "ll-auto detect: fixture project → decide done, 07 half" \
   '$AUTO detect --cwd "$ROOT/scripts/fixtures/project" --json > "$TMP/auto-project.json" \
@@ -223,10 +247,12 @@ check "ll-auto detect: fixture empty → tudo todo" \
 check "ll-auto detect --json é JSON válido" \
   '$AUTO detect --cwd "$ROOT/scripts/fixtures/project" --json \
    | node -e "JSON.parse(require(\"fs\").readFileSync(0,\"utf8\"))"'
+fi
 
 # ---------------------------------------------------------------------------
 # 4d. helper ll-auto: roteiro, next-cmd, report, auto-md
 # ---------------------------------------------------------------------------
+if section 4d; then
 check "ll-auto roteiro: --verify all → 07, verify-07, 08, verify-08, close" \
   '$AUTO roteiro --cwd "$ROOT/scripts/fixtures/project" --flags "--verify all" --json > "$TMP/auto-verify-all.json" \
    && grep -q "\"stage\":\"phase-07\".*\"stage\":\"verify-07\".*\"stage\":\"phase-08\".*\"stage\":\"verify-08\".*\"stage\":\"close\"" "$TMP/auto-verify-all.json" \
@@ -261,10 +287,12 @@ check "ll-auto auto-md: as cinco seções, o objetivo e as flags" \
    && grep -q "^um objetivo$" "$TMP/auto-md.txt" && grep -q -e "^--only 8$" "$TMP/auto-md.txt" \
    && grep -q "^| # | stage | command | status | evidence |$" "$TMP/auto-md.txt" \
    && grep -q "^| 1 | phase-08 | ll-implement 08 --no-talk | todo |" "$TMP/auto-md.txt"'
+fi
 
 # ---------------------------------------------------------------------------
 # 5. instalador
 # ---------------------------------------------------------------------------
+if section 5; then
 export CLAUDE_CONFIG_DIR="$TMP/cfg" XDG_CACHE_HOME="$TMP/cache"
 mkdir -p "$CLAUDE_CONFIG_DIR"
 
@@ -340,10 +368,12 @@ mkdir -p "$XDG_CACHE_HOME/ll-skills"
 V="$(cat "$CLAUDE_CONFIG_DIR/ll-skills/VERSION")"
 printf '{"checked":%s,"installed":"%s","latest":"99.0.0","update_available":true,"method":"npm"}' "$(date +%s)" "$V" > "$XDG_CACHE_HOME/ll-skills/update-check.json"
 check "leitor avisa versão nova" 'node "$CLAUDE_CONFIG_DIR/hooks/ll-skills-check-update.js" | grep -q "/ll-update"'
+fi
 
 # ---------------------------------------------------------------------------
 # 6. preâmbulo
 # ---------------------------------------------------------------------------
+if section 6; then
 check "não-TTY sem --yes não escreve CLAUDE.md" '[ ! -e "$CLAUDE_CONFIG_DIR/CLAUDE.md" ]'
 check "não-TTY imprime o diff e a dica --yes"   'grep -q -- "--yes" "$TMP/install1.log"'
 
@@ -364,10 +394,12 @@ sed -i 's/^## Skills$/## Skills MEXIDO A MAO/' "$CMD"
 node bin/install.js --yes < /dev/null > /dev/null
 check "corpo alterado à mão é restaurado" 'cmp -s "$CMD" "$TMP/claudemd-1"'
 check "backup .ll-skills.bak existe"      '[ -f "$CMD.ll-skills.bak" ]'
+fi
 
 # ---------------------------------------------------------------------------
 # 7. poda das skills 1.x (com e sem manifesto)
 # ---------------------------------------------------------------------------
+if section 7; then
 LEGACY_SKILLS="ll-atualizar ll-decidir-antes ll-desarmar ll-orquestrar ll-pesquisar ll-pesquisar-mercado ll-verificar-entrega ll-voltar-do-futuro"
 CFG_L="$TMP/cfg-legacy"
 seed_legacy() {
@@ -398,10 +430,12 @@ assert_pruned "com manifesto"
 seed_legacy   # agora o manifesto atual (2.x) não lista nada disso: só KNOWN_LEGACY resolve
 CLAUDE_CONFIG_DIR="$CFG_L" node bin/install.js --no-preamble < /dev/null > /dev/null
 assert_pruned "sem manifesto"
+fi
 
 # ---------------------------------------------------------------------------
 # 8. uninstall
 # ---------------------------------------------------------------------------
+if section 8; then
 node bin/install.js --uninstall < /dev/null > /dev/null
 check "uninstall removeu skills"      '[ -z "$(ls "$CLAUDE_CONFIG_DIR/skills" | grep "^ll-" || true)" ]'
 check "uninstall removeu as cópias do helper" '[ ! -e "$CLAUDE_CONFIG_DIR/skills/ll-implement" ]'
@@ -411,10 +445,12 @@ check "uninstall removeu o check-update" '! grep -q "ll-skills-check-update" "$C
 check "uninstall preservou alheios"   'grep -q "echo alheio" "$CLAUDE_CONFIG_DIR/settings.json" && [ -f "$CLAUDE_CONFIG_DIR/skills/alheia/SKILL.md" ]'
 check "uninstall removeu o preâmbulo" '! grep -q "ll-skills:preamble" "$CMD"'
 check "uninstall preservou as sentinelas" 'grep -q "SENTINEL-TOP" "$CMD" && grep -q "SENTINEL-BOTTOM" "$CMD"'
+fi
 
 # ---------------------------------------------------------------------------
 # 9. lint dos prompts (uma checagem por regra de scripts/lint-prompts.sh)
 # ---------------------------------------------------------------------------
+if section 9; then
 lint() { # lint <n>: roda uma regra e só imprime a saída quando ela falha
   bash "$ROOT/scripts/lint-prompts.sh" --rule "$1" > "$TMP/lint-$1.txt" 2>&1 \
     || { cat "$TMP/lint-$1.txt"; return 1; }
@@ -428,8 +464,10 @@ check "lint 5: strings proibidas"       'lint 5'
 check "lint 6: cópias idênticas"        'lint 6'
 check "lint 7: idioma"                  'lint 7'
 check "lint 8: lista privada"           'lint 8'
+fi
 
 # 10. lint de contrato entre as peças (uma checagem por regra de scripts/lint-contract.cjs)
+if section 10; then
 contract() { node "$ROOT/scripts/lint-contract.cjs" --rule "$1" >/dev/null 2>&1; }
 check "contrato 1: references citadas existem e são citadas"  'contract 1'
 check "contrato 2: comandos do helper definidos e citados"     'contract 2'
@@ -449,4 +487,55 @@ check "contrato 6: raiz sem skills falha" '! contract_root scripts/fixtures/empt
 if [ -n "${LL_FORBIDDEN_FILE:-}" ] && [ -f "$LL_FORBIDDEN_FILE" ]; then
   check "no private terms in tracked files" '! git ls-files | grep -v "^\.gitignore$" | xargs grep -n -i -w -E -f "$LL_FORBIDDEN_FILE" 2>/dev/null | grep -q .'
 fi
+fi
+
+# ---------------------------------------------------------------------------
+# lint-orquestrador. as exceções de ll-auto valem só para ll-auto
+# ---------------------------------------------------------------------------
+if section lint-orquestrador; then
+cd "$ROOT"
+SCR="$TMP/lint-scratch"
+mkdir -p "$SCR"
+git ls-files -z | xargs -0 cp --parents -t "$SCR"
+git -C "$SCR" init -q
+git -C "$SCR" add -A
+mkdir -p "$SCR/skills/ll-fake"
+cat > "$SCR/skills/ll-fake/SKILL.md" <<'FAKE'
+---
+name: ll-fake
+description: Pretends to be an orchestrator so the lint can prove the ll-auto exceptions do not leak to any other skill on the tree.
+argument-hint: "[--flag]"
+disable-model-invocation: true
+allowed-tools: Bash(${CLAUDE_SKILL_DIR}/scripts/ll-auto.js *)
+---
+
+# Fake
+
+## Deliverables
+
+| File | Role | Mutability |
+|---|---|---|
+| `docs/FAKE.md` | nothing | never |
+
+## Flow
+
+/ll-research x
+
+## Completion criterion
+
+▶ Next — /clear, then ll-resume
+FAKE
+git -C "$SCR" add -A
+lint_scr() { bash "$SCR/scripts/lint-prompts.sh" --rule "$1" > "$TMP/scr-rule$1.out" 2>&1; }
+lint_real() { bash "$ROOT/scripts/lint-prompts.sh" --rule "$1" >/dev/null 2>&1; }
+
+check "orquestrador: skills/ll-auto/SKILL.md existe" '[ -f "$ROOT/skills/ll-auto/SKILL.md" ]'
+check "orquestrador: regra 1 reprova o allowed-tools do ll-auto em outra skill" \
+  '! lint_scr 1 && grep -q "^FAIL 1 .*skills/ll-fake/SKILL.md: allowed-tools" "$TMP/scr-rule1.out"'
+check "orquestrador: regra 5 reprova a linha /ll- em outra skill" \
+  '! lint_scr 5 && grep -q "^FAIL 5 .*skills/ll-fake/SKILL.md: line .* invokes a skill as a command" "$TMP/scr-rule5.out"'
+check "orquestrador: regras 1 e 5 passam na árvore real (com ll-auto)" \
+  'lint_real 1 && lint_real 5'
+fi
+
 echo "smoke test OK — $N checks"
