@@ -6,6 +6,7 @@
 //   node scripts/lint-contract.cjs            all rules
 //   node scripts/lint-contract.cjs --rule 2   one rule
 //   node scripts/lint-contract.cjs --json     machine output
+//   node scripts/lint-contract.cjs --root <dir>   lint another tree (fixtures)
 //
 // Checks the seams that no test covers: SKILL.md <-> references/, helper commands <-> ll-tools.js,
 // skills <-> agents, verdict vocabulary, state-file names, `Next` targets, installer <-> package.
@@ -14,7 +15,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = path.resolve(__dirname, '..');
+// `--root <dir>` replaces the package root for the whole run (the rule fixtures use it).
+// Parsed here, before the consts below are built from ROOT at module load.
+const ROOT = (() => {
+  const at = process.argv.indexOf('--root');
+  const given = at >= 0 ? process.argv[at + 1] : null;
+  return given ? path.resolve(process.cwd(), given) : path.resolve(__dirname, '..');
+})();
 const J = path.join;
 const NEXT_MARK = '▶ Next';
 const MODELS = 'opus|sonnet|haiku|fable';
@@ -305,29 +312,72 @@ function rule5() {
   return r;
 }
 
-// 6. Every `Next` line points at an existing skill, /clear, /goal or a placeholder.
+// 6. Every `Next` line hands over in the grammar `▶ Next — /clear, then <cmd>`.
+// `<cmd>` is an existing `ll-<skill>` with optional arguments, `/goal <text>`, or a `<placeholder>`;
+// alternatives live in one trailing parenthetical; a handoff quoted inside backticks may be followed
+// by free prose after the closing backtick.
+const NEXT_OPEN = '/clear, then ';
+function cut(s) { return String(s).trim().slice(0, 60); }
+
+// The reasons one handoff breaks the grammar; empty means it holds.
+function handoffFails(tail, wrapped) {
+  const fails = [];
+  let hand = tail;
+  if (wrapped) {
+    const close = tail.indexOf('`');
+    if (close < 0) return [`opens inside backticks and never closes them —${cut(tail)}`];
+    hand = tail.slice(0, close);
+  }
+  hand = hand.trim();
+  // Kept from the first version of this rule: every skill the line cites must exist.
+  for (const cmd of matches(/\bll-[a-z]+(?:-[a-z]+)*\b/g, tail).filter((c) => c !== 'll-tools')) {
+    if (!text(J(ROOT, 'skills', cmd, 'SKILL.md'))) fails.push(`names \`${cmd}\`, which is not a skill`);
+  }
+  if (!hand.startsWith(NEXT_OPEN)) {
+    let why = 'does not open with `/clear, then `';
+    if (/^`?\s*\/clear\s*`?\s*,?\s*then\b/.test(hand)) {
+      if (hand.indexOf('`') === 0 || /^\/clear`/.test(hand)) why = 'wraps `/clear` in backticks';
+      else if (/^\/clear\s+then\b/.test(hand)) why = 'writes `then` without the comma';
+    }
+    fails.push(`${why} —${cut(hand)}`);
+    return fails;
+  }
+  const rest = hand.slice(NEXT_OPEN.length).trim();
+  const split = /^([^()]*?)\s*(?:\(([^()]*)\))?$/.exec(rest);
+  if (!split) { fails.push(`puts text outside a single trailing parenthetical —${cut(rest)}`); return fails; }
+  const cmd = split[1].trim();
+  if (cmd.includes('`')) fails.push(`wraps the command in backticks —${cut(cmd)}`);
+  else if (/\bpaste\b/i.test(cmd)) fails.push(`says "paste" instead of naming the command —${cut(cmd)}`);
+  else if (/^\/goal\b/.test(cmd)) {
+    if (!cmd.slice('/goal'.length).trim()) fails.push('names /goal with no text after it');
+  } else if (!/^<[^<>]+>$/.test(cmd)) {
+    if (!/^ll-[a-z]+(?:-[a-z]+)*(?:\s+[^`()]*)?$/.test(cmd)) fails.push(`names no command —${cut(cmd)}`);
+    else if (matches(/\bll-[a-z]+(?:-[a-z]+)*\b/g, cmd).length > 1) {
+      fails.push(`lists alternatives outside a parenthetical —${cut(cmd)}`);
+    }
+  }
+  return fails;
+}
+
 function rule6() {
   const r = result();
+  if (!SKILL_TREE.length) { r.fails.push(`no skills tree under ${ROOT}`); return r; }
   for (const file of SKILL_TREE) {
     const body = text(file);
     if (body === null) continue;
     for (const line of body.split('\n')) {
       // The marker only opens a handoff when the em dash follows; prose *about* the line does not.
-      const hit = /▶ Next\s*—/.exec(line);
-      if (!hit) continue;
-      r.checked += 1;
-      const tail = line.slice(hit.index + hit[0].length);
-      const cited = matches(/\bll-[a-z]+(?:-[a-z]+)*\b/g, tail).filter((c) => c !== 'll-tools');
-      let ok = true;
-      for (const cmd of cited) {
-        if (!text(J(ROOT, 'skills', cmd, 'SKILL.md'))) {
-          ok = false;
-          r.fails.push(`${rel(file)}: Next names \`${cmd}\`, which is not a skill`);
-        }
+      const marker = /▶ Next\s*—/g;
+      const hits = [];
+      let hit;
+      while ((hit = marker.exec(line)) !== null) hits.push({ at: hit.index, end: hit.index + hit[0].length });
+      for (let i = 0; i < hits.length; i++) {
+        const tail = line.slice(hits[i].end, i + 1 < hits.length ? hits[i + 1].at : line.length);
+        r.checked += 1;
+        const fails = handoffFails(tail, line[hits[i].at - 1] === '`');
+        for (const f of fails) r.fails.push(`${rel(file)}: Next ${f}`);
+        refCount(file, fails.length === 0);
       }
-      const anchored = cited.length > 0 || /\/clear|\/goal|<[^>]+>/.test(tail);
-      if (!anchored) { ok = false; r.fails.push(`${rel(file)}: Next names no command —${tail.trim().slice(0, 60)}`); }
-      refCount(file, ok);
     }
   }
   return r;
