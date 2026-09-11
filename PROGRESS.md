@@ -109,6 +109,12 @@ not_verified: nothing for this milestone
 
 - [2026-09-11T19:28:49Z] 3.1.0 round — wave 2: lint rule 9, helper ceiling 760/36000 (DEC-0016), eval asserts for the new wording, new case router-large-opener
 
+- [2026-09-11T19:45:10Z] 3.1.0 round — wave 4: preamble scoped to ll repos (owner feedback), premise gate 4 questions without ids, rule 9 catches [PG- and banda 1, evals prompt the slash commands
+
+- [2026-09-11T19:49:01Z] W4-A: amendment — preamble routing removed entirely, skills only by explicit command in any repo (owner, 2026-09-11) (DEC-0021)
+
+- [2026-09-11T19:49:01Z] W4-B: amendment — router-research/router-execute/router-large-opener deleted; router-no-skill proves a plain request is done even with ll state (DEC-0022)
+
 ## Epilogue — phase 01 — 2026-09-10
 passed: M1, M2, M3, M4, M5 (5/5) — every skill locked, preamble without a router, README/CHANGELOG updated, router eval cases assert the manual contract, lint and smoke test green in this worktree.
 left: none.
@@ -399,3 +405,17 @@ commands: CHANGELOG header 1 · version 3.1.0 · turns 8/12/16/20/24 present 5 �
 deviations: D-4 — round-1 turn 3 expected ROADMAP.md for a two-phase project; corrected to the PLAN §8 table (notes-api.md:16, notes-api-auto.md:8).
 questions: none · backlog: none
 not_verified: turns 8–24 never driven yet (the rerun is the next step).
+### W4-A — 2026-09-11 17:12
+built: the preamble no longer routes any request to a skill in any repository (owner instruction, DEC-0021); the ll-decide premise gate is four plain questions in one block, the caution constraint recorded as `ASM-n [revisable]` (DEC-0022); lab turn 1 and the 3.1.0 changelog follow.
+commits: d9b608b · 17d9907 fix(preamble) · e09bc23 fix(ll-decide) · ce0302a chore(lab) · d24deba chore(changelog)
+commands: lint → "ok   9 plain questions" exit 0 · preamble 58/70 · SKILL.md 137 · premise-gate.md 97 · `[PG-` 0/0 · `banda 1` 0/0/0 · `Commands to name` 0 · `never redirects` 1.
+deviations: scope paragraph (d9b608b) superseded by the owner's amendment and removed in 17d9907.
+questions: none · backlog: `skills/ll-brainstorm/SKILL.md:102` "five gate answers" → fixed by the session (four + assumption).
+not_verified: live ll-decide (gate run below); installed `~/.claude/CLAUDE.md` (reinstall below).
+### W4-B — 2026-09-11 16:56
+built: rule 9 flags `[PG-` on question lines and `banda 1` in skills/, agents/, assets/; `router-research`, `router-execute`, `router-large-opener` deleted; `router-no-skill` (fixture with PLAN.md + decisions/, no PROGRESS.md: a research request is done on the spot); `implement-review-gate` types `/ll-implement 7`.
+commits: cb36997 test(W4-B) · 26a415d feat(W4-B)
+commands: `--rule 9` ok (100 files) · lint-scratch 8 · evals-auto 18 · `npm test` → "smoke test OK — 247 checks" · lint-contract ok · router-no-skill assert pass 0 / fail 1 · clean checkout green · 12 cases, README "twelve".
+deviations: rule 9 skips `scripts/evals/cases/*/assert.sh` on the question-line scan (the assert names the pattern it scores).
+questions: none · backlog: CHANGELOG:12 and `implement-stops-at-next/prompt.txt` named the deleted case / prose prompt → fixed by the session; ROADMAP/PLAN/phases/01 mentions are history, left.
+not_verified: live reps (gate run below).

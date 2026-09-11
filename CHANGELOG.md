@@ -9,7 +9,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - Passo `board-switch` no helper: troca o marcador de fase antes da primeira onda gravar, e `passes` recusa gravar quando o marcador é de outra fase — a onda 1 não escreve mais no lugar da fase anterior (F-1).
 - Coluna `note` e condição executável (`` `cmd` exit N ``) nas linhas de backlog nascidas em `ll-implement`; o epílogo lista quem ainda não é parseável e a fase roda `backlog-reconcile` a seco antes de fechar, reescrevendo a linha na hora (F-2).
 - Linha de progresso por onda no terminal durante uma fase (`onda i/M — M2, M3 rodando`), no despacho e no retorno de cada marco (F-4).
-- Lint rule 9 (`lint-prompts.sh`): nenhuma pergunta ao dono ou linha de contagem carrega `band-1`, `[DEC-`, `[D-` ou `ASM-`; novo caso de eval `router-large-opener`; os asserts de `decide-final-round` e `implement-stops-at-next` seguem a nova redação.
+- Lint rule 9 (`lint-prompts.sh`): nenhuma pergunta ao dono ou linha de contagem carrega `band-1`, `[DEC-`, `[D-` ou `ASM-`; os casos de eval que esperavam a sessão "nomear o comando" (`router-research`, `router-execute`, `router-large-opener`) foram apagados e `router-no-skill` prova o contrário — um pedido comum é feito na hora mesmo num repositório com estado; os asserts de `decide-final-round` e `implement-stops-at-next` seguem a nova redação.
 - Teto de tamanho do helper em 760 linhas / 36 000 bytes (`DEC-0016-helper-ceiling-760-36000.md`).
 - `phase-stats --since <data>` passa a incluir o próprio dia informado (F-12).
 - `ll-resume` grava a resposta a uma decisão `WAITING` no próprio arquivo da decisão.

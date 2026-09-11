@@ -99,7 +99,7 @@ Rules: every A item cites its analog or says `[no analog — my call]` (and beco
 every Taste item says why it is revisable, the "constraint I am inventing out of caution" case
 spelled out; C is recorded, never discussed; no acronym without its translation on the same
 line; the queue behind the map is never shown. Project route: header `Project — <title>`, and
-PREMISES carry the five gate answers (deliverable in the client's format, source of truth, invented
+PREMISES carry the four gate answers plus the caution assumption (deliverable in the client's format, source of truth, invented
 constraint, house pattern, the number that decides success) when the owner already gave them.
 
 ### 4. Battery B (once, ≤4)
