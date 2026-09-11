@@ -1,1 +1,1 @@
-escreva o plano para um serviço que envia lembretes por e-mail
+/ll-decide project serviço que envia lembretes por e-mail

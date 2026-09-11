@@ -8,9 +8,9 @@ WORK="$1"; OUT_JSON="$2"; OUT_TXT="$3"
 # What belongs to the skill, never to the opener.
 DECIDED='express|fastify|prisma|sqlite|postgres|uuid|nanoid|localStorage|src/'
 
-first_text_contains "$OUT_JSON" 'll-decide project|ll-research' \
+first_text_contains "$OUT_JSON" 'll-brainstorm|ll-decide project|ll-research' \
   'the first message names the command that owns the request'
-contains "$OUT_TXT" 'll-decide project|ll-research' 'the answer hands the command over'
+contains "$OUT_TXT" 'll-brainstorm|ll-decide project|ll-research' 'the answer hands the command over'
 
 # The opener and the final answer are scored the same way: a router answer is one message.
 OPENER="$(mktemp)"
