@@ -29,7 +29,7 @@ function blank(s) { return !s || /^[-—]+$/.test(s); }
 function lines(s) { return s.split('\n').filter((l) => l.trim()); }
 function listOf(m, k) { return Array.isArray(m[k]) ? m[k].map(String) : []; }
 
-const VALF = ['since', 'files', 'prefix', 'reason', 'commit', 'state', 'file', 'dir', 'cwd'];
+const VALF = ['since', 'files', 'prefix', 'reason', 'commit', 'state', 'file', 'dir', 'cwd', 'milestones', 'phase'];
 const BOOLF = ['json', 'run'];
 function parseArgv(argv) {
  const r = { _: [], flags: {} };
@@ -37,13 +37,10 @@ function parseArgv(argv) {
   const t = argv[i];
   if (t === '--') { r._.push(...argv.slice(i + 1)); break; }
   if (!t.startsWith('--')) { r._.push(t); continue; }
-  let k = t.slice(2), v = null;
-  const eq = k.indexOf('=');
-  if (eq >= 0) { v = k.slice(eq + 1); k = k.slice(0, eq); }
+  const k = t.slice(2);
   if (BOOLF.indexOf(k) >= 0) r.flags[k] = true;
   else if (VALF.indexOf(k) < 0) die('unknown flag --' + k);
-  else if (v === null && (v = argv[++i]) === undefined) die('flag --' + k + ' needs a value');
-  else r.flags[k] = v;
+  else if ((r.flags[k] = argv[++i]) === undefined) die('flag --' + k + ' needs a value');
  }
  return r;
 }
@@ -376,6 +373,33 @@ function stateLine(indent, id, f) {
   .map((k) => k + ': ' + outScalar(f[k])).join(', ') + ' }';
 }
 
+const pad2 = (v) => String(v === null || v === undefined ? '' : v).padStart(2, '0');
+const MRE = /^\s*(M\d+|G-\d+):\s*\{/, NOSB = 'no ll-state block in PROGRESS.md';
+
+C['board-switch'] = (a) => {
+ const root = rootOf(a, true), phase = pad2(a._[0] || die('missing phase argument'));
+ const ids = String(a.flags.milestones || '').split(',').map((x) => x.trim()).filter(Boolean);
+ if (!/^\d{2}$/.test(phase) || !ids.length || ids.some((i) => !/^(M\d+|G-\d+)$/.test(i))) {
+  die('usage: board-switch NN --milestones M1,M2');
+ }
+ const { block, state } = loadStateBlock(root) || die(NOSB);
+ const from = state.phase === null ? die('no `phase:` line in the ll-state block') : pad2(state.phase);
+ const keep = from === phase ? state.order.map((o) => o.id) : [];
+ const seeded = ids.filter((i) => keep.indexOf(i) < 0);
+ const ind = state.order.length ? state.order[0].indent : '  ', out = [];
+ let at = -1;
+ for (const l of block.lines) {
+  if (/^phase:\s/.test(l)) { out.push('phase: ' + phase); continue; }
+  if (MRE.test(l)) { if (keep.length) { out.push(l); at = out.length; } continue; }
+  if (/^milestones:\s*(\{\s*\})?$/.test(l)) { out.push('milestones:'); at = out.length; continue; }
+  out.push(l);
+ }
+ if (at < 0) die('no `milestones:` key in the ll-state block');
+ out.splice(at, 0, ...seeded.map((i) => stateLine(ind, i, { passes: false, reason: 'not started' })));
+ writeAtomic(block.file, block.all.slice(0, block.start + 1).concat(out, block.all.slice(block.end)).join('\n'));
+ return { ok: true, phase, from, seeded };
+};
+
 C.passes = (a) => {
  const root = rootOf(a, true), id = mid(a);
  if (!/^(M\d+|G-\d+)$/.test(id)) die('bad milestone id: ' + id);
@@ -383,7 +407,10 @@ C.passes = (a) => {
  if (arg !== 'true' && arg !== 'false') die('expected true|false');
  const value = arg === 'true';
  if (!value && !a.flags.reason) die('passes <M> false requires --reason');
- const { block, state } = loadStateBlock(root) || die('no ll-state block in PROGRESS.md');
+ const { block, state } = loadStateBlock(root) || die(NOSB);
+ if (a.flags.phase !== undefined && pad2(state.phase) !== pad2(a.flags.phase)) {
+  die('board is phase ' + pad2(state.phase) + ', not ' + pad2(a.flags.phase) + ' ' + DASH + ' run board-switch first');
+ }
  const all = block.all.slice(), old = state.order.find((o) => o.id === id);
  const f = old ? Object.assign({}, state.milestones[id]) : {};
  f.passes = value;
@@ -512,15 +539,16 @@ C['backlog-reconcile'] = (a) => {
 
 C.epilogue = (a) => {
  const root = rootOf(a, true);
- const sb = loadStateBlock(root) || die('no ll-state block in PROGRESS.md');
+ const sb = loadStateBlock(root) || die(NOSB);
  const phase = String(a._[0] || sb.state.phase || die('missing phase argument'));
  const ms = sb.state.milestones, pad = phase.padStart(2, '0');
  const plan = J(root, 'phases', pad, 'PLAN.md');
- let blocked_by = {}, backlog = [], next = null;
+ let blocked_by = {}, backlog = [], unparsable = [], next = null;
  try { if (fs.existsSync(plan)) blocked_by = C.waves({ _: [plan], flags: { cwd: root } }).blocked_by; } catch {}
  try {
-  backlog = C['backlog-reconcile']({ _: [], flags: { cwd: root } }).items
-   .filter((i) => i.state === 'OPEN').map((i) => i.id);
+  const items = C['backlog-reconcile']({ _: [], flags: { cwd: root } }).items;
+  backlog = items.filter((i) => i.state === 'OPEN').map((i) => i.id);
+  unparsable = items.filter((i) => i.result === 'unparsable-condition').map((i) => i.id);
  } catch {}
  const roadmap = readText(J(root, 'ROADMAP.md'));
  if (roadmap) {
@@ -532,12 +560,12 @@ C.epilogue = (a) => {
  return { ok: true, phase: pad,
   passed: Object.keys(ms).filter((k) => ms[k].passes === true),
   left: Object.keys(ms).filter((k) => ms[k].passes !== true).map((k) => ({ id: k, why: why(k) })),
-  waiting: waiting(root), new_backlog: backlog, dirty: gitInfo(root).dirty,
+  waiting: waiting(root), new_backlog: backlog, unparsable, dirty: gitInfo(root).dirty,
   head: log.length ? log[0].sha7 : null, blocked_by,
   next_command: next !== null ? 'll-implement ' + next : 'll-close' };
 };
 
-const TARGETS = { questions_per_phase: 4, owner_prompts_per_phase: 1, band1_open_at_close: 0 };
+const TARGETS = { questions: 4, owner_prompts: 1, owner_open_at_close: 0 };
 function phaseEpilogues(root) {
  const all = (readText(J(root, 'PROGRESS.md')) || '').split('\n'), out = [];
  let prev = 0;
@@ -546,7 +574,7 @@ function phaseEpilogues(root) {
   if (!h) return;
   const op = all.slice(prev, i).filter((x) => /^- \[[^\]]+\] owner:/.test(x)).length; prev = i;
   const end = all.findIndex((x, k) => k > i && /^## /.test(x)), sec = all.slice(i, end < 0 ? 1e9 : end).join('\n');
-  const m = /milestones passed (\d+)\/(\d+) · questions asked (\d+) \/ assumptions (\d+)[^/]*\/ band-1 open (\d+)[^·]*· amendments (\d+)[^·]*· verification:\s*(\S+)\s+(\S+)/.exec(sec);
+  const m = /milestones passed (\d+)\/(\d+) · questions asked (\d+) \/ assumptions (\d+)[^/]*\/ (?:band-1|owner decisions) open (\d+)[^·]*· amendments (\d+)[^·]*· verification:\s*(\S+)\s+(\S+)/.exec(sec);
   out.push(m ? { phase: h[1], passed: +m[1], total: +m[2], questions: +m[3], assumptions: +m[4], band1_open: +m[5],
    amendments: +m[6], verdict: m[8], verification: m[7], owner_prompts: op } : { phase: h[1], count_line: false, owner_prompts: op });
  });
@@ -554,7 +582,8 @@ function phaseEpilogues(root) {
 }
 
 C['phase-stats'] = (a) => {
- const root = rootOf(a), es = gitLog(root, a.flags.since ? ['--since=' + a.flags.since] : null);
+ const sc = a.flags.since, from = /^\d{4}-\d{2}-\d{2}$/.test(sc) ? sc + 'T00:00:00' : sc;
+ const root = rootOf(a), es = gitLog(root, sc ? ['--since=' + from] : null);
  const days = uniq(es.map((e) => e.date)).sort(), by_type = {};
  for (const e of es) {
   const m = /^([a-z]+)(\([^)]*\))?!?:/.exec(e.subject), t = m ? m[1] : 'other';
@@ -632,6 +661,7 @@ const S = ' · ';
 const j = (...p) => p.filter((x) => x !== null && x !== '').join(S);
 const or = (v) => (v && v.length ? v : 'none');
 const FMT = {
+  'board-switch': (r) => j(`phase ${r.phase}`, `from ${r.from || DASH}`, `seeded ${or(r.seeded.join(' '))}`),
   waves: (r) => j(`waves ${r.waves.length}`, r.waves.map((w) => `w${w.wave} ${w.milestones}`).join(S),
     `defects ${r.defects.length}`, `blocked ${Object.keys(r.blocked_by).length}`,
     r.unscheduled.length ? `unscheduled ${r.unscheduled}` : ''),
@@ -650,10 +680,10 @@ const FMT = {
   'backlog-reconcile': (r) => j(`backlog ${r.items.length}`, `open ${r.open}`, r.run ? `closed ${or(r.closed)}` : 'dry-run'),
   epilogue: (r) => [j(`phase ${r.phase}`, `head ${r.head || DASH}`, r.dirty ? `${r.dirty} dirty` : 'clean'),
     `passed: ${or(r.passed.join(' '))}${S}left: ${or(r.left.map((l) => `${l.id} (${l.why})`).join(S))}`,
-    `waiting: ${or(r.waiting.map((w) => w.id).join(' '))}${S}backlog: ${or(r.new_backlog.join(' '))}`,
+    `waiting: ${or(r.waiting.map((w) => w.id).join(' '))}${S}backlog: ${or(r.new_backlog.join(' '))}${S}unparsable: ${or(r.unparsable.join(' '))}`,
     `blocked_by: ${or(Object.keys(r.blocked_by).map((k) => `${k}<-${r.blocked_by[k]}`).join(' '))}`,
     `next: ${r.next_command}`,
-    'targets: q≤4/phase · owner≤1/phase · band-1=0 at close'].join('\n'),
+    'targets: q≤4 · owner≤1 · yours open=0'].join('\n'),
   'phase-stats': (r) => j(`days ${r.days_with_work}/${r.span_days}`, `idle ${r.idle_days}`,
     `commits ${r.commits}`, `test/feat ${r.test_feat_ratio === null ? DASH : r.test_feat_ratio}`,
     `phases ${r.phases.length} · over target ${r.phases.filter((p) => p.questions > 4 || p.owner_prompts > 1 || p.band1_open > 0).length}`),
@@ -661,15 +691,14 @@ const FMT = {
     + r.defects.map((d) => `\n  ${d.severity} ${d.rule} ${d.milestone || '-'}` + (d.message === d.rule ? '' : ` ${DASH} ${d.message}`)).join(''),
 };
 
-const WRITE = new Set(['dec-reserve', 'passes', 'heartbeat']);
+const WRITE = new Set(['dec-reserve', 'passes', 'heartbeat', 'board-switch']);
 
 function main() {
  const argv = process.argv.slice(2), cmd = argv[0];
- let write = WRITE.has(cmd) || (cmd === 'backlog-reconcile' && argv.indexOf('--run') > 0);
+ const write = WRITE.has(cmd) || (cmd === 'backlog-reconcile' && argv.indexOf('--run') > 0);
  try {
   if (!C[cmd]) die('usage: ll-tools.js <' + Object.keys(C).join('|') + '> [args] [--json]');
   const a = parseArgv(argv.slice(1));
-  write = WRITE.has(cmd) || (cmd === 'backlog-reconcile' && !!a.flags.run);
   const res = sz(C[cmd](a));
   process.stdout.write((a.flags.json || !FMT[cmd] ? JSON.stringify(res) : FMT[cmd](res)) + '\n');
   process.exit(0);
