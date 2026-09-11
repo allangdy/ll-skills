@@ -21,7 +21,7 @@ C as one word, never into A, never into a plan for that phase. Then classify wit
 `references/decision-policy.md`:
 Mechanical (band 2) → A; Taste (band 3) → A marked `[revisable]` with the reason; Blocking (band 1:
 money above the ceiling, irreversible outside the repo, price or promise, scope cut, the number the
-owner will look at, a recorded rule contradicted by evidence) → B, at most 4, by impact. A band-1
+owner will look at, a recorded rule contradicted by evidence) → B, at most 4, by impact. A band 1
 item in A is a bug. What earlier DECISIONS, PLAN §3 or an external document settled is cited by id.
 
 ## 3. The map (the first visible message, ≤35 lines)
@@ -47,8 +47,9 @@ Every A item cites its analog or says `[no analog — my call]` (→ revisable);
 ## 4. Battery B (once, ≤4) and the owner's replies
 
 No B items: no battery. Otherwise one AskUserQuestion call in the canonical format of
-`references/decision-policy.md` — `[D-NN-kk] Question n/N — <title> (impact · revert)`, the
-measured fact with its source, 2–3 options each with `<what becomes true> · <cost> · <what is
+`references/decision-policy.md` — the header is `Pergunta n/N — <título> (impacto ALTO|MÉDIO|BAIXO
+· desfazer: <custo>)`; the id (`D-NN-kk`) stays in the file, never in the header or the options.
+The measured fact with its source, 2–3 options each with `<what becomes true> · <cost> · <what is
 lost>`, the recommended one first, a "Claude decides" option that records the delegation.
 - "ok" → A ratified in bulk, B as answered. "pode ir" / "você decide" → A closed on the
   recommendations and the delegation recorded; B still goes out, one block of ≤4, because band 1 is
@@ -71,6 +72,6 @@ Write `phases/NN/DECISIONS.md` — under the repository root, beside `PROGRESS.m
 impact, revert, backing, decided by, consequences) · Implementer freedoms · Revisable with
 `Review trigger:` · Deferred with resume condition · Against the recommendation · Owner's free
 answers verbatim · Accepted risks. Append-only, ids never recycled, supersession by a new line;
-band-1 items also get `decisions/DEC-NNNN-<slug>.md` under an id from `ll-tools.js dec-reserve`.
-Print the score and, on its own line, the counter `questions asked N / assumptions M / band-1 open K`,
+band 1 items also get `decisions/DEC-NNNN-<slug>.md` under an id from `ll-tools.js dec-reserve`.
+Print the score and, on its own line, the counter `questions asked N / assumptions M / owner decisions open K`,
 then continue to step 2 of the skill.

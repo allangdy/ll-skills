@@ -34,6 +34,10 @@ inside one plan only, so a milestone of another phase has no collision check her
   `sonnet/medium` for a mechanical one; PLAN §7 overrides.
 - `verification: external` when presence plus wiring cannot prove the criterion (provider
   callback, email, deploy): the verifier then requires a test exercising the transition.
+- A committed acceptance script under `phases/NN/` derives the repository root with `git rev-parse
+  --show-toplevel`, binds its own port and, when it stops a process, kills only the PID it started.
+  A hardcoded `/home/…` path, a literal `REPO=/abs/...`, `pkill` or `killall` in a committed script
+  is a plan defect, not a style note — a verifier disconfirmation about it is a BLOCK.
 
 ## TDD by milestone type
 
@@ -109,3 +113,22 @@ not in PLAN §1; skipped without a project PLAN.md). Warnings: `block-too-long` 
 `files-too-many` (>5), `acceptance-not-command` (no npm/node/pytest/make/… prefix), `model-format`
 (`opus/high`), `truths-missing`, `body-section-missing` (block id without a `### M<n>` body). Then
 `waves --json` reports `file_overlap`, `exclusive_conflict`, `unknown_depends_on`, `cycle` (→ `unscheduled`).
+
+## Helper contract
+
+One row per `ll-tools.js` command this skill calls, with its output fields — read here, the
+helper itself is called, never read.
+
+| Command | Output fields |
+|---|---|
+| `ll-tools.js state` | `phase`, `milestones.{total,passed,list}`, `last_commit`, `waiting`, `epilogue_present`, `active_phase_plan` |
+| `ll-tools.js plan-lint phases/NN/PLAN.md` | `verdict` (pass\|warn\|fail), `defects[]`, `summary.{error,warn}`, `skipped[]` |
+| `ll-tools.js waves phases/NN/PLAN.md --json` | `waves[].{wave,milestones,builds,blocked}`, `defects[]`, `blocked_by`, `unscheduled` |
+| `ll-tools.js board-switch NN --milestones <ids>` | `phase`, seeded `M<n>: {passes:false}` lines; idempotent when the phase already matches |
+| `ll-tools.js dec-reserve <n>` | `ids[]`, `files[]`, `prefix`, `width` |
+| `ll-tools.js spot-check <M> --files <list>` | `verdict` (pass\|fail), `files.{expected,found,missing}`, `commits.{count,shas}` |
+| `ll-tools.js tdd-gate <M> --since <sha>` | `tdd` (pass\|fail), `test`, `feat`, `reason` |
+| `ll-tools.js passes <M> true\|false --phase NN [--commit <sha7> \| --reason <text> --state <…>]` | `passes`, `milestone`, `line`, `created`, `board.{passed,total}` |
+| `ll-tools.js heartbeat "<text>"` | `file`, `line`, `text` |
+| `ll-tools.js backlog-reconcile [--run]` | `items[].{id,state,condition,ran,exit,result}`, `closed[]`, `open` |
+| `ll-tools.js epilogue NN --json` | `phase`, `passed[]`, `left[].{id,why}`, `waiting`, `new_backlog[]`, `dirty`, `head`, `blocked_by`, `next_command` |

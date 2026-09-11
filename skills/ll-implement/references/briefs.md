@@ -78,7 +78,8 @@ MODEL         contract milestone → opus/high | mechanical milestone → sonnet
 DEC RESERVED  DEC-<nnnn>, DEC-<nnnn>  (cite only these ids in questions:; never create a decision)
 INPUTS        <path>, <path>  (checked: exist) | none
 DO NOT        write PROGRESS/PLAN/ROADMAP/BACKLOG/decisions; commit outside FILES; push; weaken a test;
-              spawn an agent; cd; relative paths; grep a directory that holds a .env
+              spawn an agent; cd; relative paths; grep a directory that holds a .env; hardcode an
+              absolute path or `pkill`/`killall` in a committed script
 RETURN        the `### M<n>` block in your fixed format (built, commits, commands, deviations, questions,
               backlog, not_verified), at most 1,500 tokens. Nothing before or after it.
 ```
