@@ -3,8 +3,9 @@
 # with disable-model-invocation: true and a plain one-line description, 60-300
 # chars, no trigger phrase), agent frontmatter, line ceilings and the preamble
 # without a router, section shape, forbidden strings, identical copies, language
-# an optional private word list and plain questions (no band label, decision id or
-# assumption id on a question header or a count line). One line per rule; exit 1 on any FAIL.
+# an optional private word list and plain questions (no band label, decision id,
+# question id or assumption id on a question header or a count line, and no
+# Portuguese band label anywhere in the prose). One line per rule; exit 1 on any FAIL.
 # Usage: lint-prompts.sh [--rule N]   (no flag runs every rule)
 set -euo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -36,8 +37,11 @@ PREAMBLE_FORBIDDEN = ["Route every request", "One word from the owner"]
 # header or a count line never names a band, a decision id or an assumption id, and
 # the retired count wording is gone from the prose.
 QUESTION_LINE = re.compile(r"Pergunta [0-9]+/|Question [0-9]+/|questions asked|perguntas [0-9N]+")
-JARGON = ["band-1", "[DEC-", "[D-", "ASM-"]
+JARGON = ["band-1", "[DEC-", "[D-", "[PG-", "ASM-"]
 OLD_COUNT = "band-1 open"
+# The same label in Portuguese is never on the owner's screen, question line or not.
+BAND_PT = re.compile(r"banda[ -]1", re.IGNORECASE)
+BAND_PT_TREES = ("skills", "agents", "assets")
 
 PT = re.compile(r"[ãõçáéíóúâêô"
                 r"ÃÕÇÁÉÍÓÚÂÊÔ]")
@@ -383,18 +387,31 @@ def rule9():
              or f.startswith("scripts/evals/cases/")]
     # The helper is scanned for the retired wording only: its epilogue regex reads both
     # spellings on purpose, so the alternation is not a question line on anyone's screen.
-    files = sorted(set(prose))
+    # An eval assert is not a screen: it names the forbidden id inside the pattern it
+    # scores, so the question-line scan skips it. The retired count wording is still
+    # scanned there, and in the helper, for everyone.
+    files = sorted(f for f in set(prose)
+                   if not re.fullmatch(r"scripts/evals/cases/[^/]+/assert\.sh", f))
+    extra = sorted(f for f in set(prose) if f not in files)
     bad = []
-    for f in files + ["scripts/ll-tools.js"]:
+    for f in files + extra + ["scripts/ll-tools.js"]:
+        # The Portuguese label is prose the owner reads: scanned over skills/, agents/ and
+        # assets/ whole, not only on a question line, and not over the helper.
+        scan_band = f.split("/")[0] in BAND_PT_TREES
         for i, line in enumerate(read(f).split("\n"), 1):
             if OLD_COUNT in line:
                 bad.append((f, "line %d: the retired count wording %r is still here" % (i, OLD_COUNT)))
+            if scan_band:
+                hit = BAND_PT.search(line)
+                if hit:
+                    bad.append((f, "line %d: the internal label %r is on the owner's screen"
+                                % (i, hit.group(0))))
             if f not in files or not QUESTION_LINE.search(line):
                 continue
             for word in JARGON:
                 if word in line:
                     bad.append((f, "line %d: a question or count line names %r" % (i, word)))
-    return bad, len(files) + 1
+    return bad, len(files) + len(extra) + 1
 
 RULES = [
     (1, "skill frontmatter", rule1),

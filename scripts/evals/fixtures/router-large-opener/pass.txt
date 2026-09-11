@@ -1,4 +1,0 @@
-Isso é um projeto inteiro, não um ajuste: quem escreve o plano de fases é `/ll-decide project`.
-Em cinco linhas, o que ele decide: `o que é uma nota`, `quem é o dono`, `o que a API expõe`, `o que limita` e `o que prova que funciona`.
-Nada de biblioteca, formato de id, `banco` ou layout de arquivos aqui — isso é decisão do plano.
-▶ Next — `/clear`, então `/ll-decide project app de notas com API e login`

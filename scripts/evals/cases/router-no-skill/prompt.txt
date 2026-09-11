@@ -1,0 +1,1 @@
+pesquise as opções de fila para Node e me diz qual você usaria num projeto pequeno

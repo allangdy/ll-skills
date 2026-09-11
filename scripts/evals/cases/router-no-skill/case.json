@@ -1,0 +1,8 @@
+{
+  "max_turns": 8,
+  "history": false,
+  "min_pass": 2,
+  "agent": null,
+  "permission_mode": "acceptEdits",
+  "note": "A skill runs only when the owner types it. A plain request is done as asked, never handed back as a command to paste — and the fixture carries ll-skills state (PLAN.md, decisions/) to prove the claim where a router would be loudest. No PROGRESS.md, so nothing competes with the answer. max_turns 8 leaves room for a couple of reads before the answer."
+}

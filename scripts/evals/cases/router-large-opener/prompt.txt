@@ -1,1 +1,0 @@
-quero um app de notas com API REST, banco e login de usuários — como vc faria?

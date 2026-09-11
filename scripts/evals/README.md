@@ -6,7 +6,7 @@ copy of a fixture repository, and scores the answer and the work tree with a she
 
     bash scripts/evals/run.sh --dry-run --all              # print the commands, call nothing
     bash scripts/evals/run.sh --case router-small --reps 1 # one case, one rep
-    bash scripts/evals/run.sh --all                        # fourteen cases, three reps
+    bash scripts/evals/run.sh --all                        # twelve cases, three reps
 
 `--all` | `--case <id>` (repeatable) | `--reps N` (default 3) | `--model <id>` | `--dry-run`.
 Exit 0 when every selected case passed in at least `min_pass` reps (`case.json`, capped at the
@@ -14,7 +14,7 @@ reps actually run, so `--reps 1` means 1 of 1).
 
 ## Cost
 
-Router cases are 1–6 turns and cost cents. The six agent and skill cases run 30–40 turns: dollars
+Router cases are 1–8 turns and cost cents. The six agent and skill cases run 30–40 turns: dollars
 per rep, tens of dollars for `--all --reps 3` — a skill that fans out subagents costs about a dollar
 per turn-block, so keep routing caps low. Dry run first, then one cheap case.
 
@@ -34,16 +34,29 @@ preprocessor Bash calls together with the model's own tool calls, and a run has 
 `num_turns 7` under `--max-turns 4`. Pin each cap above the highest count real reps show (`case.json`
 `note`), so the cap only ever cuts a run that really went long.
 
-## Router cases proven offline
+## Router cases
 
-`router-large-opener` scores the opener to a LARGE request: the command that owns it
-(`/ll-decide project` or `/ll-research`) and at most five lines of plan that name no library, id
-format, storage API or file layout, with nothing written and no Skill call. Its assert, and the
-`decide-final-round` (decision-room path before the first question, count line in plain words) and
-`implement-stops-at-next` (wave line before the epilogue, helper never read) asserts, are proven
+A skill runs only when the owner types it, so these cases score what the session does with a plain
+request — never which command it names back.
+
+| case | prompt | what it scores |
+|---|---|---|
+| `router-small` | `conta as linhas de README.md` | the answer itself: nothing written, no ritual, no Skill call |
+| `router-no-skill` | a research request in a repo that carries `PLAN.md` and `decisions/` | the research itself: no command handed back, no `▶ Next`, no Skill call, nothing created |
+| `preamble-no-ritual` | a one-line typo fix | no spec, no plan, no `PROGRESS.md`, no subagent |
+
+A case that exercises a skill types the slash command in its `prompt.txt` (`/ll-implement 7`,
+`/ll-decide project …`): a skill is never started from prose, so a prose prompt would score the
+plain answer, not the skill.
+
+## Cases proven offline
+
+The `router-no-skill` (research delivered, no command handed back), `decide-final-round`
+(decision-room path before the first question, count line in plain words) and
+`implement-stops-at-next` (wave line before the epilogue, helper never read) asserts are proven
 without calling `claude -p` by `npm test` (section `evals-auto`), against the captures and answers
-under `fixtures/router-large-opener/` — `out.json`, a compliant `pass.txt` and a `fail.txt` that
-decides for the skill.
+under `fixtures/router-no-skill/` — `out.json`, a compliant `pass.txt` and a `fail.txt` that only
+hands a command back — and the inline captures the smoke test builds.
 
 ## Results — outside the repo
 
