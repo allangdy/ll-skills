@@ -724,8 +724,9 @@ isn_assert() { # isn_assert <arquivo de resposta> [captura]
 }
 check "assert implement-stops-at-next aceita onda antes do epílogo" \
   'isn_assert "$EV/onda.txt"'
-check "assert implement-stops-at-next rejeita saída sem linha de onda" \
-  '! isn_assert "$EV/sem-onda.txt"'
+CAP_SEM_ONDA='[{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"scout rodando (sonnet)"}]}},{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"▶ Next — /clear, then /ll-implement 8"}]}},{"type":"result","subtype":"success","is_error":false,"result":""}]'
+check "assert implement-stops-at-next rejeita captura sem linha de onda" \
+  '! isn_assert "$EV/sem-onda.txt" "$CAP_SEM_ONDA"'
 check "assert implement-stops-at-next rejeita captura que lê o helper com head" \
   '! isn_assert "$EV/onda.txt" "$CAP_LE_HELPER"'
 
