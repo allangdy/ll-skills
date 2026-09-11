@@ -385,3 +385,17 @@ built: ll-brainstorm SKILL.md plain count lines (5 spots), ll-close step 1 BACKL
 commits: d19dc72 feat(W1-D)
 commands: band-1 0/0 · owner decisions open 3 · pkill 1/1 · memory/ 1/1 · status: DECIDED 1 · five lines 1 · note 1 · inclusive 1 · wc -l 182/70/80/119/128/97/66 under ceilings · lint-contract rules 3,5,6 ok.
 deviations: every hyphenated `band-1` in ll-brainstorm replaced (acceptance grep = 0); ll-resume completion criterion acknowledges the one DEC write. questions: none · backlog: none · not_verified: full lint until W1-C/W2 landed.
+### W2 — 2026-09-11 16:41
+built: lint rule 9 "plain questions" (question headers and count lines carry no `band-1`/`[DEC-`/`[D-`/`ASM-`; the retired `band-1 open` wording is gone from skills/, agents/, assets/, evals cases and the helper), helper ceiling 760 lines / 36 000 bytes in lint rule 3 and both smoke section-1 checks (DEC-0016), new eval case `router-large-opener` with its own fixture repo and an offline capture pair, updated `decide-final-round` (plain count line + decision-room path before the first question) and `implement-stops-at-next` (`^onda 1/` before the epilogue + no Bash/Read that reads `ll-tools.js`) asserts, 12 new smoke checks.
+commits: f01eba8 test(W2) · 1945dbb feat(W2)
+commands: `bash scripts/lint-prompts.sh` → "ok   9 plain questions (105 files)" exit 0 · `--only 9` → 11 checks · `--only lint-scratch` → 6 · `--only evals-auto` → 17 · `npm test` → "smoke test OK — 244 checks" · `node scripts/lint-contract.cjs` → "ok — 7 rule(s), 0 violation(s)" · router-large-opener assert pass.txt exit 0 / fail.txt exit 1 · clean checkout: lint ok, 244 checks · `run.sh --dry-run --case router-large-opener` → 1 block printed.
+deviations: rule 9 scans `scripts/ll-tools.js` only for the literal `band-1 open` (its epilogue regex reads both spellings on one line); fixtures exempt; evals README "fourteen cases".
+questions: none · backlog: none
+not_verified: live reps of the three cases (the gate runs them); rule 9 against a real screen transcript (the lab rerun); router-large-opener out.json is hand-written.
+### W3 — 2026-09-11 15:47
+built: round-2 lab scenario (turns 8–24, answers table and blocked protocol), README driver protocol (isolated CLAUDE_CONFIG_DIR, trust pre-accept + fallback, 5-minute polling, per-turn assertions), rubric additions (gate→regime, visible progress, board integrity, paths taken), CHANGELOG `## [3.1.0] - 2026-09-11`, package.json 3.1.0.
+commits: 7d0afd5 docs(lab) · a004c71 chore(release): 3.1.0
+commands: CHANGELOG header 1 · version 3.1.0 · turns 8/12/16/20/24 present 5 · CLAUDE_CONFIG_DIR 7+3 · e-mail 11 · regime 1 / gate 0 · jargon assertion strings 2.
+deviations: D-4 — round-1 turn 3 expected ROADMAP.md for a two-phase project; corrected to the PLAN §8 table (notes-api.md:16, notes-api-auto.md:8).
+questions: none · backlog: none
+not_verified: turns 8–24 never driven yet (the rerun is the next step).
