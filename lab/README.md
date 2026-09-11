@@ -46,6 +46,38 @@ pane it did not create; every wait has a timeout; a `blocked` state is answered 
 table, never improvised — an unscripted question is itself a finding, recorded in the run log and
 answered with the scenario's default line.
 
+## Driver protocol — isolated session, trust, polling
+
+The session under test never runs inside the driver's own `~/.claude`: it gets its own
+`CLAUDE_CONFIG_DIR`, so nothing it does touches the driver's own skills, memory or settings, and
+nothing it reads can leak the driver's credentials by accident.
+
+- **Isolated config.** `export CLAUDE_CONFIG_DIR=$(mktemp -d)` before `herdr agent start`, then seed
+  it the way `bin/install.js` would (`skills/`, `agents/`, `CLAUDE.md` copied in from the package
+  under test, or `CLAUDE_CONFIG_DIR=$CLAUDE_CONFIG_DIR node bin/install.js --yes` run against this
+  checkout) so the session under test sees the same skill set the driver develops, not the driver's.
+- **Trust pre-accepted.** Before turn 1, write the key the trust dialog reads inside that same
+  `CLAUDE_CONFIG_DIR`: `.claude.json` → `projects["<throwaway project dir>"].hasTrustDialogAccepted:
+  true`. Fallback, if a Claude Code version moved the key and the dialog still appears (this is what
+  happened in the 2026-09-11 run, `lab/runs/2026-09-11-notes-api/RUN.md` 14:05:42–14:06:32): expect
+  the dialog on turn 1 and answer it with `herdr agent send-keys lab down enter` before the scripted
+  first prompt goes in.
+- **Polling, never a foreground wait above 5 minutes.** A turn that can run long (`ll-implement`, a
+  waited `/goal`, `ll-auto --pause-at/--resume`) is not one multi-hour `herdr agent prompt --wait`;
+  poll instead with `herdr agent wait lab --until idle --timeout 300000` in a loop and stop the loop
+  when the state is `idle`, `blocked` or `done`.
+- **Per-turn logging.** Every 5 minutes the loop is still `working`, append the last 5 lines of
+  `herdr agent read lab --source recent-unwrapped --lines 5` to `RUN.md` as `silence <n> min` since
+  the last owner-facing line. After the loop ends, read both `herdr pane read <pane-id> --source
+  recent-unwrapped --lines 200` (plain text, for the owner-facing screen and jargon checks) and
+  `herdr agent read lab` (JSON, for tool-call counts) and append both to `RUN.md`.
+- **Per-turn assertions**, run right after the state goes `idle`/`done`, before the next prompt:
+  `ll-tools.js state --json` — the phase equals the phase just run and no earlier `M*` line was
+  overwritten; `ll-tools.js backlog-reconcile --json` — no `unparsable` row; the plain-text pane read
+  — no `band-1`, `banda 1`, `DEC-`, `ASM-` on screen; after `ll-decide`, the `OPTIONS.html` path line
+  in the transcript comes before the first question line; after a `--milestone` turn, `docs/history/`
+  exists on disk. Log every assertion's pass/fail in `RUN.md`, not only the failures.
+
 ## Where the evidence is
 
 - Session transcript: `~/.claude/projects/<cwd with / replaced by ->/<session-id>.jsonl`
@@ -63,18 +95,26 @@ with timestamps and every `blocked` it answered), `REPORT.md` (the evaluator's),
 ## Ready commands — manual scenario `notes-api`
 
 ```bash
-# 0. throwaway project (outside every real repo)
+# 0. throwaway project (outside every real repo) + isolated config dir
 D=~/projects/temp/$(date +%Y-%m-%d)-notes-api && mkdir -p "$D" && git -C "$D" init -q -b main
 R=lab/runs/$(date +%Y-%m-%d)-notes-api && mkdir -p "$R" && printf '# RUN — notes-api — %s\n\n' "$(date +%F)" > "$R/RUN.md"
+export CLAUDE_CONFIG_DIR=$(mktemp -d)
+node bin/install.js --yes   # seeds skills/agents/CLAUDE.md into $CLAUDE_CONFIG_DIR
+node -e 'const fs=require("fs"),p=process.env.CLAUDE_CONFIG_DIR+"/.claude.json",d=process.env.D||process.argv[1];
+  const j=fs.existsSync(p)?JSON.parse(fs.readFileSync(p)):{};
+  j.projects=j.projects||{}; j.projects[d]=Object.assign({hasTrustDialogAccepted:true}, j.projects[d]);
+  fs.writeFileSync(p, JSON.stringify(j,null,2));' "$D"
 
 # 1. workspace + agent (read the pane id from the JSON)
 P=$(herdr workspace create --cwd "$D" --label lab-notes-api --no-focus | node -pe 'JSON.parse(require("fs").readFileSync(0)).result.root_pane.pane_id')
 herdr agent start lab --kind claude --pane "$P"
 SID=$(herdr agent list | node -pe 'JSON.parse(require("fs").readFileSync(0)).result.agents.find(a=>a.name==="lab").agent_session.value')
 
-# 2. the human's turns — one line each, in the order of the scenario file; after each, log + read
-herdr agent prompt lab "<turn text from lab/scenarios/notes-api.md>" --wait --timeout 3600000
-herdr agent read lab --source recent-unwrapped --lines 80
+# 2. the human's turns — one line each, in the order of the scenario file; after each, poll + log + read
+herdr agent prompt lab "<turn text from lab/scenarios/notes-api.md>"
+until [ "$(herdr agent get lab)" != working ]; do sleep 300; herdr agent read lab --source recent-unwrapped --lines 5 >> "$R/RUN.md"; done
+herdr agent read lab --source recent-unwrapped --lines 200 >> "$R/RUN.md"
+herdr agent read lab >> "$R/RUN.md"
 # when the state is blocked: read, pick the scripted answer, then
 herdr agent send-keys lab down enter        # or: herdr agent prompt lab "<free-text answer>" --wait
 
@@ -87,4 +127,5 @@ herdr agent prompt lab "/clear" --wait --timeout 60000
 ```
 
 The autonomous scenario replaces step 2 with a single `/ll-auto "<objective>" --auto-decision`
-turn and a `--wait --timeout 7200000`; questions should not appear — every `blocked` is a finding.
+turn and the same polling loop up to 7 200 000 ms; questions should not appear — every `blocked` is
+a finding.
