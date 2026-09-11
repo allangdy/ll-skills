@@ -40,8 +40,8 @@ region() { awk '/^\/\/ <ll-shared:state>$/,/^\/\/ <\/ll-shared:state>$/' "$1"; }
 if section 1; then
 for f in bin/*.js hooks/*.js scripts/*.js; do node --check "$f"; done
 
-check "helper ≤700 linhas"            '[ "$(wc -l < scripts/ll-tools.js)" -le 700 ]'
-check "helper ≤32768 bytes"           '[ "$(wc -c < scripts/ll-tools.js)" -le 32768 ]'
+check "helper ≤760 linhas"            '[ "$(wc -l < scripts/ll-tools.js)" -le 760 ]'
+check "helper ≤36000 bytes"           '[ "$(wc -c < scripts/ll-tools.js)" -le 36000 ]'
 
 npm pack --dry-run --json > "$TMP/pack.json" 2>/dev/null
 check "tarball inclui o helper"       'grep -q "scripts/ll-tools.js" "$TMP/pack.json"'

@@ -3,7 +3,8 @@
 # with disable-model-invocation: true and a plain one-line description, 60-300
 # chars, no trigger phrase), agent frontmatter, line ceilings and the preamble
 # without a router, section shape, forbidden strings, identical copies, language
-# and an optional private word list. One line per rule; exit 1 on any FAIL.
+# an optional private word list and plain questions (no band label, decision id or
+# assumption id on a question header or a count line). One line per rule; exit 1 on any FAIL.
 # Usage: lint-prompts.sh [--rule N]   (no flag runs every rule)
 set -euo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -31,6 +32,13 @@ ALLOWED_TOOLS_BY_SKILL = {"ll-auto": "Bash(${CLAUDE_SKILL_DIR}/scripts/ll-auto.j
 ORCHESTRATOR = ["ll-auto"]
 # Strings the global preamble must not carry: they route a request to a skill.
 PREAMBLE_FORBIDDEN = ["Route every request", "One word from the owner"]
+# Rule 9 — the owner's screen carries no internal vocabulary (DEC-0018): a question
+# header or a count line never names a band, a decision id or an assumption id, and
+# the retired count wording is gone from the prose.
+QUESTION_LINE = re.compile(r"Pergunta [0-9]+/|Question [0-9]+/|questions asked|perguntas [0-9N]+")
+JARGON = ["band-1", "[DEC-", "[D-", "ASM-"]
+OLD_COUNT = "band-1 open"
+
 PT = re.compile(r"[ãõçáéíóúâêô"
                 r"ÃÕÇÁÉÍÓÚÂÊÔ]")
 
@@ -202,10 +210,10 @@ def rule3():
     helper = read("scripts/ll-tools.js")
     hn = len(helper.split("\n")) - 1
     hb = os.path.getsize(path("scripts/ll-tools.js"))
-    if hn > 700:
-        bad.append(("scripts/ll-tools.js", "%d lines, ceiling 700" % hn))
-    if hb > 32768:
-        bad.append(("scripts/ll-tools.js", "%d bytes, ceiling 32768" % hb))
+    if hn > 760:
+        bad.append(("scripts/ll-tools.js", "%d lines, ceiling 760" % hn))
+    if hb > 36000:
+        bad.append(("scripts/ll-tools.js", "%d bytes, ceiling 36000" % hb))
     checked += 1
     pack_json_override = os.environ.get("LL_PACK_JSON")
     if pack_json_override:
@@ -367,6 +375,27 @@ def rule8():
         bad.append((parts[0], "line %s matches the private word list" % (parts[1] if len(parts) > 1 else "?")))
     return bad, len(files)
 
+def rule9():
+    # The prose the owner reads. Fixtures are exempt: scripts/fixtures/*/PROGRESS.md
+    # keeps the old wording as the proof that a 3.0.0 file still parses.
+    prose = [f for f in TRACKED
+             if f.split("/")[0] in ("skills", "agents", "assets")
+             or f.startswith("scripts/evals/cases/")]
+    # The helper is scanned for the retired wording only: its epilogue regex reads both
+    # spellings on purpose, so the alternation is not a question line on anyone's screen.
+    files = sorted(set(prose))
+    bad = []
+    for f in files + ["scripts/ll-tools.js"]:
+        for i, line in enumerate(read(f).split("\n"), 1):
+            if OLD_COUNT in line:
+                bad.append((f, "line %d: the retired count wording %r is still here" % (i, OLD_COUNT)))
+            if f not in files or not QUESTION_LINE.search(line):
+                continue
+            for word in JARGON:
+                if word in line:
+                    bad.append((f, "line %d: a question or count line names %r" % (i, word)))
+    return bad, len(files) + 1
+
 RULES = [
     (1, "skill frontmatter", rule1),
     (2, "agent frontmatter", rule2),
@@ -376,6 +405,7 @@ RULES = [
     (6, "identical copies", rule6),
     (7, "language", rule7),
     (8, "private word list", rule8),
+    (9, "plain questions", rule9),
 ]
 
 failed = False

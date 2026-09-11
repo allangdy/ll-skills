@@ -6,7 +6,7 @@ copy of a fixture repository, and scores the answer and the work tree with a she
 
     bash scripts/evals/run.sh --dry-run --all              # print the commands, call nothing
     bash scripts/evals/run.sh --case router-small --reps 1 # one case, one rep
-    bash scripts/evals/run.sh --all                        # thirteen cases, three reps
+    bash scripts/evals/run.sh --all                        # fourteen cases, three reps
 
 `--all` | `--case <id>` (repeatable) | `--reps N` (default 3) | `--model <id>` | `--dry-run`.
 Exit 0 when every selected case passed in at least `min_pass` reps (`case.json`, capped at the
@@ -33,6 +33,17 @@ text (`ll-auto --auto-decision`, ≤ 4000 chars) and the committed `docs/GOAL.md
 preprocessor Bash calls together with the model's own tool calls, and a run has ended `success` with
 `num_turns 7` under `--max-turns 4`. Pin each cap above the highest count real reps show (`case.json`
 `note`), so the cap only ever cuts a run that really went long.
+
+## Router cases proven offline
+
+`router-large-opener` scores the opener to a LARGE request: the command that owns it
+(`/ll-decide project` or `/ll-research`) and at most five lines of plan that name no library, id
+format, storage API or file layout, with nothing written and no Skill call. Its assert, and the
+`decide-final-round` (decision-room path before the first question, count line in plain words) and
+`implement-stops-at-next` (wave line before the epilogue, helper never read) asserts, are proven
+without calling `claude -p` by `npm test` (section `evals-auto`), against the captures and answers
+under `fixtures/router-large-opener/` — `out.json`, a compliant `pass.txt` and a `fail.txt` that
+decides for the skill.
 
 ## Results — outside the repo
 

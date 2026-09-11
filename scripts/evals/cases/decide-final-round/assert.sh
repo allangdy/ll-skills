@@ -6,7 +6,7 @@ WORK="$1"; OUT_JSON="$2"; OUT_TXT="$3"
 
 # a one-shot run has no owner to answer: either the final round (counter) or a blocking gate block (≤ 4 questions) is the correct stop
 if grep -qE 'questions asked' "$OUT_TXT"; then
-  contains "$OUT_TXT" 'band-1 open' 'the final round carries "band-1 open"'
+  contains "$OUT_TXT" 'owner decisions open' 'the final round carries "owner decisions open"'
 else
   contains "$OUT_TXT" '\[PG-1\]|Pergunta 1/|Question 1/' 'the gate asks its first question instead of assuming'
   n="$(grep -cE '^\*\*\[PG-[0-9]+\]|^\*\*Pergunta [0-9]+/|^\*\*Question [0-9]+/' "$OUT_TXT")"
@@ -14,7 +14,20 @@ else
   no_path "$WORK/PLAN.md" 'nothing frozen while the gate is open'
 fi
 
-# The contract is only scored when it was written: with a band-1 item open, nothing freezes.
+# The decision room is handed over before the first question, never after it (F-5).
+if grep -qE 'OPTIONS\.html' "$OUT_TXT"; then
+  opt="$(grep -nE 'OPTIONS\.html' "$OUT_TXT" | head -1 | cut -d: -f1)"
+  q="$(grep -nE 'Pergunta 1/|Question 1/' "$OUT_TXT" | head -1 | cut -d: -f1)"
+  if [ -z "$q" ] || [ "$opt" -lt "$q" ]; then
+    ok "the decision-room path (line $opt) comes before the first question"
+  else
+    fail "the decision-room path (line $opt) comes after the first question (line $q)"
+  fi
+else
+  ok 'no decision-room path in this answer: the room was not opened, so the order is not scored'
+fi
+
+# The contract is only scored when it was written: with an owner-only item open, nothing freezes.
 if [ -f "$WORK/PLAN.md" ]; then
   contains "$WORK/PLAN.md" '^## ' 'PLAN.md carries ## sections'
   if [ -d "$WORK/decisions" ]; then

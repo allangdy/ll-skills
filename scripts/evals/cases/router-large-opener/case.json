@@ -1,0 +1,8 @@
+{
+  "max_turns": 6,
+  "history": false,
+  "min_pass": 2,
+  "agent": null,
+  "permission_mode": "acceptEdits",
+  "note": "Own fixture, deliberately without PROGRESS.md: the RESUME rule would fire first in a repo that has one. A LARGE request is answered with the command that owns it and at most five lines of plan that decide nothing the skill decides — no library, id format, storage API or file layout."
+}
