@@ -115,6 +115,8 @@ not_verified: nothing for this milestone
 
 - [2026-09-11T19:49:01Z] W4-B: amendment — router-research/router-execute/router-large-opener deleted; router-no-skill proves a plain request is done even with ll state (DEC-0022)
 
+- [2026-09-11T20:02:35Z] 3.1.0 round — wave 5: ll-implement --no-talk never asks; owner-only items become WAITING DEC + stop: owner (live eval implement-review-gate stopped on a question in -p mode)
+
 ## Epilogue — phase 01 — 2026-09-10
 passed: M1, M2, M3, M4, M5 (5/5) — every skill locked, preamble without a router, README/CHANGELOG updated, router eval cases assert the manual contract, lint and smoke test green in this worktree.
 left: none.
@@ -419,3 +421,10 @@ commands: `--rule 9` ok (100 files) · lint-scratch 8 · evals-auto 18 · `npm t
 deviations: rule 9 skips `scripts/evals/cases/*/assert.sh` on the question-line scan (the assert names the pattern it scores).
 questions: none · backlog: CHANGELOG:12 and `implement-stops-at-next/prompt.txt` named the deleted case / prose prompt → fixed by the session; ROADMAP/PLAN/phases/01 mentions are history, left.
 not_verified: live reps (gate run below).
+### W5 — 2026-09-11 17:42
+built: `ll-implement --no-talk` sends no question: A ratified, owner-only items → `WAITING` DEC (id from `dec-reserve`) + `stop: owner` on dependent milestones; the rest runs (DEC-0023). Both implement eval cases type `/ll-implement 7 --no-talk`.
+commits: e6a5a0d fix(ll-implement)
+commands: lint → "ok   9 plain questions (100 files)" · lint-contract ok · `--only no-talk` → 3 checks · `only B asked` 0/0 · WAITING 2 · `stop: owner` 3 · SKILL.md 121, phase-conversation.md 84.
+deviations: §4 and §5 of phase-conversation.md aligned (no battery under the flag).
+questions: none · backlog: none
+not_verified: live behavior (gate run below); `npm test` + clean checkout (run below).
