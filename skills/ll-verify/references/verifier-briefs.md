@@ -43,6 +43,9 @@ long runs decay: nothing here is accepted by declaration.
    `ll-tools.js ledger` to mark each ledger line FRESH or STALE.
 5. Only after every state is written, open the `<!-- ll-state -->` board in PROGRESS.md and compare:
    `passes: true` whose command fails in this run is the gravest finding there is: name it.
+6. A committed script under `phases/` or `scripts/` with an absolute home path, `pkill -f` or
+   `killall` → `BLOCKS: process` (a disconfirmation about a committed artifact is a BLOCK, not a
+   reservation).
 
 Install no dependency, start no service beyond the sanity step; what is missing becomes
 NOT_VERIFIABLE with the requirement named.

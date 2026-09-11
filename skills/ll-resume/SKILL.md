@@ -54,7 +54,9 @@ Não verificado — <stale memory of N days, orphan worktree, phantom goal, abse
 Every claim carries its evidence — sha, `file:line`, or date; a green milestone with no commit
 behind it is an orphan, not a delivery. If there are WAITING decisions, offer them after the
 briefing in one `AskUserQuestion` with at most 4, ordered by what they block, each stating the cost
-of waiting — never before it, never twice in a turn. Answers stay in the conversation.
+of waiting — never before it, never twice in a turn. When the owner picks an option, append
+`status: DECIDED — "<option>" (owner, <date>, ll-resume)` to that `decisions/DEC-*.md` — one write,
+that file only.
 
 ## Legacy names
 
@@ -73,4 +75,6 @@ Projects not yet migrated keep the Portuguese names — read them, rename nothin
 
 ## Completion criterion
 
-Briefing in ≤20 lines, ≤5 tool calls, 0–1 questions, zero files touched, last line `▶ Next — /clear, then <cmd>`.
+Briefing in ≤20 lines, ≤5 tool calls, 0–1 questions, zero files touched (one write to a
+`decisions/DEC-*.md` only when the owner answers a WAITING decision), last line
+`▶ Next — /clear, then <cmd>`.

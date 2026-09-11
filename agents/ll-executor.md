@@ -90,7 +90,7 @@ commits: <sha7> test(M<n>): <msg> · <sha7> feat(M<n>): <msg>
 commands: <acceptance command> → "<last output line>" · <other command> → "<last line>"
 deviations: none | <rule applied> — <what> (<file:line>)
 questions: none | <decision requested> — <the option you would take and why>
-backlog: none | <deviation|stub|test-not-run|debt|domain-question> · <what> · `<closing command>` exit 0
+backlog: none | <type> · <what> · `<cmd>` exit 0 · note: <prose>
 not_verified: <what this milestone does not prove; one item per line, or none>
 ```
 

@@ -12,6 +12,8 @@ Commands to name, never to run: research, a comparison or an unvalidated restric
 milestone, "implementa", "continua" → `/ll-implement N`; "status", "onde estamos", "o que tenho pra
 decidir" → `/ll-resume`; a decision to record → `/ll-decide`; deploy, credential, incident →
 `/ll-oncall`; external feedback on a running product → `/ll-refine`; closing a phase → `/ll-close`.
+The answer to a request that is a skill's job is the command and at most five lines of plan that
+name no library, id format, storage API or file layout — those are the skill's decisions.
 A request that is a verb plus an addressable target and fits in about three tool calls gets the work
 itself, not a ritual: read the target, do what is authorized, verify with a number, label provenance;
 no spec, no plan, no PROGRESS entry, no VERIFICATION, no premortem, no interview, no subagent, no

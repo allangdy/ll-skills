@@ -9,8 +9,8 @@ disable-model-invocation: true
 
 Opens a piece of work by deciding what can be decided and showing it, so the owner corrects only
 what he cares about. The result is judged by three numbers: the map fits in 35 lines, the owner is
-interrupted once (one battery of at most 4 questions), and zero band-1 items are open when the file
-is written. Nothing is implemented and nothing is committed here.
+interrupted once (one battery of at most 4 questions), and zero owner decisions are open when the
+file is written. Nothing is implemented and nothing is committed here.
 
 Reply to the owner in Portuguese; every file you write is in English.
 
@@ -21,6 +21,7 @@ Reply to the owner in Portuguese; every file you write is in English.
 | `phases/NN/DECISIONS.md` | phase route: the decisions of the opening conversation, 8 fixed sections, IDs `D-NN-kk` | append-only, single writer (this session); IDs never recycled; supersession by a new line, never by edit |
 | `docs/decide/OPENING.md` | project route: same schema, IDs `D-00-kk`; `ll-decide project` treats everything in it as settled | append-only |
 | (nothing) | chat route: ends in the conversation | — |
+| `<CLAUDE_CONFIG_DIR>/projects/<cwd>/memory/*.md` | a `feedback` memory when the owner corrects a premise | outside the repo, by design |
 
 Readers: `ll-implement` skips its own opening conversation when `phases/NN/DECISIONS.md` exists;
 the verifier runs its decision-coverage gate only if the file exists. Chat writes no file because
@@ -47,7 +48,7 @@ what was locked. A reference the request cites is read by the route below, never
 | Other URL | Playwright MCP headless: `mcp__plugin_playwright_playwright__browser_navigate`, then snapshot or screenshot |
 | Page behind the owner's login | Chrome MCP (`mcp__claude-in-chrome__*`), only then |
 
-None works → band-1 question (ask the owner to attach or paste it), never an assumption. "Fiel ao
+None works → owner decision (ask the owner to attach or paste it), never an assumption. "Fiel ao
 protótipo" makes the prototype a premise whose source is the content read.
 
 ### 1. Scout before you speak (≤10% of context, 0 agents)
@@ -66,7 +67,7 @@ List every open point as a question (question storming: no answers yet), then cl
 - Blocking (band 1: money above the ceiling, irreversible outside the repo, price or promise,
   scope cut, the number the owner will look at, a recorded rule contradicted by evidence) → B,
   at most 4, ordered by impact.
-A band-1 item in A is a bug. Never in B: who executes; a fact readable from repo, db or infra;
+An owner decision in A is a bug. Never in B: who executes; a fact readable from repo, db or infra;
 which pattern when a house pattern exists; a reversible detail inside a closed contract;
 confirmation of another session's decision; a subject outside the round; a question whose answer
 changes no action; copy without a commercial promise; industry defaults (retention, performance
@@ -122,7 +123,7 @@ Write the file, print the score in three lines and the next command. Nothing is 
 
 ```
 Closed. <k> locked by me (<r> revisable), <j> answered by you (<c> against the recommendation),
-<m> deferred. Questions asked <j> / assumptions <a> / band-1 open 0.   (printed even when <j> = 0)
+<m> deferred. Questions asked <j> / assumptions <a> / owner decisions open 0.   (printed even when <j> = 0)
 → phases/NN/DECISIONS.md
 ▶ Next — /clear, then ll-implement NN (or "adjust X" if something is wrong)
 ```
@@ -133,7 +134,7 @@ File skeleton (8 sections, all present even when empty):
 # Phase NN — Decisions · <date> · ll-brainstorm
 ## Score
 <n> points · <k> locked by me (<r> revisable) · <j> answered by the owner (<c> against the
-recommendation) · <m> deferred · 0 band-1 items open.
+recommendation) · <m> deferred · 0 owner decisions open.
 ## Locked
 ### D-NN-01 — <title>
 - Class: QUESTION|RULE · Band: 1|2|3 · Impact: HIGH|MED|LOW · Revert: <cost>
@@ -169,7 +170,7 @@ Cap: two map rounds. After the second, stop and say: "we are discussing more tha
 close A as it stands and handle the rest in execution, or take the premise that is not standing
 to `ll-decide project` (its premortem) as the next command." Budget: ≤4 turns on the phase route, ≤8 on project.
 
-Done when the file exists with its 8 sections and the Score line reads `0 band-1 items open`.
+Done when the file exists with its 8 sections and the Score line reads `0 owner decisions open`.
 ▶ Next — /clear, then ll-implement NN (phase route; project route: ll-decide project)
 nothing to run (chat route).
 

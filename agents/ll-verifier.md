@@ -50,6 +50,7 @@ Levels for a phase criterion: exists (the file) → substantive (not a stub: no 
 - `git diff <range> -- <test files>`: an assertion loosened, a test skipped, deleted or made unconditional without a `DEC-` id in the commit or in `decisions/` → `BLOCKS: process`.
 - each milestone with `tdd: yes`: `git log` shows `test(M<n>)` before `feat(M<n>)`; missing or inverted → `BLOCKS: process`.
 - files a milestone's block names that do not exist in HEAD, or commits it lists that git does not have → `BLOCKS: report`.
+- a committed script under `phases/` or `scripts/` with an absolute home path, `pkill -f` or `killall` → `BLOCKS: process` (a disconfirmation about a committed artifact is a BLOCK, not a reservation).
 
 ## The 8 plan questions (mode plan)
 
