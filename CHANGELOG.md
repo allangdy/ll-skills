@@ -18,6 +18,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ### Corrigido
 
+- Skill só por comando explícito: o preâmbulo global não redireciona mais nenhum pedido para uma skill, em nenhum repositório, tenha ele estado do ll-skills ou não — a sessão responde ou faz o que foi pedido, e só nomeia um comando quando o dono pergunta qual usar (feedback do dono, 2026-09-11).
+- O gate de premissas do `ll-decide` manda no máximo quatro perguntas num bloco só, com cabeçalhos limpos (sem `[PG-n]`, sem `banda 1` na tela); a restrição inventada por cautela deixou de ser pergunta — vira assunção `ASM-n [revisable]` com gatilho de revisão, contada como assunção.
 - Pergunta cujas opções só diferem em rigor de checagem não é mais feita — vira decisão por ausência (F-8).
 - A sala de decisão (`OPTIONS.html`) é entregue por caminho de arquivo antes da primeira pergunta, sem publicar artefato e sem chamar outra skill (F-5, `DEC-0017-decision-room-file-not-published.md`).
 - As telas e as perguntas ao dono não usam mais `banda 1`, `DEC-`, `ASM-`; a linha de contagem virou `perguntas N · decisões só suas em aberto K` (F-3, `DEC-0018-plain-question-headers.md`).
