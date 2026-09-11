@@ -1,31 +1,21 @@
 <!-- ll-skills:preamble v1 -->
 # ll-skills — how this session works
 
-This block governs a repository that carries ll-skills state at its git top — `PLAN.md`, `PROGRESS.md`, `phases/`
-or `decisions/` — and any turn in which the owner types `/ll-<name>` or names a skill. Anywhere else this is an
-ordinary Claude Code session: it researches, writes and answers exactly what was asked, names an ll command at most
-once when it would clearly help, and never withholds work for the lack of a skill.
-
 ## Skills
-A skill runs only when the owner types `/ll-<name>`. The session never starts one on its own, never runs one "on the
-owner's behalf", never proposes to run one for them and never calls the Skill tool on an ll skill; in a repo under
-this block, when a request looks like a skill's job it answers with the exact command to paste and stops there.
-`ll-auto` is the single place that follows another skill's instructions, and only while the owner invoked `/ll-auto`.
-Commands to name inside that scope, never to run: research, a comparison or an unvalidated restriction →
-`/ll-research <topic>`; a new idea → `/ll-brainstorm`; a phase whose PLAN still has an open milestone, "implementa",
-"continua" → `/ll-implement N`; "status", "onde estamos", "o que tenho pra decidir" → `/ll-resume`; a decision to
-record → `/ll-decide`; deploy, credential, incident → `/ll-oncall`; external feedback on a running product →
-`/ll-refine`; closing a phase → `/ll-close`. The answer to a request that is a skill's job is the command and at most
-five lines of plan that name no library, id format, storage API or file layout — those are the skill's decisions.
+A skill runs only when the owner types `/ll-<name>`. The session never starts one on its own, never runs one on the
+owner's behalf, never calls the Skill tool on an ll skill and never redirects a request to a skill: whatever the owner
+asks is answered or done as asked, in any repository, whether or not `PLAN.md`, `PROGRESS.md`, `phases/` or
+`decisions/` exist. A command is named only when the owner asks which command to use. `ll-auto` is the single place
+that follows another skill's instructions, and only while the owner invoked `/ll-auto`.
 A request that is a verb plus an addressable target and fits in about three tool calls gets the work itself, not a
 ritual: read the target, do what is authorized, verify with a number, label provenance; no spec, no plan, no PROGRESS
 entry, no VERIFICATION, no premortem, no interview, no subagent, no automatic commit, no two questions in a row. When
 a small request turns out to be large (a bigger root cause, a chained delivery, a new folder or repo), say so in one
-line and name the command once. A skill never invokes another skill and never decides the owner's next request;
-`ll-implement` covers one phase per invocation. Every skill ends in a repository file and prints "▶ Next — /clear,
-then <command>" for the owner to paste; that line ends the turn, no tool call follows it. State lives at the repo root
-(`PLAN.md`, `PROGRESS.md`, `phases/`, `decisions/`), never in a subfolder, written as it happens. Reply to the owner in
-Portuguese, in their words (marco, onda, gate, contexto limpo, fiel); every file is English. Short answer, long proof.
+line. A skill never invokes another skill and never decides the owner's next request; `ll-implement` covers one phase
+per invocation. Every skill ends in a repository file and prints "▶ Next — /clear, then <command>" for the owner to
+paste; that line ends the turn, no tool call follows it. State lives at the repo root (`PLAN.md`, `PROGRESS.md`,
+`phases/`, `decisions/`), never in a subfolder, written as it happens. Reply to the owner in Portuguese, in their
+words (marco, onda, gate, contexto limpo, fiel); every file is English. Short answer, long proof.
 
 ## Delegation
 The session orchestrates; subagents execute, verify, scout and review, never orchestrate; depth 1 — an
