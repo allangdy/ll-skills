@@ -38,9 +38,11 @@ with the F-0n that killed it. Tables scroll inside their own container on narrow
 (`overflow-x:auto` wrapper), the body never scrolls horizontally.
 
 ## Publishing
-Write the file, then give the owner its path in the reply; when the Artifact tool is available,
-publish the same file (favicon "⚖️") and give the link too — the file in `docs/decide/` stays the
-source. The interview starts only after this message.
+Write the file with `Write` — it is the deliverable, nothing else publishes it and no other skill
+is loaded to design it; the structure above (self-contained, inline CSS) is everything this step
+needs. Send its path to the owner in a message of its own, with no other content, right after
+writing it and before the first `AskUserQuestion` of the interview. Under `--no-talk` the same
+path line is printed instead of waited on.
 
 ## Judge brief (Fable, high, clean context — a fresh agent, never `fork`)
 Fill the paths absolute:

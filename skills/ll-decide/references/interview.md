@@ -15,7 +15,10 @@ A confirmed failure is a design constraint: options that ignore it are not offer
 
 Classify each item with the bands: band 1 → question; band 2/3 → assumption `ASM-n` with the
 cheapest-to-revert default and its reason, in PLAN §3, escalable only by contrary evidence. In
-doubt, look at fan-out: an item that conditions 3+ others is a question even if reversible.
+doubt, look at fan-out: an item that conditions 3+ others is a question even if reversible. A
+question whose options differ only in rigor — how strictly, how often or from where a check is
+re-run: the strictest cheap option is taken and recorded as an assumption `[decided by absence —
+revisable]`.
 
 ## Blanket delegation
 "Pode decidir tudo", "você decide o que der", "me pergunta só o que for realmente necessário" is a
@@ -27,14 +30,14 @@ window, what counts as an event) · a reference of his the session could not rea
 file) · a recorded rule that new evidence contradicts. They go out in one block of at most 4 per
 round, ordered by impact, recommendation first with its cost; the owner may answer "A" to ratify
 every recommended item at once. Ten minutes of silence ratify the recommended list A, never a
-blocking item B and never a band-1 item. An interview that ends with zero questions asked while a
-band-1 item exists is the defect this rule exists for: the delegation was read as "never ask".
+blocking item B and never an owner-only item. An interview that ends with zero questions asked while an
+owner-only item exists is the defect this rule exists for: the delegation was read as "never ask".
 
 `--no-talk` goes one step further: no block leaves the session. Band-2/3 items take their
 recommended option at once as `ASM-n [decided by absence — revisable]`; every item that stays a
 question under a blanket delegation becomes `decisions/DEC-NNNN-<slug>.md` in state `WAITING`,
 listed in PLAN §3 with what it blocks, and the first phase whose work depends on one carries
-`stop: owner` in its ROADMAP section. Zero questions with a band-1 item open is the defect above
+`stop: owner` in its ROADMAP section. Zero questions with an owner-only item open is the defect above
 only when the item vanishes; here it is written, dated and pointed at from the plan.
 
 Order: the kickoff question first when it exists (big-bang vs incremental, minimum vs complete —
@@ -50,11 +53,13 @@ Count the queue, announce "N decisions", and keep `n/N` stable; growth is announ
 
 ## Batteries
 At most 4 questions per call, one subject per call, ordered by impact. HIGH-impact items on money,
-price or scope go alone. `header` ≤ 12 chars; the `question` field carries `[DEC-NNNN] Question
-n/N — <title> (impact · revert)` (the reserved id), `FACT:` with number and source (a row of OPTIONS.html, a
-premortem F-0n, `file:line`), `CONTEXT:` for any acronym, and the decision in business words
-ending with "?". Options 2–3 (4 only multi-select), recommended first with `(Recommended)` and a
-traceable reason; each description = what becomes true · cost · what is lost. Add "Claude decide"
+price or scope go alone. `header` ≤ 12 chars; the `question` field carries `Pergunta n/N — <title
+in business words> (impacto ALTO|MÉDIO|BAIXO · desfazer: <cost>)` — the reserved `DEC-NNNN` id
+stays in the file that records the answer, never in the header or an option —, `FACT:` with number
+and source (a row of OPTIONS.html, a premortem F-0n, `file:line`), `CONTEXT:` for any acronym, and
+the decision in business words ending with "?". Options 2–3 (4 only multi-select), recommended
+first with `(Recommended)` and a traceable reason; each description = what becomes true · cost ·
+what is lost — an option names the thing decided, never an id alone. Add "Claude decide"
 when delegable. Never add "Other" — the tool provides it. Everything the owner needs is inside the
 field: text in a previous turn does not reach him. Fatigue: after 3–5 HIGH decisions offer a
 pause; the queue lives in `decisions/`, so a new session resumes from the next open item.
@@ -73,7 +78,7 @@ A free answer is a first-class redesign: record verbatim, give it an ID, treat i
 requirement — it may create items, kill items, or redirect the process (a research request, a
 blind-judge request). When it asks for an unbiased opinion, run the judge brief of
 `decision-room.md` on that item and re-present the same numbered question with the verdict
-("Question 6/16 (retomada)"). "Não entendi" or a counter-question: rephrase with better context;
+("Pergunta 6/16 (retomada)"). "Não entendi" or a counter-question: rephrase with better context;
 the failure was the question's. "Claude decide" / "você decide" / "pergunta pro X": record
 `ASM-n` (or the delegation) with default and reason; never ask that item again. An order against
 the recommendation: one challenge with the cost named, then obey and record under
@@ -85,9 +90,10 @@ When the queue has no open item, one message — not a question tool call — go
 delegation was. It opens with three lines:
 ```
 decisions: <N total>
-questions asked N / assumptions M / band-1 open K
-band-1 open: <ids and one line each, or "none">
+questions asked N / assumptions M / owner decisions open K
+owner decisions open: <ids and one line each, or "none">
 ```
+(printed to the owner in Portuguese as `perguntas N / assunções M · decisões só suas em aberto K`)
 then lists every decision as it will be written in PLAN §3: `ID · decision · by (owner / Claude ASM
 / inherited from …) · [against recommendation] · [accepted risk]`, then the assumptions, then the
 accepted risks. A run whose items are all band 2/3 sends the same message with `N = 0` and the full
@@ -96,9 +102,9 @@ The owner replies "ok"/"A" or names what to change; a badly posed item is re-ask
 canonical format.
 A correction is applied and the list is shown once more. "ok" or "A" freezes; ten minutes of silence
 in the hot window ratifies the recommended list (A, the assumptions) and freezes PLAN.md too, but
-only when `band-1 open` is 0 — with one band-1 item open nothing freezes.
+only when `owner decisions open` is 0 — with one owner-only item open nothing freezes.
 Under `--no-talk` the same message is printed as a report and no reply is waited for: `N = 0`, the
-full ASM list, the WAITING ids under `band-1 open`, and PLAN.md is frozen right after it even with
+full ASM list, the WAITING ids under `owner decisions open`, and PLAN.md is frozen right after it even with
 K > 0 — the WAITING DECs hold the dependent phases, not the freeze.
 Nothing is written before this round closes.
 
@@ -107,6 +113,6 @@ Every decision: `decisions/DEC-NNNN-<slug>.md` in the schema of `plan-skeleton.m
 PLAN §3. `decisions/README.md` carries the four counts (by owner / by rule / delegated /
 assumptions), the against-recommendation list, the free answers verbatim with the ID each created,
 and the consciously accepted risks. The same header carries the counter
-`questions asked N / assumptions M / band-1 open K`; with `N = 0` and `M > 5` the session also appends to `PROGRESS.md`, under the
+`questions asked N / assumptions M / owner decisions open K`; with `N = 0` and `M > 5` the session also appends to `PROGRESS.md`, under the
 phase heading, `- review assumptions: <M> ASM written with 0 questions asked (<date>)`. A decision
 attributed to the owner that he did not make voids the artefact: it is rewritten, not patched.

@@ -39,14 +39,15 @@ instead of creating one. In an opening conversation these are the A items.
 
 ### Blanket delegation
 "Pode decidir tudo, me pergunta só o que for realmente necessário" delegates bands 2 and 3, never band 1:
-band-1 items are still asked, in one block of ≤4 with the recommendation marked. Zero questions plus a stack of assumptions has misread it.
+owner-only items are still asked, in one block of ≤4 with the recommendation marked. Zero questions plus a stack of assumptions has misread it.
 
 ## Contact minimum
 Every planning skill (`ll-brainstorm`, `ll-decide`, the phase conversation of `ll-implement`) ends
-with a final round that shows `questions asked N / assumptions M / band-1 open K`, even when N = 0.
-Silence of 10 minutes ratifies the recommended list (A), never a blocking item (B).
+with a final round that shows `questions asked N / assumptions M / owner decisions open K`
+(printed to the owner in Portuguese as `perguntas N / assunções M · decisões só suas em aberto K`),
+even when N = 0. Silence of 10 minutes ratifies the recommended list (A), never a blocking item (B).
 
-## Never ask (10 items)
+## Never ask (11 items)
 1. Who executes — agent vs session, worktrees, model per wave. Decide it and record it.
 2. A fact readable from the repo, the database or the infra — look it up, including whether it was already done.
 3. Which pattern, when a house pattern exists — follow it.
@@ -57,12 +58,15 @@ Silence of 10 minutes ratifies the recommended list (A), never a blocking item (
 8. Copy without impact on a commercial promise. Route it to a blind judge instead.
 9. Industry defaults — data retention, performance target, error format, default auth. Recorded in Locked with backing.
 10. The same policy question a second time, however it is rephrased.
+11. A question whose options differ only in rigor — how strictly, how often or from where a check
+    is re-run: the strictest cheap option is taken and recorded as an assumption `[decided by
+    absence — revisable]`.
 
 ## Silence, delegation, directives
 - Silence for 10 minutes in the hot window (harness AFK timeout) ratifies option A of a band-2/3 item or
-  list A of a map — never option B, never a band-1 item. Record `ratified by silence`; in a run, `[decided by absence — revisable]`.
+  list A of a map — never option B, never an owner-only item. Record `ratified by silence`; in a run, `[decided by absence — revisable]`.
 - Under `--no-talk` the ten minutes are not waited for: the recommended option is taken at once and
-  recorded `[decided by absence — revisable]`. A band-1 item is never taken this way — it is written
+  recorded `[decided by absence — revisable]`. An owner-only item is never taken this way — it is written
   as a decision in state `WAITING` and the work that depends on it stops there.
 - "Claude decide", "você decide", "pergunta pro time" are legitimate answers: record an assumption
   `ASM-n` (permanent; announced if changed later) or the delegation, and never ask that item again.
@@ -96,19 +100,22 @@ the execution back to the owner: ask in one line and execute; transfer only what
 - Count the decisions before the first question; number `n/N`; never renumber; if the scope grows,
   say "+2 questions". At most 4 questions per call, one call per subject, ordered by impact, all
   inside the round's subject.
-- `header` ≤ 12 chars. `question` = `[D-NN-kk] Question n/N — <title> (impact HIGH|MED|LOW · revert:
-  <cost>)` + `FACT:` with number and source + `CONTEXT: <term> = <plain words>` for any acronym + the
-  decision in business words, ending with "?". Target ≤ 200 chars; over ~500, rewrite. Everything
-  inside the field — text in the previous turn does not reach the owner.
+- `header` ≤ 12 chars. `question` = `Pergunta n/N — <title in business words> (impacto
+  ALTO|MÉDIO|BAIXO · desfazer: <cost>)` + `FACT:` with number and source + `CONTEXT: <term> =
+  <plain words>` for any acronym + the decision in business words, ending with "?". Target ≤ 200
+  chars; over ~500, rewrite. Everything inside the field — text in the previous turn does not reach
+  the owner. The `D-NN-kk`/`DEC-NNNN` id is written only in the file that records the answer, never
+  in the header or in an option.
 - Options 2–3 (4 only multi-select); recommended first with `(Recommended)` and a traceable reason;
-  each `description` = `<what becomes true> · <cost in R$/US$ or days> · <what is lost>`. Add "Claude
-  decide" when the item is delegable. No "Other" — the tool provides it; free text is a new requirement.
+  each `description` = `<what becomes true> · <cost in R$/US$ or days> · <what is lost>`. An option
+  names the thing decided, never an id alone. Add "Claude decide" when the item is delegable. No
+  "Other" — the tool provides it; free text is a new requirement.
 - Recommend on the product axis; cost appears as a number in the option; above the ceiling the item
   is band 1. In a scope question the maximalist option is always on the table.
 
 Example:
 ```
-question: "[D-07-01] Question 1/2 — cents mismatch (impact HIGH · revert: 1 migration)
+question: "Pergunta 1/2 — cents mismatch (impacto ALTO · desfazer: 1 migration)
   FACT: <share>% of <n> rows of the last close differ by ≤ <tolerance> (<path to the run
   output>); today the job stops at the first one.
   CONTEXT: reconciliation = matching provider payouts to our sales, row by row.
