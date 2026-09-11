@@ -533,6 +533,7 @@ check "lint 5: strings proibidas"       'lint 5'
 check "lint 6: cópias idênticas"        'lint 6'
 check "lint 7: idioma"                  'lint 7'
 check "lint 8: lista privada"           'lint 8'
+check "lint 9: perguntas sem jargão"    'lint 9 && grep -q "^ok   9 plain questions" "$TMP/lint-9.txt"'
 fi
 
 # 10. lint de contrato entre as peças (uma checagem por regra de scripts/lint-contract.cjs)
@@ -690,6 +691,58 @@ check "assert goal-autonomous aceita a resposta boa" \
 check "assert goal-autonomous rejeita resposta vazia" \
   '! goal_autonomous_assert "$EV/wrong.txt"'
 echo "evals-auto: goal-autonomous pair asserted"
+
+# router-large-opener: par offline (captura limpa + resposta boa/ruim), nenhuma chamada paga
+rlo_assert() { # rlo_assert <arquivo de resposta>
+  local w="$EV/router-large-opener"
+  rm -rf "$w"; mkdir -p "$w"
+  git -C "$w" init -q -b main
+  bash "$ROOT/scripts/evals/cases/router-large-opener/assert.sh" "$w" \
+    "$ROOT/scripts/evals/fixtures/router-large-opener/out.json" "$1" \
+    > "$EV/router-large-opener.log" 2>&1
+}
+check "assert router-large-opener aceita a abertura que só nomeia o comando" \
+  'rlo_assert "$ROOT/scripts/evals/fixtures/router-large-opener/pass.txt"'
+check "assert router-large-opener rejeita a abertura que já escolhe biblioteca e layout" \
+  '! rlo_assert "$ROOT/scripts/evals/fixtures/router-large-opener/fail.txt"'
+
+# implement-stops-at-next: a linha de onda antes do epílogo e o helper chamado, nunca lido
+CAP_ONDA='[{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"onda 1/2 — M1, M2 rodando (opus, sonnet)"}]}},{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"▶ Next — /clear, then /ll-implement 8"}]}},{"type":"result","subtype":"success","is_error":false,"result":""}]'
+CAP_LE_HELPER='[{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"onda 1/2 — M1, M2 rodando (opus, sonnet)"}]}},{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"t1","name":"Bash","input":{"command":"head -40 scripts/ll-tools.js"}}]}},{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"▶ Next — /clear, then /ll-implement 8"}]}},{"type":"result","subtype":"success","is_error":false,"result":""}]'
+printf 'onda 1/2 — M1, M2 rodando (opus, sonnet)\nonda 1/2 — M1 ok (smoke test OK)\n## Epilogue — phase 07 — 2026-09-11\n▶ Next — `/clear`, then `/ll-implement 8`\n' > "$EV/onda.txt"
+printf '## Epilogue — phase 07 — 2026-09-11\n▶ Next — `/clear`, then `/ll-implement 8`\n' > "$EV/sem-onda.txt"
+isn_assert() { # isn_assert <arquivo de resposta> [captura]
+  local w="$EV/implement-stops-at-next"
+  rm -rf "$w"; mkdir -p "$w"
+  printf '%s' "${2:-$CAP_ONDA}" > "$w/out.json"
+  bash "$ROOT/scripts/evals/cases/implement-stops-at-next/assert.sh" "$w" "$w/out.json" "$1" \
+    > "$EV/implement-stops-at-next.log" 2>&1
+}
+check "assert implement-stops-at-next aceita onda antes do epílogo" \
+  'isn_assert "$EV/onda.txt"'
+check "assert implement-stops-at-next rejeita saída sem linha de onda" \
+  '! isn_assert "$EV/sem-onda.txt"'
+check "assert implement-stops-at-next rejeita captura que lê o helper com head" \
+  '! isn_assert "$EV/onda.txt" "$CAP_LE_HELPER"'
+
+# decide-final-round: contagem em palavras simples e o caminho das opções antes da 1ª pergunta
+printf 'docs/decide/OPTIONS.html — as opções lado a lado\nquestions asked 2 / assumptions 3 / owner decisions open 1\n**Pergunta 1/2 — limite de título (impacto MÉDIO · desfazer: barato)**\n' > "$EV/round-ok.txt"
+printf 'questions asked 2 / assumptions 3 / owner decisions open 1\n**Pergunta 1/2 — limite de título (impacto MÉDIO · desfazer: barato)**\ndocs/decide/OPTIONS.html — as opções lado a lado\n' > "$EV/round-tarde.txt"
+printf 'questions asked 2 / assumptions 3 / band-1 open 1\n**Pergunta 1/2 — limite de título**\n' > "$EV/round-jargao.txt"
+dfr_assert() { # dfr_assert <arquivo de resposta>
+  local w="$EV/decide-final-round"
+  rm -rf "$w"; mkdir -p "$w"
+  git -C "$w" init -q -b main
+  printf '%s' "$CAP_CLEAN" > "$w/out.json"
+  bash "$ROOT/scripts/evals/cases/decide-final-round/assert.sh" "$w" "$w/out.json" "$1" \
+    > "$EV/decide-final-round.log" 2>&1
+}
+check "assert decide-final-round aceita a rodada com o caminho antes da pergunta" \
+  'dfr_assert "$EV/round-ok.txt"'
+check "assert decide-final-round rejeita o caminho depois da primeira pergunta" \
+  '! dfr_assert "$EV/round-tarde.txt"'
+check "assert decide-final-round rejeita a contagem com o rótulo antigo" \
+  '! dfr_assert "$EV/round-jargao.txt"'
 fi
 
 # ---------------------------------------------------------------------------
@@ -713,11 +766,24 @@ check "lint 1: descrição dobrada (>) em mais de uma linha reprova" \
   'lint_bad folded-description "description is not one line"'
 check "lint 1: disable-model-invocation: false reprova" \
   'lint_bad model-invocation-false "disable-model-invocation: true missing"'
+# lint_bad9 <caso> <trecho esperado no FAIL>: a mesma fixture contra a regra 9
+lint_bad9() {
+  cp "$ROOT/scripts/fixtures/lint-bad/$1/SKILL.md" "$LSCR/skills/ll-fake/SKILL.md"
+  git -C "$LSCR" add -A
+  bash "$LSCR/scripts/lint-prompts.sh" --rule 9 > "$TMP/lint-bad9-$1.out" 2>&1 && return 1
+  grep -q "^FAIL 9 .*skills/ll-fake/SKILL.md: line [0-9]*: .*$2" "$TMP/lint-bad9-$1.out"
+}
+check "lint 9: id de decisão no cabeçalho da pergunta reprova" \
+  'lint_bad9 jargon-in-questions "\[DEC-"'
+check "lint 9: a linha de contagem com o rótulo antigo reprova" \
+  'lint_bad9 jargon-in-questions "band-1 open"'
 # sem a fixture a mesma árvore passa: o FAIL vem da SKILL.md ruim, não da cópia
 rm -rf "$LSCR/skills/ll-fake"
 git -C "$LSCR" add -A
 check "lint 1: a árvore de rascunho sem a fixture passa" \
   'bash "$LSCR/scripts/lint-prompts.sh" --rule 1 > "$TMP/lint-bad-clean.out" 2>&1'
+check "lint 9: a árvore de rascunho sem a fixture passa" \
+  'bash "$LSCR/scripts/lint-prompts.sh" --rule 9 > "$TMP/lint-bad9-clean.out" 2>&1'
 fi
 
 # ---------------------------------------------------------------------------

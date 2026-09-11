@@ -1,0 +1,4 @@
+Eu faria assim: `express` para a API, `sqlite` no disco, id com `uuid` v4.
+Layout: `src/server.js`, `src/notes.js`, `src/auth.js`, `test/http.test.js`.
+Cada nota guarda `id`, `title`, `body`, `created_at` e o dono.
+O login devolve um JWT que o cliente guarda em `localStorage`.
