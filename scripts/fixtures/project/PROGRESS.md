@@ -57,5 +57,5 @@ not_verified: backoff under real network latency
 
 passed: M1 · left: M2 (acceptance red), M3 (BLOCKED: DEC-0041) · WAITING: DEC-0041 (cents rounding) ·
 new backlog: B-014, B-015 · actions that need you: decide DEC-0041 before wave 3
-milestones passed 2/3 · questions asked 3 / assumptions 1 (ASM-1) / band-1 open 0 · amendments 1 · verification: phases/07/VERIFICATION.md APPROVED
+milestones passed 2/3 · questions asked 3 / assumptions 1 (ASM-1) / owner decisions open 0 · amendments 1 · verification: phases/07/VERIFICATION.md APPROVED
 ▶ Next — `/clear`, then `ll-implement 8`

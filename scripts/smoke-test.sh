@@ -116,7 +116,7 @@ check "linha nova fica acima do epílogo" \
 fi
 
 # ---------------------------------------------------------------------------
-# 4. os 12 comandos do helper
+# 4. os 13 comandos do helper
 # ---------------------------------------------------------------------------
 if section 4; then
 cd "$FIX"
@@ -170,6 +170,20 @@ touch "$FIXDECF/decisions/DEC-X-001-a.md" "$FIXDECF/decisions/DEC-X-002-b.md"
 check "dec-reserve sem --prefix detecta DEC-X → 003" 'grep -q "\"ids\":\[\"DEC-X-003\"\]" "$TMP/dec-x.json"'
 check "dec-reserve sem --prefix retorna prefix DEC-X" 'grep -q "\"prefix\":\"DEC-X\"" "$TMP/dec-x.json"'
 
+BSW="$TMP/bsw"
+cp -R "$FIX" "$BSW"
+$HELPER board-switch 08 --milestones M1,M2 --cwd "$BSW" --json > "$TMP/bsw.json"
+check "board-switch 08 troca a fase do placar" \
+  'grep -q "\"phase\":\"08\"" "$TMP/bsw.json" && grep -q "\"from\":\"07\"" "$TMP/bsw.json" && grep -q "^phase: 08$" "$BSW/PROGRESS.md"'
+check "board-switch semeia 2 marcos e apaga os antigos" \
+  '[ "$(grep -c "^  \(M[0-9]*\|G-[0-9]*\): {" "$BSW/PROGRESS.md")" -eq 2 ] && grep -q "^  M2: { passes: false" "$BSW/PROGRESS.md" && ! grep -q "a1b2c3d" "$BSW/PROGRESS.md"'
+check "board-switch na mesma fase só semeia o que falta" \
+  '$HELPER board-switch 08 --milestones M1,M2,M3 --cwd "$BSW" --json | grep -q "\"seeded\":\[\"M3\"\]" && [ "$(grep -c "^  M[0-9]*: {" "$BSW/PROGRESS.md")" -eq 3 ]'
+check "passes --phase 07 recusa o placar da 08" \
+  '$HELPER passes M1 true --commit abc1234 --phase 07 --cwd "$BSW" > "$TMP/pw.out" 2>/dev/null; [ $? -eq 1 ] && grep -q "\"ok\":false" "$TMP/pw.out" && grep -q "board is phase 08, not 07" "$TMP/pw.out"'
+check "passes --phase 08 grava no placar da 08" \
+  '$HELPER passes M1 true --commit abc1234 --phase 08 --cwd "$BSW" --json | grep -q "\"passes\":true"'
+
 check "heartbeat escreve no PROGRESS" '$HELPER heartbeat "smoke test ran" --json | grep -q "\"ok\":true"'
 check "heartbeat acima do epílogo"    'grep -q "smoke test ran" PROGRESS.md'
 
@@ -177,6 +191,15 @@ $HELPER backlog-reconcile --run --json > "$TMP/backlog.json"
 check "backlog-reconcile fecha só B-014" 'grep -q "\"closed\":\[\"B-014\"\]" "$TMP/backlog.json"'
 check "B-014 virou CLOSED no arquivo"    'grep "B-014" BACKLOG.md | grep -q "CLOSED"'
 check "B-015 continua OPEN"              'grep "B-015" BACKLOG.md | grep -q "OPEN"'
+check "backlog-reconcile acusa B-017 unparsable" \
+  '$HELPER backlog-reconcile --json > "$TMP/bk017.json"; grep -q "\"id\":\"B-017\",\"state\":\"OPEN\"" "$TMP/bk017.json" && grep -q "\"unparsable-condition\"" "$TMP/bk017.json"'
+check "epilogue 07 humano lista o unparsable" '$HELPER epilogue 07 | grep -q "unparsable: B-017"'
+check "epilogue 07 json traz unparsable"      '$HELPER epilogue 07 --json | grep -q "\"unparsable\":\[\"B-017\"\]"'
+check "phase-stats --since do dia do último commit é inclusivo" \
+  '$HELPER phase-stats --since 2026-09-09 --json | grep -q "\"commits\":1"'
+mkdir -p "$TMP/oldw" && sed "s/owner decisions open/band-1 open/" PROGRESS.md > "$TMP/oldw/PROGRESS.md"
+check "phase-stats aceita a redação antiga da linha de contagem" \
+  '$HELPER phase-stats --cwd "$TMP/oldw" --json | grep -q "\"band1_open\":0"'
 
 # comandos de leitura fora de um projeto: ok:false e exit 0
 cd "$EMPTY"
