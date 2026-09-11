@@ -49,7 +49,10 @@ onda="$(node -e '
     const content = ev.message && ev.message.content;
     if (!Array.isArray(content)) continue;
     for (const b of content) {
-      if (!b || b.type !== "text") continue;
+      if (!b) continue;
+      // a one-shot run prints no mid-run text: the wave heartbeat is the proxy; the screen line is checked by the lab rubric
+      if (b.type === "tool_use" && !hit && /heartbeat\s+\\?"(wave|onda) 1\//.test(JSON.stringify(b.input || {}))) hit = n + 1;
+      if (b.type !== "text") continue;
       n++;
       if (!hit && /(^|\n)onda 1\//.test(b.text || "")) hit = n;
       if (!epi && /## Epilogue|▶ Next/.test(b.text || "")) epi = n;
@@ -88,7 +91,7 @@ reads="$(node -e '
   let data; try { data = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); }
   catch { process.stdout.write("unparseable out.json"); process.exit(0); }
   const events = Array.isArray(data) ? data : [data];
-  const shell = /(cat|sed|grep|head|tail|less)\b[^\n]*ll-tools\.js/;
+  const shell = /(^|[\s;|&(])(cat|sed|grep|head|tail|less)\b[^\n;|&]*ll-tools\.js/; // the reading verb starts a command and the helper is its argument
   for (const ev of events) {
     if (!ev || ev.type !== "assistant") continue;
     const content = ev.message && ev.message.content;
