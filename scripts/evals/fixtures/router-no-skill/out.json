@@ -1,0 +1,27 @@
+[
+  {
+    "type": "system",
+    "subtype": "init",
+    "session_id": "router-no-skill-fixture",
+    "model": "claude-sonnet-5"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "Para um projeto pequeno em Node eu usaria `bullmq` sobre `redis`: fila com retry e dead-letter prontos.\nAs outras que olhei: `pg-boss` no Postgres, `rabbitmq` e `sqs`."
+        }
+      ]
+    }
+  },
+  {
+    "type": "result",
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 3,
+    "result": "Para um projeto pequeno em Node eu usaria `bullmq` sobre `redis`: fila com retry e dead-letter prontos.\nAs outras que olhei: `pg-boss` no Postgres, `rabbitmq` e `sqs`."
+  }
+]

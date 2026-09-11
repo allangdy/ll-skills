@@ -692,19 +692,23 @@ check "assert goal-autonomous rejeita resposta vazia" \
   '! goal_autonomous_assert "$EV/wrong.txt"'
 echo "evals-auto: goal-autonomous pair asserted"
 
-# router-large-opener: par offline (captura limpa + resposta boa/ruim), nenhuma chamada paga
-rlo_assert() { # rlo_assert <arquivo de resposta>
-  local w="$EV/router-large-opener"
+# router-no-skill: par offline (captura limpa + resposta boa/ruim), nenhuma chamada paga.
+# Skill só por comando explícito: um pedido comum é atendido na hora, mesmo com estado ll no repo.
+rns_assert() { # rns_assert <arquivo de resposta> [captura inline]
+  local w="$EV/router-no-skill"
   rm -rf "$w"; mkdir -p "$w"
   git -C "$w" init -q -b main
-  bash "$ROOT/scripts/evals/cases/router-large-opener/assert.sh" "$w" \
-    "$ROOT/scripts/evals/fixtures/router-large-opener/out.json" "$1" \
-    > "$EV/router-large-opener.log" 2>&1
+  local cap="$ROOT/scripts/evals/fixtures/router-no-skill/out.json"
+  if [ $# -ge 2 ]; then printf '%s' "$2" > "$w/out.json"; cap="$w/out.json"; fi
+  bash "$ROOT/scripts/evals/cases/router-no-skill/assert.sh" "$w" "$cap" "$1" \
+    > "$EV/router-no-skill.log" 2>&1
 }
-check "assert router-large-opener aceita a abertura que só nomeia o comando" \
-  'rlo_assert "$ROOT/scripts/evals/fixtures/router-large-opener/pass.txt"'
-check "assert router-large-opener rejeita a abertura que já escolhe biblioteca e layout" \
-  '! rlo_assert "$ROOT/scripts/evals/fixtures/router-large-opener/fail.txt"'
+check "assert router-no-skill aceita a pesquisa entregue na hora" \
+  'rns_assert "$ROOT/scripts/evals/fixtures/router-no-skill/pass.txt"'
+check "assert router-no-skill rejeita a resposta que só manda colar o comando" \
+  '! rns_assert "$ROOT/scripts/evals/fixtures/router-no-skill/fail.txt"'
+check "assert router-no-skill rejeita captura com tool_use Skill" \
+  '! rns_assert "$ROOT/scripts/evals/fixtures/router-no-skill/pass.txt" "$CAP_SKILL"'
 
 # implement-stops-at-next: a linha de onda antes do epílogo e o helper chamado, nunca lido
 CAP_ONDA='[{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"onda 1/2 — M1, M2 rodando (opus, sonnet)"}]}},{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"▶ Next — /clear, then /ll-implement 8"}]}},{"type":"result","subtype":"success","is_error":false,"result":""}]'
@@ -777,6 +781,10 @@ check "lint 9: id de decisão no cabeçalho da pergunta reprova" \
   'lint_bad9 jargon-in-questions "\[DEC-"'
 check "lint 9: a linha de contagem com o rótulo antigo reprova" \
   'lint_bad9 jargon-in-questions "band-1 open"'
+check "lint 9: id de pergunta [PG- no cabeçalho reprova" \
+  'lint_bad9 jargon-in-questions "\[PG-"'
+check "lint 9: a palavra banda 1 na prosa reprova" \
+  'lint_bad9 jargon-in-questions "banda 1"'
 # sem a fixture a mesma árvore passa: o FAIL vem da SKILL.md ruim, não da cópia
 rm -rf "$LSCR/skills/ll-fake"
 git -C "$LSCR" add -A

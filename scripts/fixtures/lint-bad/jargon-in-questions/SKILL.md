@@ -15,9 +15,13 @@ disable-model-invocation: true
 
 **Question 2/2 — retenção [ASM-3]** (impact LOW)
 
+**[PG-1] Pergunta 1/5 — janela de retenção** (impacto ALTO · desfazer: caro)
+
 2. Print the counter: `questions asked 2 / assumptions 1 / band-1 open 1`
 
 3. The Portuguese line: `perguntas 2 / assunções 1 · decisões [D-07-01] em aberto 1`
+
+4. Print the label the owner never reads: esta é uma banda 1, só o dono decide.
 
 ## Deliverables
 

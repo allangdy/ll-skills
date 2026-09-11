@@ -1,0 +1,5 @@
+Isso é trabalho do skill de pesquisa: eu não inicio um skill por conta própria. Cole o comando `/ll-research`:
+
+    `/ll-research opções de fila para Node`
+
+O skill compara as opções, confere as fontes e escreve `docs/research/RESEARCH.md`.

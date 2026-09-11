@@ -1,0 +1,4 @@
+Para um projeto pequeno em Node eu usaria `bullmq` sobre `redis`: fila durável, retry, backoff e dead-letter já vêm prontos.
+As outras que valem olhar: `pg-boss` (a fila mora no Postgres — uma dependência a menos quando o banco já existe), `rabbitmq` (roteamento rico, mas é mais um serviço para operar) e `sqs` (gerenciado, com o preço de amarrar o projeto à AWS).
+Regra prática: enquanto tudo couber num processo e o Postgres já estiver de pé, `pg-boss`; quando precisar de concorrência, rate limit e repetição por fila, `bullmq`.
+Nada disso foi medido aqui: é leitura de documentação, não `benchmark` rodado por mim.
