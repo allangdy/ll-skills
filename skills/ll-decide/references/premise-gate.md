@@ -1,9 +1,10 @@
-# Premise gate — the five questions
+# Premise gate — the four questions
 
-Read at project step 1. Five questions, one block, before any subagent runs. Each answer re-prices
+Read at project step 1. Four questions, one block, before any subagent runs. Each answer re-prices
 everything that follows, and none of them can be read from the repo — an unanswered one is
 inherited as a guess by every later step. Questions already answered in `docs/decide/OPENING.md`
-(its `PREMISES` line or a `D-00-kk` entry) are skipped; when all five are answered, no call is made.
+(its `PREMISES` line or a `D-00-kk` entry) are skipped; when all four are answered, no call is made.
+A fifth premise exists and is never asked: the constraint the session is inventing out of caution.
 
 ## The gate blocks
 
@@ -13,7 +14,7 @@ starts. A premise is closed when it carries one of three sources, written next t
 A premise with none of the three is a question, sent now, in one block of at most 4; until the
 block comes back — an answer, an "A", or ten minutes of silence on band-2/3 items — no premortem
 narrator, no judge, no subagent and no file is written. "Pode decidir tudo" does not open the gate:
-it turns band-2/3 premises into `ASM-n`, and leaves band-1 premises (PG-1, PG-2 and any premise
+it turns band-2/3 premises into `ASM-n`, and leaves the owner-only ones (PG-1, PG-2 and any premise
 resting on a reference the session could not read) as questions.
 
 External references named in the request are read before the gate, by the route table in
@@ -25,15 +26,19 @@ read, cited by artifact id or path.
 
 `--no-talk` sends no block at all. Each premise without a source takes the recommended option of
 its question at once, written beside it as `ASM-n [decided by absence — revisable]`, and step 2
-starts immediately. PG-1 and PG-2 are band 1 — as is any premise resting on a reference the
+starts immediately. PG-1 and PG-2 are owner-only — as is any premise resting on a reference the
 session could not read: they are recorded as premises and also as `decisions/DEC-NNNN-<slug>.md`
 in state `WAITING`, so what the owner still owes is written down rather than dropped, and the
 work that depends on a WAITING id is what stops later, never this step.
 
-The tool takes four questions per call: 1–4 in the first call, 5 in the next, nothing in between.
-Format: the canonical one in `decision-policy.md` — `[PG-n] Question n/5 — <title> (impact HIGH ·
-revert: <cost>)`, `FACT:` with what the repo or the request already shows, the decision in
-business words ending with "?", 2–3 options, recommended first with its reason.
+The four questions travel in one call — the tool's limit is four and there is never a fifth to
+send after it. Format: the canonical one in `decision-policy.md`, on screen and in the owner's
+language — `Pergunta n/4 — <title> (impacto ALTO|MEDIO|BAIXO · desfazer: <custo>)`, `FACT:` with
+what the repo or the request already shows, the decision in business words ending with "?", 2–3
+options, recommended first with its reason. The `PG-n` id names the section of this file and the
+decision file only: it never appears in a header, an option or the closing line, and neither does
+any band label — an owner-only item is called "só suas" on screen. The answer key is one line:
+`Responda por letra (ex.: 1A 2A 3B 4A)`, free text welcome.
 
 ## PG-1 — The number that decides success, and what counts as FAILURE
 Why: without it an autonomous run reads a non-zero exit or a partial delivery as success; the
@@ -70,21 +75,23 @@ a reference". Asked only when a candidate pattern was found or the domain usuall
 (infra, CI/CD, repo layout, naming); when none was found, the option set says so.
 Lands in: PLAN §7 (execution protocol) and §2 when the pattern constrains the design.
 
-## PG-5 — The constraint being invented out of caution
-Why: a prudence rule nobody asked for — "no customer data in logs", say — propagates into the
-server, the route tests, the documents and a deploy before anyone checks whether it was required.
-Form: state the constraint the plan is about to adopt on its own ("I intend to mask customer
-phones in internal logs") and ask whether it is the owner's rule. Options: "drop it — not my
-rule (Recommended when the owner's words or CLAUDE.md contain no such rule)" · "keep it as an
-invariant, with this source: <...>" · "keep it revisable: my constraint, review trigger <...>".
-The prudence constraints listed in `decision-policy.md` are proposed here, never assumed.
-Lands in: PLAN §5 (freedoms or reserved) or §2 with source; a kept-revisable one gets `[revisable]`.
+## The constraint invented out of caution — never a question
+A prudence rule nobody asked for — "no customer data in logs", say — propagates into the server,
+the route tests, the documents and a deploy before anyone checks whether it was required. It is
+still not a question: asking the owner to rule on a constraint he never raised spends his one
+block on the session's own caution. The session decides it alone, in one of two ways: drop it
+when the owner's words and CLAUDE.md contain no such rule, or keep it as `ASM-n [revisable]` with
+a one-line `Review trigger:` when dropping it would cost real rework. Either way it is named in
+the final round as an assumption, in plain words ("mascarei X; reversível"), never as a question.
+The prudence constraints listed in `decision-policy.md` are handled here by this rule.
+Lands in: PLAN §5 (freedoms or reserved) or §2 with source; a kept one gets `[revisable]`.
 
 ## After the block
-Record the five answers (PG-1..PG-5) verbatim in `decisions/DEC-0001-<slug>.md` .. `DEC-0005-<slug>.md`
+Record the four answers (PG-1..PG-4) verbatim in `decisions/DEC-0001-<slug>.md` .. `DEC-0004-<slug>.md`
 (or the reserved ids — four digits, no project prefix) and in the
 fixed block of `docs/decide/OPTIONS.html` (step 4). Each recorded premise names its source on its
-own line: `source: <file:line | "owner, <date>: '<quote>'" | ASM-n>`. Five sources present is the
-condition for step 2 to start. A free-text answer to any of them is a
+own line: `source: <file:line | "owner, <date>: '<quote>'" | ASM-n>`. A kept caution constraint is
+written beside them as `ASM-n [revisable]` with its review trigger, and counted as an assumption,
+not as a question. Four sources present is the condition for step 2 to start. A free-text answer to any of them is a
 requirement: give it an ID and carry it into the interview queue. A "Claude decide" answer is
 `ASM-n` in PLAN §3 and is not asked again in any later step.
