@@ -1,6 +1,6 @@
 {
   "name": "ll-skills",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Evidence-driven development pipeline for Claude Code: router preamble, 12 skills (auto, brainstorm, research, decide, goal, implement, verify, close, resume, refine, oncall, update), 4 agents, 3 hooks and a state helper",
   "bin": {
     "ll-skills": "bin/install.js"

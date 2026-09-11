@@ -2,6 +2,34 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). A skill `ll-update` lê este arquivo para mostrar o que mudou entre a versão instalada e a publicada.
 
+## [3.1.0] - 2026-09-11
+
+### Adicionado
+
+- Passo `board-switch` no helper: troca o marcador de fase antes da primeira onda gravar, e `passes` recusa gravar quando o marcador é de outra fase — a onda 1 não escreve mais no lugar da fase anterior (F-1).
+- Coluna `note` e condição executável (`` `cmd` exit N ``) nas linhas de backlog nascidas em `ll-implement`; o epílogo lista quem ainda não é parseável e a fase roda `backlog-reconcile --run` sozinha, sem esperar o fechamento (F-2).
+- Linha de progresso por onda no terminal durante uma fase (`onda i/M — M2, M3 rodando`), no despacho e no retorno de cada marco (F-4).
+- Lint rule 9 (`lint-prompts.sh`): nenhuma pergunta ao dono ou linha de contagem carrega `band-1`, `[DEC-`, `[D-` ou `ASM-`; novo caso de eval `router-large-opener`; os asserts de `decide-final-round` e `implement-stops-at-next` seguem a nova redação.
+- Teto de tamanho do helper em 760 linhas / 36 000 bytes (`DEC-0016-helper-ceiling-760-36000.md`).
+- `phase-stats --since <data>` passa a incluir o próprio dia informado (F-12).
+- `ll-resume` grava a resposta a uma decisão `WAITING` no próprio arquivo da decisão.
+- Linhas de memória fora do repositório (`ll-brainstorm`, `ll-close`) declaradas na tabela de entregáveis (F-10).
+- Segunda rodada completa do laboratório: `lab/scenarios/notes-api.md` ganha os turnos 8–24 (fechamento por milestone, pesquisa, decisão sem perguntas com roadmap de quatro fases e uma decisão `WAITING`, meta autônoma, verificação externa, sabotagem seguida de reverificação, oncall, feedback em docx, refino, `ll-auto --pause-at/--resume`), `lab/README.md` ganha o protocolo de sessão isolada (`CLAUDE_CONFIG_DIR` próprio, diálogo de confiança pré-aceito, sondagem a cada 5 minutos) e `lab/rubric.md` ganha as métricas de progresso visível, integridade do board e caminhos percorridos.
+
+### Corrigido
+
+- Pergunta cujas opções só diferem em rigor de checagem não é mais feita — vira decisão por ausência (F-8).
+- A sala de decisão (`OPTIONS.html`) é entregue por caminho de arquivo antes da primeira pergunta, sem publicar artefato e sem chamar outra skill (F-5, `DEC-0017-decision-room-file-not-published.md`).
+- As telas e as perguntas ao dono não usam mais `banda 1`, `DEC-`, `ASM-`; a linha de contagem virou `perguntas N · decisões só suas em aberto K` (F-3, `DEC-0018-plain-question-headers.md`).
+- As skills chamam o helper pelo comando, nunca leem o código dele na tela do dono (F-7).
+- Script de aceitação comitado com caminho absoluto ou que mata processo alheio (`pkill`, `killall`) vira bloqueio do verificador em vez de uma ressalva (F-6).
+- O primeiro turno de um pedido grande para no comando e num plano de até 5 linhas, sem escolher formato de id nem biblioteca de IO antes da hora (F-9).
+- O laboratório aceita o diálogo de confiança da pasta antes do primeiro turno, num `CLAUDE_CONFIG_DIR` isolado — a primeira tentativa da rodada de 2026-09-11 tinha morrido nesse diálogo (F-11, `DEC-0019-lab-round-2-scope.md`).
+
+### Alterado
+
+- `lab/rubric.md`: a lista de jargão troca `gate` por `regime` (a classe de roteamento já tem nome próprio no `CLAUDE.md`; nada em `lab/` deveria repeti-la na tela do dono).
+
 ## [3.0.0] - 2026-09-10
 
 ### Adicionado
