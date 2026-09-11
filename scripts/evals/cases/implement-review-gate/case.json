@@ -4,5 +4,5 @@
   "min_pass": 2,
   "agent": null,
   "permission_mode": "bypassPermissions",
-  "note": "No executor is dispatched until phases/07/PLAN-REVIEW.md is on disk; and one invocation plans one phase, so phases/08/ must stay untouched."
+  "note": "--no-talk so a one-shot run never waits on an owner-only question: the cents item (DEC-0041) becomes WAITING, M5/M6/M7 get stop: owner, and the review gate must still be written for M1/M2/M4. No executor is dispatched until phases/07/PLAN-REVIEW.md is on disk; and one invocation plans one phase, so phases/08/ must stay untouched."
 }

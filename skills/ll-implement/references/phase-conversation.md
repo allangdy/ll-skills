@@ -2,9 +2,14 @@
 
 The phase route of `ll-brainstorm`, condensed for use inside `ll-implement` when
 `phases/NN/DECISIONS.md` does not exist yet: same file, same schema, same closing conditions, no
-agent. Reduced to the battery with `--no-talk`, "pode ir", "você decide", "just do it" or a pasted
-complete plan: the map is skipped and A is ratified whole, B is still asked in one block of ≤4
-(band 1 is never delegated), the file is written, one line says what was locked.
+agent. Reduced to the battery with "pode ir", "você decide", "just do it" or a pasted complete
+plan: the map is skipped and A is ratified whole, B is still asked in one block of ≤4 (band 1 is
+never delegated by a blanket phrase), the file is written, one line says what was locked.
+With `--no-talk` nothing is asked and nothing waits on an answer: A is ratified on its
+recommendations and each owner-only item becomes its own `decisions/DEC-NNNN-<slug>.md` in state
+`WAITING` (id from `ll-tools.js dec-reserve`), listed in the Deferred section with its resume
+condition, while every milestone whose work depends on it carries `stop: owner` in
+`phases/NN/PLAN.md`; the file is written and step 2 of the skill runs.
 
 ## 1. Scout before speaking (≤10% of context)
 
@@ -46,7 +51,8 @@ Every A item cites its analog or says `[no analog — my call]` (→ revisable);
 
 ## 4. Battery B (once, ≤4) and the owner's replies
 
-No B items: no battery. Otherwise one AskUserQuestion call in the canonical format of
+No B items, or `--no-talk`: no battery — under `--no-talk` each B item is recorded as a `WAITING`
+decision instead of a question, and the phase goes on. Otherwise one AskUserQuestion call in the canonical format of
 `references/decision-policy.md` — the header is `Pergunta n/N — <título> (impacto ALTO|MÉDIO|BAIXO
 · desfazer: <custo>)`; the id (`D-NN-kk`) stays in the file, never in the header or the options.
 The measured fact with its source, 2–3 options each with `<what becomes true> · <cost> · <what is
@@ -61,9 +67,10 @@ lost>`, the recommended one first, a "Claude decides" option that records the de
 
 ## 5. Close
 
-Closes when: zero Blocking items open (answered or deferred by the owner); A ratified; every
-locked item has backing (`file:line`, a measurement, the owner's words) or sits under Revisable;
-names stable across the last two exchanges. Cap: two map rounds, then close A as it stands and
+Closes when: zero Blocking items open (answered or deferred by the owner — under `--no-talk`,
+every one of them is deferred as a `WAITING` decision and the milestones that depend on it get
+`stop: owner`); A ratified; every locked item has backing (`file:line`, a measurement, the
+owner's words) or sits under Revisable; names stable across the last two exchanges. Cap: two map rounds, then close A as it stands and
 carry the rest into execution as `stop: owner`.
 
 Write `phases/NN/DECISIONS.md` — under the repository root, beside `PROGRESS.md`, never in a

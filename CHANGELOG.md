@@ -18,6 +18,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ### Corrigido
 
+- `ll-implement --no-talk` nunca pergunta: o item que só você decide vira decisão `WAITING` e congela só os marcos que dependem dele; o resto da fase roda (era o que `ll-auto` já assumia).
 - Skill só por comando explícito: o preâmbulo global não redireciona mais nenhum pedido para uma skill, em nenhum repositório, tenha ele estado do ll-skills ou não — a sessão responde ou faz o que foi pedido, e só nomeia um comando quando o dono pergunta qual usar (feedback do dono, 2026-09-11).
 - O gate de premissas do `ll-decide` manda no máximo quatro perguntas num bloco só, com cabeçalhos limpos (sem `[PG-n]`, sem `banda 1` na tela); a restrição inventada por cautela deixou de ser pergunta — vira assunção `ASM-n [revisable]` com gatilho de revisão, contada como assunção.
 - Pergunta cujas opções só diferem em rigor de checagem não é mais feita — vira decisão por ausência (F-8).
