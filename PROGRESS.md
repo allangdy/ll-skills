@@ -117,6 +117,8 @@ not_verified: nothing for this milestone
 
 - [2026-09-11T20:02:35Z] 3.1.0 round — wave 5: ll-implement --no-talk never asks; owner-only items become WAITING DEC + stop: owner (live eval implement-review-gate stopped on a question in -p mode)
 
+- [2026-09-11T20:30:57Z] 3.1.0 round — gate: live evals router-no-skill/router-small/decide-final-round PASS (run 1657); implement pair rerun after the assert fixes (a612aac)
+
 ## Epilogue — phase 01 — 2026-09-10
 passed: M1, M2, M3, M4, M5 (5/5) — every skill locked, preamble without a router, README/CHANGELOG updated, router eval cases assert the manual contract, lint and smoke test green in this worktree.
 left: none.
