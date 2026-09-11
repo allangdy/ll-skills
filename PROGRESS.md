@@ -103,6 +103,12 @@ not_verified: nothing for this milestone
 
 - [2026-09-10T19:32:33Z] backlog round — B-002..B-020 dispatched to three executors (lint · ll-auto helper · evals+docs), HEAD d8c7735
 
+- [2026-09-11T19:17:26Z] 3.1.0 round — wave 1: four executors on disjoint files (helper+smoke+fixtures · ll-implement · ll-decide+policy · brainstorm/close/resume/agents/preamble), from lab/runs/2026-09-11-notes-api/CHANGE-PLAN.md
+
+- [compaction 2026-09-11T19:19:15Z · auto · HEAD a63db54] re-read phases/05/PLAN.md and the milestone board before continuing.
+
+- [2026-09-11T19:28:49Z] 3.1.0 round — wave 2: lint rule 9, helper ceiling 760/36000 (DEC-0016), eval asserts for the new wording, new case router-large-opener
+
 ## Epilogue — phase 01 — 2026-09-10
 passed: M1, M2, M3, M4, M5 (5/5) — every skill locked, preamble without a router, README/CHANGELOG updated, router eval cases assert the manual contract, lint and smoke test green in this worktree.
 left: none.
@@ -353,3 +359,29 @@ commits: b549a0e fix(ci): publish confirmation waits up to 5 minutes for the reg
 commands: yaml parse + greps → exit=0 · `npm view ll-skills version` → 3.0.0 (19:11:41) · `CLAUDE_CONFIG_DIR=<tmp> node package/bin/install.js --yes --no-settings` on the published tarball → "Pronto." VERSION 3.0.0 · `npx -y ll-skills@3.0.0` → same (the first npx attempt seconds after publish failed with "command not found", a cache race; the retry passed)
 deviations: none · questions: none · backlog: none
 not_verified: the widened window on a real run (next release)
+
+## 3.1.0 round — 2026-09-11
+Source: lab/runs/2026-09-11-notes-api/CHANGE-PLAN.md (findings F-1..F-12, D-2..D-5). Wave 1: four executors on disjoint files. Decisions DEC-0016..0019 written by the session.
+### W1-A — 2026-09-11 16:52
+built: `ll-tools.js board-switch NN --milestones …` (rewrites `phase:`, drops the old phase's `M*`/`G-*` lines, seeds `{ passes: false, reason: "not started" }`, idempotent), `passes --phase NN` refusing another phase's board with exit 1, `epilogue` reporting `unparsable:` ids, day-inclusive `phase-stats --since`, count-line regex accepting both wordings, D-2 duplicate `write` gone; 10 new smoke checks in section 4; fixture BACKLOG with a `note` column + prose-condition row B-017.
+commits: 05af5d2 test(W1-A) · 87c8491 feat(W1-A)
+commands: `bash scripts/smoke-test.sh --only 4` → "smoke test OK — 70 checks" exit 0 (was 60) · `bash scripts/lint-prompts.sh --rule 3` → FAIL: 711 lines / 34624 bytes over 700 / 32768 · `node scripts/lint-contract.cjs --rule 2` → ok · sizes 682 l / 32763 B → 678 / 32527 after shrinks → 711 / 34624 with the features.
+deviations: `<ll-shared:state>` comment not shrunk (region compared byte-for-byte with hooks/ll-state.js); last-resort shrink not taken (would delete two green checks); seeded shape per CHANGE-PLAN `{ passes: false, reason: "not started" }`; `TARGETS` keys renamed `questions/owner_prompts/owner_open_at_close`; fixture PROGRESS carries the new wording, one check proves the old one still parses.
+questions: DEC-0016 — raise the ceiling to 760 / 36000 → decided by the session (decisions/DEC-0016-helper-ceiling-760-36000.md), applied in W2.
+backlog: none (fixtures auto-closed/auto-verify-next keep `band-1 open` as the proof the old wording parses; rule 9 exempts fixtures)
+not_verified: board-switch and `--phase` only on a fixture copy, never in a real wave; `npm test` end-to-end blocked by the ceiling until W2.
+### W1-B — 2026-09-11 15:40
+built: ll-implement SKILL.md + three references: board-switch step, every `passes` example with `--phase NN`, parseable BACKLOG row shape (`note` column, exact condition cell, dry-run `backlog-reconcile` before the epilogue), count line `owner decisions open K` / `decisões só suas em aberto K` (zero `band-1`), visible `onda i/M` lines, fifth boundary "the helper is called, never read" + Helper contract table, portable-acceptance-script rule, briefs.md DO NOT against absolute paths / `pkill` / `killall`.
+commits: fe20540 feat(W1-B)
+commands: lint-prompts rules 1,2,4,5,6,7 ok (rule 3 red only on ll-tools.js) · `node scripts/lint-contract.cjs` → "ok — 7 rule(s), 0 violation(s)" · greps: board-switch 3, `--phase NN` 6, never read 2, onda 2, show-toplevel 1, pkill 1, band-1 0/0, owner decisions open 2 · wc -l 121/134/124/77 under ceilings.
+deviations: none · questions: none · backlog: none · not_verified: full lint until W2.
+### W1-C — 2026-09-11 20:42
+built: ll-decide SKILL.md, interview.md, decision-room.md and decision-policy.md ×3 (byte-identical): `owner decisions open K` / `owner-only item`, header `Pergunta n/N — <title> (impacto … · desfazer: …)` with the id in the recording file only, `docs/decide/OPTIONS.html` handed over in its own message before the first question with no Artifact publish and no other skill, never-ask item 11 (options differing only in rigor).
+commits: 9c36ad3 feat(W1-C)
+commands: md5sum ×3 identical · band-1 0/0/0 · only in rigor 1/1/1 · artifact-design 0/0 · Pergunta n/N 1 · wc -l 137/118/64/128 · lint rules 5/6/7 ok.
+deviations: the pre-existing `Artifact` read-a-reference row in SKILL.md step 0 stays (same row as ll-brainstorm/ll-refine; unrelated to F-5) — accepted by the session. questions: none · backlog: none · not_verified: live ll-decide run (the lab rerun).
+### W1-D — 2026-09-11
+built: ll-brainstorm SKILL.md plain count lines (5 spots), ll-close step 1 BACKLOG columns with `note` and step 7 options without bare ids, `BLOCKS: process` rule for non-portable committed scripts in agents/ll-verifier.md and verifier-briefs.md, preamble caps a skill-shaped answer at the command + five decision-free lines, `memory/*.md` deliverable rows in ll-brainstorm/ll-close, ll-resume appends `status: DECIDED` to the answered DEC file (completion criterion updated).
+commits: d19dc72 feat(W1-D)
+commands: band-1 0/0 · owner decisions open 3 · pkill 1/1 · memory/ 1/1 · status: DECIDED 1 · five lines 1 · note 1 · inclusive 1 · wc -l 182/70/80/119/128/97/66 under ceilings · lint-contract rules 3,5,6 ok.
+deviations: every hyphenated `band-1` in ll-brainstorm replaced (acceptance grep = 0); ll-resume completion criterion acknowledges the one DEC write. questions: none · backlog: none · not_verified: full lint until W1-C/W2 landed.
