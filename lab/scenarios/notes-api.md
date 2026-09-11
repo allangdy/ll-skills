@@ -19,7 +19,7 @@ pre-accepted before turn 1 — see `lab/README.md` "Driver protocol — isolated
 polling" for the exact steps and the fallback if the dialog still appears.
 
 ## Turns — round 1 (in order; `→` = what the driver expects before the next turn)
-1. `quero fazer uma API de notas em Node, sem dependências, com testes. criar, listar, buscar por id e apagar, salvando em arquivo JSON. me diz por onde começar` → the session names one command and starts no skill (finding if it starts one).
+1. `quero fazer uma API de notas em Node, sem dependências, com testes. criar, listar, buscar por id e apagar, salvando em arquivo JSON. me diz por onde começar` → an ordinary answer that starts no skill (finding if it starts one); naming a command is not expected, and the driver types turn 2 regardless.
 2. `/ll-brainstorm project` → answer questions from the table; ends in DECISIONS/OPENING and a ▶ Next.
 3. `/clear` then `/ll-decide project` → `PLAN.md` §8 table with two phases (no `ROADMAP.md` — the
    skill writes one only above 3 phases), `PROGRESS.md`; answer from the table.
